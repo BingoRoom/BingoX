@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Bingo</Authors>
+    <Company>Bingo</Company>
+    <Description>基本类，接口定义、扩展方法、工具类</Description>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyOriginatorKeyFile>BingoX.Core.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='net40|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;Framework</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Generator\DisposableAction.cs" />
+  </ItemGroup>
+
+</Project>
