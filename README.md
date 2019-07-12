@@ -1,2 +1,1 @@
-# BingoX
-一个积累了多年工作经验的类库
+https://bingoroom.github.io/BingoX/
