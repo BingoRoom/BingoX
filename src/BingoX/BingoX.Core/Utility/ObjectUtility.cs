@@ -10,15 +10,6 @@ namespace BingoX.Utility
     public static class ObjectUtility
     {
 
-        public static T GetValue<T>(this NameValueCollection collection, string key, T defaultValue)
-        {
-            if (collection == null) throw new ArgumentNullException("collection");
-            string value = collection.Get(key);
-            if (value == null) return defaultValue;
-
-            return Cast<T>(value, defaultValue);
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -43,9 +34,6 @@ namespace BingoX.Utility
             return (T)Cast(value, typeof(T), defaultValue);
 
         }
-
-
-
 
         /// <summary>
         /// 
@@ -74,10 +62,8 @@ namespace BingoX.Utility
                 case TypeCode.DBNull:
                 case TypeCode.Empty:
                     throw new ArgumentNullException("value");
-
                 case TypeCode.String:
                     return StringUtility.Cast((string)value, tmpType);
-
                 case TypeCode.Int16:
                 case TypeCode.Int32:
                 case TypeCode.Int64:
@@ -106,8 +92,182 @@ namespace BingoX.Utility
             if (targetConvter.CanConvertFrom(valueType)) return targetConvter.ConvertFrom(value);
             var toConvter = TypeDescriptor.GetConverter(valueType);
             if (toConvter.CanConvertTo(tmpType)) return toConvter.ConvertTo(value, tmpType);
-
             throw new NotSupportedException();
+        }
+        /// <summary>
+        /// 数值自增
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static object MunberIncrement(object number)
+        {
+            TypeCode code = Convert.GetTypeCode(number);
+            switch (code)
+            {
+                default:
+                    throw new Exception("类型不能自增");
+                case TypeCode.Single:
+                    {
+                        var a = (Single)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.Byte:
+                    {
+                        var a = (int)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.Char:
+                    {
+                        var a = (Char)number;
+                        a++;
+                        return a;
+                    }
+
+                case TypeCode.Decimal:
+                    {
+                        var a = (Decimal)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.Double:
+                    {
+                        var a = (Double)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.Int16:
+                    {
+                        var a = (Int16)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.Int32:
+                    {
+                        var a = (Int32)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.Int64:
+                    {
+                        var a = (Int64)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.SByte:
+                    {
+                        var a = (SByte)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.UInt16:
+                    {
+                        var a = (UInt16)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.UInt32:
+                    {
+                        var a = (UInt32)number;
+                        a++;
+                        return a;
+                    }
+                case TypeCode.UInt64:
+                    {
+                        var a = (UInt64)number;
+                        a++;
+                        return a;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// 数值自减
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static object MunberDecrement(object number)
+        {
+
+            TypeCode code = Convert.GetTypeCode(number);
+            switch (code)
+            {
+                default:
+                    throw new Exception("类型不能自增");
+                case TypeCode.Single:
+                    {
+                        var a = (Single)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.Byte:
+                    {
+                        var a = (Byte)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.Char:
+                    {
+                        var a = (Char)number;
+                        a--;
+                        return a;
+                    }
+
+                case TypeCode.Decimal:
+                    {
+                        var a = (Decimal)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.Double:
+                    {
+                        var a = (Double)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.Int16:
+                    {
+                        var a = (Int16)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.Int32:
+                    {
+                        var a = (Int32)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.Int64:
+                    {
+                        var a = (Int64)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.SByte:
+                    {
+                        var a = (SByte)number;
+                        return a--;
+                    }
+                case TypeCode.UInt16:
+                    {
+                        var a = (UInt16)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.UInt32:
+                    {
+                        var a = (UInt32)number;
+                        a--;
+                        return a;
+                    }
+                case TypeCode.UInt64:
+                    {
+                        var a = (UInt64)number;
+                        a--;
+                        return a;
+                    }
+            }
         }
     }
 }

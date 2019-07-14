@@ -10,5 +10,7 @@ namespace BingoX.Helper
             var obj = row[name];
             return ObjectUtility.Cast<T>(obj);
         }
+
+
     }
 }

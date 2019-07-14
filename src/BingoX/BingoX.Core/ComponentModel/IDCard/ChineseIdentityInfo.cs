@@ -1,9 +1,18 @@
 ﻿using System;
 
-namespace BingoX.Validation
+namespace BingoX.ComponentModel.IDCard
 {
+    /// <summary>
+    /// 表示一个中国身份证信息
+    /// </summary>
     public struct ChineseIdentityInfo
     {
+        /// <summary>
+        /// 构造中国身份证信息
+        /// </summary>
+        /// <param name="province">省代号</param>
+        /// <param name="gender">性别</param>
+        /// <param name="birthday">出生日期</param>
         public ChineseIdentityInfo(string province, IDCardGender gender, DateTime birthday)
         {
             ProvinceCode = province;
@@ -11,11 +20,23 @@ namespace BingoX.Validation
             Birthday = birthday;
 
         }
+        /// <summary>
+        /// 表示身份证指向的公民的出生日期
+        /// </summary>
         public DateTime Birthday { get; private set; }
+        /// <summary>
+        /// 表示身份证的性别
+        /// </summary>
         public IDCardGender Gender { get; private set; }
+        /// <summary>
+        /// 表示身份证所属省份带哈哦
+        /// </summary>
         public string ProvinceCode { get; private set; }
-
+        /// <summary>
+        /// 表示身份证的所属省份
+        /// </summary>
         public string ProvinceName { get { return GetName(); } }
+
         private string GetName()
         {
             switch (ProvinceCode)

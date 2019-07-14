@@ -28,16 +28,14 @@ namespace BingoX.Utility
 
             return GetDescription(value.GetType(), value.ToString());
         }
-        public static string GetDescription<T>(int value) where T : Enum
+        public static string GetDescription<T>(int value)
         {
-
+            if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
             var obj = Enum.ToObject(typeof(T), value);
             var str = Enum.GetName(typeof(T), obj);
             if (str == null) throw new EnumConverterException("转换失败");
 
-
             var display = GetDescription<T>(str);
-
             return display;
         }
         private static string GetDescription(Type enumtype, string value)
@@ -56,11 +54,10 @@ namespace BingoX.Utility
             return att == null ? value : att.Description;
         }
 
-        public static string GetDescription<T>(string value) where T : Enum
+        public static string GetDescription<T>(string value)
         {
+            if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
             return GetDescription(typeof(T), value);
-
-
         }
     }
 }

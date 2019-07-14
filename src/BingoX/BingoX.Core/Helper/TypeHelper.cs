@@ -74,13 +74,24 @@ namespace BingoX.Helper
         {
             return typeAllowMultipleCache.GetOrAdd(type, (t => t.IsInheritFrom<Attribute>() && t.GetTypeInfo().GetCustomAttribute<AttributeUsageAttribute>().AllowMultiple));
         }
-        public static T[] GetCustomAttributes<T>(this Type type, bool inherit = true)
+        /// <summary>
+        ///  获取所有共有属性集合
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns></returns>
+        public static IEnumerable<PropertyInfo> GetAllProperties(this Type type)
         {
-            return type.GetCustomAttributes(typeof(T), inherit).OfType<T>().ToArray();
+            return type.GetInterfaces().Concat(new[] { type }).SelectMany(itf => itf.GetProperties()).Distinct();
         }
-        public static T GetCustomAttribute<T>(this Type type, bool inherit = true)
+
+        /// <summary>
+        ///  获取所有公共方法集合
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns></returns>
+        public static IEnumerable<MethodInfo> GetAllMethodInfos(this Type type)
         {
-            return type.GetCustomAttributes(typeof(T), inherit).OfType<T>().FirstOrDefault();
+            return type.GetInterfaces().Concat(new[] { type }).SelectMany(itf => itf.GetMethods()).Distinct();
         }
         /// <summary>
         /// 返回type的详细类型

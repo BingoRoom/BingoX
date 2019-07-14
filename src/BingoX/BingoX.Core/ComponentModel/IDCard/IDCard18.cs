@@ -1,7 +1,11 @@
-﻿using System;
+﻿using BingoX.Validation;
+using System;
 
-namespace BingoX.Validation
+namespace BingoX.ComponentModel.IDCard
 {
+    /// <summary>
+    /// 表示一个18位身份证号的信息
+    /// </summary>
     public class IDCard18 : IValidation<string>
     {
 
@@ -45,7 +49,6 @@ namespace BingoX.Validation
 
         public bool Valid(string value)
         {
-
             try
             {
                 GetIDCardInfo(value);
@@ -53,7 +56,6 @@ namespace BingoX.Validation
             }
             catch (Exception)
             {
-
                 return false;
             }
         }

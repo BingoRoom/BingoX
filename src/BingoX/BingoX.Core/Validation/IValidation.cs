@@ -6,17 +6,4 @@ namespace BingoX.Validation
     {
         bool Valid(TIn value);
     }
-    public enum IDCardGender
-    {
-        /// <summary>
-        /// 男
-        /// </summary>
-        [Description("男")]
-        Male,
-        /// <summary>
-        /// 女
-        /// </summary>
-        [Description("女")]
-        Female
-    }
 }

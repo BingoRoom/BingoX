@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BingoX.Helper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BingoX.Utility
 {
@@ -174,7 +177,6 @@ namespace BingoX.Utility
         }
 
         #endregion
-
 
         #region double
 
@@ -354,5 +356,50 @@ namespace BingoX.Utility
             return Compare(tmpx, tmpy);
         }
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str1"></param>
+        /// <param name="str2"></param>
+        /// <param name="compare"></param>
+        /// <returns></returns>
+        public static bool Compare(string str1, string str2, StringCompare compare = StringCompare.IgnoreCase)
+        {
+            if (string.IsNullOrWhiteSpace(str1) && string.IsNullOrWhiteSpace(str2)) return true;
+            var tmpstr1 = StringUtility.RemoveSpace(str1);
+            var tmpstr2 = StringUtility.RemoveSpace(str2);
+            return string.Equals(tmpstr1, tmpstr2, compare == StringCompare.None ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item"></param>
+        /// <param name="source"></param>
+        /// <param name="predicate"></param>
+        /// <param name="compare"></param>
+        /// <returns></returns>
+        public static T FirstOrDefault<T>(string item, IEnumerable<T> source, Func<T, string> predicate, StringCompare compare = StringCompare.IgnoreCase) where T : class
+        {
+            if (!source.HasAny()) return default(T);
+            return source.FirstOrDefault(s => Compare(item, predicate(s), compare));
+        }
+    }
+
+    /// <summary>
+    /// 字符串比较
+    /// </summary>
+    public enum StringCompare
+    {
+        /// <summary>
+        /// 完全比较
+        /// </summary>
+        None,
+        /// <summary>
+        /// 忽略大小写
+        /// </summary>
+        IgnoreCase,
     }
 }
