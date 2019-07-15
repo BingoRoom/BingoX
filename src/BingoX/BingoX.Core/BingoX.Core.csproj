@@ -27,5 +27,8 @@
   <ItemGroup>
     <Compile Remove="Generator\DisposableAction.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ComponentModel\FastReflection\" />
+  </ItemGroup>
 
 </Project>

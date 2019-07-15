@@ -7,41 +7,43 @@ using System.Text;
 
 namespace BingoX.Utility
 {
-    public static class ObjectUtility
+    /// <summary>
+    /// 表示一个针对Object的操作工具
+    /// </summary>
+    public class ObjectUtility
     {
-
         /// <summary>
-        /// 
+        /// 把对象转型为指定的类型，如果转型失败则返回默认类型。
+        /// 默认类型默认为null
         /// </summary>
-        /// <param name="value"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <param name="value">待转型的对象</param>
+        /// <typeparam name="T">目标类型</typeparam>
+        /// <returns>目标类型对象</returns>
         public static T Cast<T>(object value)
         {
-
             return (T)Cast(value, typeof(T), default(T));
-
         }
         /// <summary>
-        /// 
+        /// 把对象转型为指定的类型，如果转型失败则返回默认类型。
+        /// 默认类型默认为null
         /// </summary>
-        /// <param name="value"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <param name="value">待转型的对象</param>
+        /// <param name="defaultValue">默认类型</param>
+        /// <typeparam name="T">目标类型</typeparam>
+        /// <returns>目标类型对象</returns>
         public static T Cast<T>(object value, T defaultValue)
         {
-
             return (T)Cast(value, typeof(T), defaultValue);
-
         }
 
         /// <summary>
-        /// 
+        /// 把对象转型为指定的类型，如果转型失败则返回默认类型。
+        /// 默认类型默认为null
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="targetType"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
+        /// <param name="value">待转型的对象</param>
+        /// <param name="targetType">目标类型</param>
+        /// <param name="defaultValue">默认类型</param>
+        /// <returns>目标类型对象</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="NotSupportedException"></exception>
         public static object Cast(object value, Type targetType, object defaultValue = null)
@@ -50,12 +52,9 @@ namespace BingoX.Utility
             if (targetType == null) throw new ArgumentNullException("targetType");
             if (value == null) throw new ArgumentNullException("value");
             var tmpType = targetType.RemoveNullabl();
-
             if (tmpType.IsInstanceOfType(value)) return value;
             if (tmpType == typeof(string)) return value.ToString();
-
             var convertible = value as IConvertible;
-
             var code = Convert.GetTypeCode(value);
             switch (code)
             {
@@ -95,10 +94,10 @@ namespace BingoX.Utility
             throw new NotSupportedException();
         }
         /// <summary>
-        /// 数值自增
+        /// 执行对象的数值自增
         /// </summary>
-        /// <param name="number"></param>
-        /// <returns></returns>
+        /// <param name="number">可自增的对象</param>
+        /// <returns>自增后的对象</returns>
         public static object MunberIncrement(object number)
         {
             TypeCode code = Convert.GetTypeCode(number);
@@ -183,10 +182,10 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 数值自减
+        /// 执行对象的数值自减
         /// </summary>
-        /// <param name="number"></param>
-        /// <returns></returns>
+        /// <param name="number">可自减的对象</param>
+        /// <returns>自减后的对象</returns>
         public static object MunberDecrement(object number)
         {
 
@@ -213,7 +212,6 @@ namespace BingoX.Utility
                         a--;
                         return a;
                     }
-
                 case TypeCode.Decimal:
                     {
                         var a = (Decimal)number;

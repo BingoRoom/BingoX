@@ -17,50 +17,17 @@ namespace BingoX.Utility
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
     /// <summary>
-    /// 
+    /// 表示一个针对操作数比较的工具
     /// </summary>
-    public static class CompareUtility
+    public class CompareUtility
     {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static bool IsBetween<T>(this T x, T min, T max) where T : IComparable
-        {
-            if (min.CompareTo(max) > 0) throw new CompareException("最小值大於最大值");
-            return (x.CompareTo(min) >= 0 && x.CompareTo(max) <= 0);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static bool IsBetween<T>(this T? x, T min, T max) where T : struct, IComparable
-        {
-            if (x == null) return false;
-            if (min.CompareTo(max) > 0) throw new CompareException("最小值大於最大值");
-            var val = x.Value;
-            return (val.CompareTo(min) >= 0 && val.CompareTo(max) <= 0);
-        }
         #region
         /// <summary>
-        /// ゅセゑ耕
+        /// 比较两个字符串是否相等
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param> 
-        /// <returns></returns>
+        /// <param name="x">比较参数1</param>
+        /// <param name="y">比较参数2</param> 
+        /// <returns>比较结果</returns>
         public static bool Compare(string x, string y)
         {
             if (x == null && y == null) return true;
@@ -69,6 +36,35 @@ namespace BingoX.Utility
             if (flag) return true;
             if (x == null || y == null) return false;
             return string.Equals(x.Trim(), y.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+        /// <summary>
+        /// 比较两个字符串是否相等
+        /// </summary>
+        /// <param name="str1">比较参数1</param>
+        /// <param name="str2">比较参数2</param>
+        /// <param name="compare">比较规则</param>
+        /// <returns>比较结果</returns>
+        public static bool Compare(string str1, string str2, StringCompare compare = StringCompare.IgnoreCase)
+        {
+            if (string.IsNullOrWhiteSpace(str1) && string.IsNullOrWhiteSpace(str2)) return true;
+            var tmpstr1 = StringUtility.RemoveSpace(str1);
+            var tmpstr2 = StringUtility.RemoveSpace(str2);
+            return string.Equals(tmpstr1, tmpstr2, compare == StringCompare.None ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// 提供一个断言Func，从一个指定类型的枚举中获取第一个符合断言的实例
+        /// </summary>
+        /// <typeparam name="T">指定类型</typeparam>
+        /// <param name="item">待比较字符串</param>
+        /// <param name="source">指定类型的枚举</param>
+        /// <param name="predicate">断言Func</param>
+        /// <param name="compare">比较规则</param>
+        /// <returns>符合断言的实例</returns>
+        public static T FirstOrDefault<T>(string item, IEnumerable<T> source, Func<T, string> predicate, StringCompare compare = StringCompare.IgnoreCase) where T : class
+        {
+            if (!source.HasAny()) return default(T);
+            return source.FirstOrDefault(s => Compare(item, predicate(s), compare));
         }
         /// <summary>
         /// 
@@ -356,40 +352,10 @@ namespace BingoX.Utility
             return Compare(tmpx, tmpy);
         }
         #endregion
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="str1"></param>
-        /// <param name="str2"></param>
-        /// <param name="compare"></param>
-        /// <returns></returns>
-        public static bool Compare(string str1, string str2, StringCompare compare = StringCompare.IgnoreCase)
-        {
-            if (string.IsNullOrWhiteSpace(str1) && string.IsNullOrWhiteSpace(str2)) return true;
-            var tmpstr1 = StringUtility.RemoveSpace(str1);
-            var tmpstr2 = StringUtility.RemoveSpace(str2);
-            return string.Equals(tmpstr1, tmpstr2, compare == StringCompare.None ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="item"></param>
-        /// <param name="source"></param>
-        /// <param name="predicate"></param>
-        /// <param name="compare"></param>
-        /// <returns></returns>
-        public static T FirstOrDefault<T>(string item, IEnumerable<T> source, Func<T, string> predicate, StringCompare compare = StringCompare.IgnoreCase) where T : class
-        {
-            if (!source.HasAny()) return default(T);
-            return source.FirstOrDefault(s => Compare(item, predicate(s), compare));
-        }
     }
 
     /// <summary>
-    /// 字符串比较
+    /// 表示一个字符比较规则的枚举
     /// </summary>
     public enum StringCompare
     {

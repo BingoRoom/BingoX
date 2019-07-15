@@ -1,4 +1,5 @@
-﻿using BingoX.Utility;
+﻿using BingoX.Helper;
+using BingoX.Utility;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,14 @@ namespace BingoX.Core.Test.Utility
         [Test, TestCaseSource(typeof(CompareUtilityDataClass), "TestFlaseCases")]
         public void TestFlaseIsBetween(IComparable value, IComparable x, IComparable y)
         {
-            var flag = CompareUtility.IsBetween(value, x, y);
+            var flag = value.IsBetween(x, y);
             Assert.IsFalse(flag);
 
         }
         [Test, TestCaseSource(typeof(CompareUtilityDataClass), "TestTrueCases")]
         public void TestTrueIsBetween(IComparable value, IComparable x, IComparable y)
         {
-            var flag = CompareUtility.IsBetween(value, x, y);
+            var flag = value.IsBetween(x, y);
             Assert.IsTrue(flag);
         }
 
@@ -75,9 +76,9 @@ namespace BingoX.Core.Test.Utility
         public void TestNulIsBetween()
         {
             int? x = null;
-            var flag = CompareUtility.IsBetween(x, 10, 20);
+            var flag = x.IsBetween(10, 20);
             Assert.IsFalse(flag);
-            flag = CompareUtility.IsBetween(x, 10, 20);
+            flag = x.IsBetween(10, 20);
             Assert.IsFalse(flag);
 
 
@@ -88,10 +89,10 @@ namespace BingoX.Core.Test.Utility
         {
             Assert.Throws<CompareException>(() =>
             {
-                var flag = CompareUtility.IsBetween(1, 10, 1);
+                var flag = CompareHelper.IsBetween(1, 10, 1);
                 Assert.IsFalse(flag);
                 int? x = null;
-                flag = CompareUtility.IsBetween(x, 10, 1);
+                flag = CompareHelper.IsBetween(x, 10, 1);
                 Assert.IsFalse(flag);
             });
         }

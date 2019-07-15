@@ -14,8 +14,6 @@ namespace BingoX
         {
             if (exceptions != null && exceptions.Any())
             {
-
-
                 _hasError = true;
                 this._error = exceptions.First();
                 this._errors = exceptions.ToArray();
@@ -33,8 +31,6 @@ namespace BingoX
 
             if (exceptions != null && exceptions.Length > 0)
             {
-
-
                 _hasError = true;
                 this._error = exceptions[0];
                 this._errors = exceptions;
@@ -59,7 +55,6 @@ namespace BingoX
         public bool HasError
         {
             get { return _hasError; }
-
         }
         private readonly Exception _error;
         private readonly bool _hasError;

@@ -108,8 +108,6 @@ namespace BingoX
         /// </summary>
         public static readonly Type Nullable = typeof(Nullable<>);
 
-
-
         /// <summary>
         /// IEnumerable 类型
         /// </summary>

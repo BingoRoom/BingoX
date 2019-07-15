@@ -8,19 +8,18 @@ using System.Text;
 
 namespace BingoX.Utility
 {
-    public static class FileUtility
+    public class FileUtility
     {
         static readonly string[] unit = { "KB", "MB", "GB", "TB", "PB" };
         const int filter = 1024;
         /// <summary>
-        ///
+        /// 获取文件大小的显示值。
         /// </summary>
-        /// <param name="filesize"></param>
-        /// <returns></returns>
+        /// <param name="filesize">文件大小（KB）</param>
+        /// <returns>返回文件大小的显示值。例如：276.34MB</returns>
         public static string GetFileSizeDisplay(long filesize)
         {
             if (filesize < filter) return string.Format("{0}b", filesize);
-
             long unitsize = 1;
             var flag = true;
             decimal size = filesize;
@@ -35,17 +34,51 @@ namespace BingoX.Utility
             }
             return string.Format("{0:f2}{1}", size, unit[index]);
         }
-  
 
-        public static string GetMD5(Stream stream)
+        /// <summary>
+        /// 获取文件的MD5
+        /// </summary>
+        /// <param name="stream">文件流</param>
+        /// <returns></returns>
+        public static string GetFileMD5(Stream stream)
         {
-            byte[] bs = MD5.Create().ComputeHash(stream);
+            return GetHash(MD5.Create(), stream);
+        }
+
+        /// <summary>
+        /// 获取文件的MD5
+        /// </summary>
+        /// <param name="stream">字节数组</param>
+        /// <returns></returns>
+        public static string GetFileMD5(byte[] stream)
+        {
+            return GetHash(MD5.Create(), new MemoryStream(stream));
+        }
+
+        private static string GetHash(HashAlgorithm algorithm, Stream stream)
+        {
+            byte[] bs = algorithm.ComputeHash(stream);
             return BitConverter.ToString(bs).Replace("-", "");
         }
-        public static string GetMD5(byte[] stream)
+
+        /// <summary>
+        /// 获取文件的SHA256
+        /// </summary>
+        /// <param name="stream">文件流</param>
+        /// <returns></returns>
+        public static string GetFileSHA256(Stream stream)
         {
-            byte[] bs = MD5.Create().ComputeHash(stream);
-            return BitConverter.ToString(bs).Replace("-", "");
+            return GetHash(HashAlgorithm.Create("SHA256"), stream);
+        }
+
+        /// <summary>
+        /// 获取文件的SHA256
+        /// </summary>
+        /// <param name="stream">字节数组</param>
+        /// <returns></returns>
+        public static string GetFileSHA256(byte[] stream)
+        {
+            return GetHash(HashAlgorithm.Create("SHA256"), new MemoryStream(stream));
         }
     }
 }

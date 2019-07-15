@@ -1,6 +1,7 @@
-﻿using System;
+﻿using BingoX.ComponentModel.IDCard;
+using System;
 
-namespace BingoX.ComponentModel.IDCard
+namespace BingoX.Validation
 {
     /// <summary>
     /// 身份证号验证器

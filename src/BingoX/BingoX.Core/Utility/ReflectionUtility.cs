@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BingoX.Helper;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace BingoX.Utility
 {
-    public static class ReflectionUtility
+    public class ReflectionUtility
     {
         static readonly IDictionary<string, Type> TypeCache = new Dictionary<string, Type>(DelegateComparer.ComparerString());
         /// <summary>
@@ -17,26 +18,19 @@ namespace BingoX.Utility
         /// <returns></returns>
         public static Type GetType(string typename)
         {
-
-            if (string.IsNullOrEmpty(typename))
-                return null;
-            if (TypeCache.ContainsKey(typename))
-                return TypeCache[typename];
+            if (string.IsNullOrEmpty(typename)) return null;
+            if (TypeCache.ContainsKey(typename)) return TypeCache[typename];
             Type type = Type.GetType(typename);
             if (type != null)
             {
                 TypeCache.Add(typename, type);
                 return type;
             }
-
-
             var allAssembly = AppDomain.CurrentDomain.GetAssemblies();
-
             foreach (var assembly in allAssembly)
             {
                 type = assembly.GetType(typename);
-                if (type == null)
-                    continue;
+                if (type == null) continue;
                 TypeCache.Add(typename, type);
                 break;
             }
@@ -50,12 +44,10 @@ namespace BingoX.Utility
         /// <param name="assemblyName"></param>
         /// <param name="className"></param>
         /// <returns></returns>
-        public static T CreateInstance<T>(string assemblyName, string className)
-            where T : class
+        public static T CreateInstance<T>(string assemblyName, string className) where T : class
         {
             object obj = CreateInstance(assemblyName, className);
-            if (obj is T)
-                return (T)obj;
+            if (obj is T) return (T)obj;
             return default(T);
         }
 
@@ -74,8 +66,6 @@ namespace BingoX.Utility
             return ObjectUtility.Cast<T>(obj);
         }
 
-
-
         /// <summary>
         /// 执行方法
         /// </summary>
@@ -91,12 +81,10 @@ namespace BingoX.Utility
             if (method == null)
             {
                 return new Exception("NotFindMethod");
-
             }
             try
             {
-
-                return method.Invoke(obj, parameters);
+                return method.FastInvoke(obj, parameters);
             }
             catch (Exception ex)
             {
@@ -135,38 +123,10 @@ namespace BingoX.Utility
         {
             var assembly = CompareUtility.FirstOrDefault(assemblyName, AppDomain.CurrentDomain.GetAssemblies(), n => n.ManifestModule.Name);
             if (assembly == null) throw new ArgumentNullException("assemblyName");
-
             var objType = assembly.GetType(className);
             if (objType == null) throw new ArgumentNullException("className");
             var obj = objType.CreateInstance();
             return obj;
-        }
-
-        /// <summary>
-        ///  创建对象
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static object CreateInstance(this Type type)
-        {
-            if (type == null)
-                return null;
-            var iConstructor = type.GetConstructor(new Type[] { });
-            if (iConstructor == null)
-                return null;
-            var obj = iConstructor.Invoke(new object[] { });
-            return obj;
-        }
-
-        /// <summary>
-        ///  创建对象
-        /// </summary>
-        /// <param name="type"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static T CreateInstance<T>(this Type type)
-        {
-            return typeof(T).IsAssignableFrom(type) ? (T)CreateInstance(type) : default(T);
         }
 
         /// <summary>
@@ -177,11 +137,9 @@ namespace BingoX.Utility
         public static TryResult<Assembly> AddAssembly(string path)
         {
             string assemblyName = Path.GetFileName(path);
-
             var assembly = CompareUtility.FirstOrDefault(assemblyName, AppDomain.CurrentDomain.GetAssemblies(), n => n.ManifestModule.Name);
             if (assembly != null) return assembly;
-            if (!File.Exists(path))
-                return new IOException("文件不存在");
+            if (!File.Exists(path)) return new IOException("文件不存在");
             try
             {
                 var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -191,7 +149,6 @@ namespace BingoX.Utility
             }
             catch (Exception ex)
             {
-
                 return ex;
             }
             return assembly;

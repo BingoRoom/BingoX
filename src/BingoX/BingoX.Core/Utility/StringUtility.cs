@@ -9,7 +9,10 @@ using BingoX.Validation;
 
 namespace BingoX.Utility
 {
-    public static class StringUtility
+    /// <summary>
+    /// 提供一个针对 String的操作工具
+    /// </summary> 
+    public class StringUtility
     {
         ///// <summary>
         ///// 
@@ -51,7 +54,7 @@ namespace BingoX.Utility
         /// <summary>
         /// 判断是不是中文
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="str">字符串</param>
         /// <returns></returns>
         public static bool HasChinese(string str)
         {
@@ -60,7 +63,7 @@ namespace BingoX.Utility
         /// <summary>
         /// 16进制字符串转字节数组
         /// </summary>
-        /// <param name="str"></param>
+        /// <param name="str">字符串</param>
         /// <returns></returns>
         public static byte[] HexToByte(string str)
         {
@@ -77,59 +80,52 @@ namespace BingoX.Utility
         /// <summary>
         /// Base64字符串转字节数组
         /// </summary>
-        /// <param name="bytes"></param>
+        /// <param name="str">字符串</param>
         /// <returns></returns>
         public static byte[] Base64ToByte(string str)
         {
             return Convert.FromBase64String(str);
         }
         /// <summary>
-        /// Base64字符串转字节数组
+        /// 把Base64字符串转成对应编码的字符串
         /// </summary>
-        /// <param name="bytes"></param>
+        /// <param name="str">字符串</param>
+        /// <param name="encoding">编码</param>
         /// <returns></returns>
-        public static string FromBase64(string str, System.Text.Encoding encoding)
+        public static string FromBase64(string str, Encoding encoding)
         {
             return encoding.GetString(Convert.FromBase64String(str));
         }
         /// <summary>
-        /// Base64字符串转字节数组
+        /// 用空格字符拼接字符串数组，并且以UTF8编码转成Base64字符串
         /// </summary>
-        /// <param name="bytes"></param>
+        /// <param name="strs">字符串数组</param>
         /// <returns></returns>
-        public static string ToBase64(string[] str)
+        public static string ToBase64(string[] strs)
         {
-            return ToBase64(str, System.Text.Encoding.UTF8, " ");
+            return ToBase64(strs, Encoding.UTF8);
         }
 
         /// <summary>
-        /// Base64字符串转字节数组
+        /// 用指定字符拼接字符串数组，并且以指定编码转成Base64字符串
         /// </summary>
-        /// <param name="bytes"></param>
+        /// <param name="strs">字符串数组</param>
+        /// <param name="encoding">指定编码</param>
+        /// <param name="separator">指定连接符</param>
         /// <returns></returns>
-        public static string ToBase64(string[] str, System.Text.Encoding encoding, string separator = " ")
+        public static string ToBase64(string[] strs, Encoding encoding, string separator = " ")
         {
-            var line = string.Join(separator, str);
+            var line = string.Join(separator, strs);
             var buffer = encoding.GetBytes(line);
             return Convert.ToBase64String(buffer);
         }
 
         /// <summary>
-        /// 移除StringBuilder最后一个字符
+        /// 检索一个字符串，把指定的字符旧串替换为新字符串
         /// </summary>
-        /// <param name="builder"></param>
-        public static void ReomveLastChar(this StringBuilder builder)
-        {
-            if (builder == null) return;
-            builder.Remove(builder.Length - 1, 1);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="oldValues"></param>
-        /// <param name="newValue"></param>
+        /// <param name="str">待替换字符串</param>
+        /// <param name="oldValues">被替换的字符串集合</param>
+        /// <param name="newValue">替换字符串</param>
         /// <returns></returns>
         public static string Replace(string str, string[] oldValues, string newValue)
         {
@@ -144,9 +140,9 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 
+        /// 判断字符串两头是否有空格
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">字符串</param>
         /// <returns></returns>
         public static bool HasSpace(string value)
         {
@@ -156,9 +152,9 @@ namespace BingoX.Utility
             return false;
         }
         /// <summary>
-        /// 
+        /// 移除字符串两头的空格
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">字符串</param>
         /// <returns></returns>
         public static string RemoveSpace(string value)
         {
@@ -167,22 +163,21 @@ namespace BingoX.Utility
             return value;
         }
         /// <summary>
-        /// 
+        /// 移除字符串中的所有空格字符
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">字符串</param>
         /// <returns></returns>
         public static string RemoveSpaceAll(string value)
         {
             if (string.IsNullOrEmpty(value)) return string.Empty;
-
             return new string(value.Where(c => !Char.IsWhiteSpace(c)).ToArray());
         }
         /// <summary>
-        /// 
+        /// 移除以某字符为标志的前面的字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="ch"></param>
-        /// <returns></returns>
+        /// <param name="str">字符串</param>
+        /// <param name="ch">字符标志</param>
+        /// <returns>移除后的字符串</returns>
         public static string RemoveStartsWith(string str, char ch)
         {
             if (string.IsNullOrWhiteSpace(str)) return string.Empty;
@@ -191,11 +186,11 @@ namespace BingoX.Utility
             return index > 0 ? newstr.Substring(index) : newstr;
         }
         /// <summary>
-        /// 
+        /// 移除以某字符串为标志的后面的字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="ch"></param>
-        /// <returns></returns>
+        /// <param name="str">字符串</param>
+        /// <param name="ch">字符标志</param>
+        /// <returns>移除后的字符串</returns>
         public static string RemoveEndsWith(string str, char ch)
         {
             if (string.IsNullOrWhiteSpace(str)) return string.Empty;
@@ -211,18 +206,15 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 
+        /// 移除字符串的最后一个字符
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
+        /// <param name="str">字符串</param>
+        /// <returns>移除后的字符串</returns>
         public static string RemoveLast(string str)
         {
             if (string.IsNullOrEmpty(str)) return str;
             return str.Remove(str.Length - 1, 1);
         }
-
-
-
 
         /// <summary>
         /// 获取字符串指定两个字符中间的值,正则
@@ -265,18 +257,11 @@ namespace BingoX.Utility
         public static string GetStringMiddle(string baseString, string startString, string endString)
         {
             if (baseString == null | startString == null || endString == null) return string.Empty;
-
             if (baseString.IndexOf(startString, StringComparison.CurrentCultureIgnoreCase) == -1 || baseString.IndexOf(endString, StringComparison.CurrentCultureIgnoreCase) == -1) return string.Empty;
-
-
             string lastPart = baseString.Substring(baseString.IndexOf(startString, StringComparison.CurrentCultureIgnoreCase) + startString.Length);
             var index = lastPart.IndexOf(endString, StringComparison.CurrentCultureIgnoreCase);
             if (index == -1) return string.Empty;
-
-
             return lastPart.Substring(0, index);
-
-
         }
 
         /// <summary>
@@ -289,23 +274,21 @@ namespace BingoX.Utility
         /// <returns></returns>
         public static string GetBriefnessString(string str, int index, string replaceString = "...")
         {
-            if (String.IsNullOrWhiteSpace(str))
-                return String.Empty;
+            if (String.IsNullOrWhiteSpace(str)) return String.Empty;
             string lastStr = String.IsNullOrEmpty(replaceString) ? "..." : replaceString;
             return str.Length > index ? str.Substring(0, index) + lastStr : str;
         }
 
-
         /// <summary>
-        /// 字符串转换类型
+        /// 将字符串枚举转型为对应类型的数组
+        /// 把字符枚举里的字符串逐个转型成指定类型之后插入数组
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="value">字符串枚举</param>
+        /// <param name="type">指定类型</param>
+        /// <returns>返回对应类型的数组</returns>
         public static Array Cast(IEnumerable<string> value, Type type)
         {
-            if (type == null || !value.HasAny())
-                return null;
+            if (type == null || !value.HasAny()) return null;
             var array = Array.CreateInstance(type, value.Count());
             int index = 0;
             foreach (string s in value)
@@ -317,15 +300,16 @@ namespace BingoX.Utility
             return array;
         }
         /// <summary>
-        /// 字符串转换类型
+        /// 将字符串枚举转型为对应类型的数组
+        /// 把字符枚举里的字符串逐个转型成指定类型之后插入数组
         /// </summary>
-        /// <param name="value"></param> 
+        /// <param name="value">字符串枚举</param> 
+        /// <typeparam name="T">指定类型</typeparam>
         /// <returns></returns>
         public static T[] Cast<T>(IEnumerable<string> value)
         {
             if (!value.HasAny()) return CollectionHelper.EmptyOfArray<T>();
             var type = typeof(T);
-
             T[] array = new T[value.Count()];
             int index = 0;
             foreach (string s in value)
@@ -337,92 +321,109 @@ namespace BingoX.Utility
             return array;
         }
         /// <summary>
-        ///  字符串转换类型
+        ///  将字符串转换为指定类型的对象
         /// </summary>
-        /// <param name="value"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <param name="value">字符串</param>
+        /// <typeparam name="T">指定类型</typeparam>
+        /// <returns>指定类型的对象的隐式转换</returns>
         public static TryResult<T> Cast<T>(string value)
         {
             return Cast(value, default(T));
         }
 
         /// <summary>
-        ///  字符串转换类型
+        ///  将字符串转换为指定类型的对象
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="typestring"></param>
-        /// <returns></returns>
+        /// <param name="value">字符串</param>
+        /// <param name="typestring">指定类型的类型名称</param>
+        /// <returns>指定类型的对象的隐式转换</returns>
         public static TryResult<object> Cast(string value, string typestring)
         {
             return Cast(value, typestring, null);
         }
 
         /// <summary>
-        ///  字符串转换类型
+        ///  将字符串转换为指定类型的对象，如转换失败则返回默认对象
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="typestring"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
+        /// <param name="value">字符串</param>
+        /// <param name="typestring">指定类型的类型名称</param>
+        /// <param name="defaultValue">默认对象</param>
+        /// <returns>指定类型的对象或默认对象的隐式转换</returns>
         public static TryResult<object> Cast(string value, string typestring, object defaultValue)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return defaultValue;
-            if (string.IsNullOrWhiteSpace(typestring))
-                return defaultValue;
+            if (string.IsNullOrWhiteSpace(value)) return defaultValue;
+            if (string.IsNullOrWhiteSpace(typestring)) return defaultValue;
             var type = ReflectionUtility.GetType(typestring);
             if (type == null) return defaultValue;
             return Cast(value, type);
         }
 
         /// <summary>
-        /// 字符串转换类型
+        /// 将字符串转换为指定类型的对象，如转换失败则返回默认对象
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="defaultValue"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <param name="value">字符串</param>
+        /// <param name="defaultValue">默认对象</param>
+        /// <typeparam name="T">指定类型</typeparam>
+        /// <returns>指定类型的对象或默认对象的隐式转换</returns>
         public static TryResult<T> Cast<T>(string value, T defaultValue)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return defaultValue;
-
+            if (string.IsNullOrWhiteSpace(value)) return defaultValue;
             var obj = Cast(value, typeof(T));
-            if (obj.Value is T)
-                return (T)obj;
+            if (obj.Value is T) return (T)obj;
             return new TryResult<T>(obj.Error, defaultValue);
         }
 
         /// <summary>
-        ///  字符串转换类型
+        ///  将字符串转换为指定类型的对象
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="type"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
+        /// <param name="value">字符串</param>
+        /// <param name="type">指定类型</param>
+        /// <returns>指定类型的隐式转换</returns>
+        public static TryResult<object> Cast(string value, Type type)
+        {
+            return Cast(value, type, null);
+        }
+
+        /// <summary>
+        /// 将字符串数组中的每一项转型为指定类型的数组
+        /// </summary>
+        /// <param name="text">字符串数组</param>
+        /// <typeparam name="T">指定类型</typeparam>
+        /// <returns>指定类型数组</returns>
+        public static T[] Cast<T>(string[] text)
+        {
+            T[] arr = new T[text.Length];
+            for (int i = 0; i < text.Length; i++)
+            {
+                arr[i] = Cast<T>(text[i]);
+
+            }
+            return arr;
+        }
+
+        /// <summary>
+        ///  将字符串转换为指定类型的对象，如转换失败则返回默认对象
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="type">指定类型</param>
+        /// <param name="defaultValue">默认对象</param>
+        /// <returns>指定类型的对象或默认对象的隐式转换</returns>
         public static TryResult<object> Cast(string str, Type type, object defaultValue)
         {
-            if (type == null)
-                return new TryResult<object>(new ArgumentNullException("type"), defaultValue);
+            if (type == null) return new TryResult<object>(new ArgumentNullException("type"), defaultValue);
             if (type == typeof(string)) return str;
             bool isNullableType = type.IsNullable();
             var castType = type.RemoveNullable();
             object setvalue = defaultValue;
-            if (castType.IsValueType && !isNullableType && setvalue == null)
-                setvalue = Activator.CreateInstance(castType);
+            if (castType.IsValueType && !isNullableType && setvalue == null) setvalue = Activator.CreateInstance(castType);
             if (string.IsNullOrWhiteSpace(str)) return new TryResult<object>(new ArgumentNullException("str"), setvalue);
-
-
             string value = str.Trim();
-
             if (castType.IsEnum)
             {
                 if (Enum.IsDefined(castType, str))
                 {
                     return Enum.Parse(castType, str, true);
                 }
-
                 if (StringValidator.IsNumeric(str))
                 {
                     var valueobj = Convert.ChangeType(str, Enum.GetUnderlyingType(castType), null);
@@ -432,59 +433,57 @@ namespace BingoX.Utility
                 var neme = names.FirstOrDefault(n => string.Equals(n, str, StringComparison.OrdinalIgnoreCase));
                 return Enum.Parse(castType, neme ?? str, true);
             }
-            if (StringValidator.IsNumeric(str) && TypeUtility.IsNumeric(castType)) return Convert.ChangeType(str, castType, null);
+            if (StringValidator.IsNumeric(str) && castType.IsNumberType()) return Convert.ChangeType(str, castType, null);
             try
             {
                 switch (castType.FullName)
                 {
                     case "System.Int32":
                         {
-                            Int32 tmp;
-
-                            if (Int32.TryParse(value, out tmp)) return tmp;
-
+                            int tmp;
+                            if (int.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.Int64":
                         {
-                            Int64 tmp;
-                            if (Int64.TryParse(value, out tmp)) return tmp;
+                            long tmp;
+                            if (long.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.Int16":
                         {
-                            Int16 tmp;
-                            if (Int16.TryParse(value, out tmp)) return tmp;
+                            short tmp;
+                            if (short.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.UInt32":
                         {
-                            UInt32 tmp;
-                            if (UInt32.TryParse(value, out tmp)) return tmp;
+                            uint tmp;
+                            if (uint.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.UInt64":
                         {
-                            UInt64 tmp;
-                            if (UInt64.TryParse(value, out tmp)) return tmp;
+                            ulong tmp;
+                            if (ulong.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.UInt16":
                         {
-                            UInt16 tmp;
-                            if (UInt16.TryParse(value, out tmp)) return tmp;
+                            ushort tmp;
+                            if (ushort.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.Decimal":
                         {
-                            Decimal tmp;
-                            if (Decimal.TryParse(value, out tmp)) return tmp;
+                            decimal tmp;
+                            if (decimal.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.Byte":
                         {
-                            Byte tmp;
-                            if (Byte.TryParse(value, out tmp)) return tmp;
+                            byte tmp;
+                            if (byte.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.Guid":
@@ -495,8 +494,8 @@ namespace BingoX.Utility
                         }
                     case "System.Double":
                         {
-                            Double tmp;
-                            if (Double.TryParse(value, out tmp)) return tmp;
+                            double tmp;
+                            if (double.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.String":
@@ -506,31 +505,30 @@ namespace BingoX.Utility
                         }
                     case "System.Single":
                         {
-                            Single tmp;
-                            if (Single.TryParse(value, out tmp)) return tmp;
+                            float tmp;
+                            if (float.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.Boolean":
                         {
-                            if (value.Length == 1 && Char.IsNumber(value[0]))
-                                setvalue = Char.GetNumericValue(value[0]) > 0;
+                            if (value.Length == 1 && char.IsNumber(value[0])) setvalue = char.GetNumericValue(value[0]) > 0;
                             else
                             {
-                                Boolean tmp;
-                                if (Boolean.TryParse(value, out tmp)) return tmp;
+                                bool tmp;
+                                if (bool.TryParse(value, out tmp)) return tmp;
                             }
                             break;
                         }
                     case "System.Char":
                         {
-                            Char tmp;
-                            if (Char.TryParse(value, out tmp)) return tmp;
+                            char tmp;
+                            if (char.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.SByte":
                         {
-                            SByte tmp;
-                            if (SByte.TryParse(value, out tmp)) return tmp;
+                            sbyte tmp;
+                            if (sbyte.TryParse(value, out tmp)) return tmp;
                             break;
                         }
                     case "System.DateTime":
@@ -553,29 +551,23 @@ namespace BingoX.Utility
                         }
                     default:
                         {
-
                             var tryf = type.InovkeType(ConvertConstructor, value);
                             if (tryf.Error == null)
                             {
                                 return tryf.Value;
-
                             }
                             if (IgnoreTypes.Contains(castType)) return tryf.Error;
                             var converter = TypeDescriptor.GetConverter(castType);
-                            if (converter.CanConvertFrom(typeof(string)))
-                                return converter.ConvertFrom(value);
+                            if (converter.CanConvertFrom(typeof(string))) return converter.ConvertFrom(value);
                             converter = TypeDescriptor.GetConverter(typeof(string));
-                            if (converter.CanConvertTo(castType))
-                                return converter.ConvertTo(value, castType);
+                            if (converter.CanConvertTo(castType)) return converter.ConvertTo(value, castType);
                             break;
-
                         }
                 }
             }
             catch (Exception e)
             {
                 return new TryResult<object>(e, setvalue);
-
             }
             return new TryResult<object>(new NotSupportedException(type.FullName), setvalue);
         }
@@ -585,44 +577,13 @@ namespace BingoX.Utility
         /// </summary>
         private static readonly IList<Type> IgnoreTypes = new List<Type> { typeof(Uri) };
         /// <summary>
-        /// 转换失败后不调用TypeConverter的类
+        /// 把指定类型配置到全局设置，使得转换失败后不调用TypeConverter的类
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">指定类型</param>
         public static void TryAddIgnoreType(Type type)
         {
             if (type == null || IgnoreTypes.Contains(type)) return;
             IgnoreTypes.Add(type);
-        }
-
-        /// <summary>
-        ///  字符串转换类型
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static TryResult<object> Cast(string value, Type type)
-        {
-            return Cast(value, type, null);
-
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static T[] Cast<T>(string[] text)
-        {
-
-            T[] arr = new T[text.Length];
-            for (int i = 0; i < text.Length; i++)
-            {
-                arr[i] = Cast<T>(text[i]);
-
-            }
-            return arr;
         }
     }
 }

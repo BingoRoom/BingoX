@@ -9,24 +9,25 @@ namespace BingoX.Helper
     public static class TypeHelper
     {
         /// <summary>
-        /// 
+        /// 获取可空类型的基类型
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">可空类型</param>
+        /// <returns>基类型</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static Type RemoveNullabl(this Type obj)
         {
             if (obj == null) throw new ArgumentNullException("obj");
             var type = obj;
-
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(type) : type;
-
         }
+        /// <summary>
+        /// 值类型缓存器
+        /// </summary>
         readonly static List<Type> numbertypes = new List<Type>();
         /// <summary>
-        /// 
+        /// 判断类型是否为数据类型
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">类型</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static bool IsNumberType(this Type type)
@@ -38,7 +39,6 @@ namespace BingoX.Helper
             var typecode = Convert.GetTypeCode(obj);
             switch (typecode)
             {
-
                 case TypeCode.Char:
                 case TypeCode.SByte:
                 case TypeCode.Byte:
@@ -114,7 +114,7 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 返回类型不含namespace的名称
+        /// 返回类型不含namespace的名称,支持泛型
         /// </summary>
         /// <param name="type">类型</param>
         /// <returns></returns>
@@ -139,11 +139,11 @@ namespace BingoX.Helper
             return builder.ToString();
         }
         /// <summary>
-        /// 返回方法的完整名称
+        /// 返回方法的定义字符串
         /// </summary>
         /// <param name="method">方法</param>
-        /// <returns></returns>
-        private static string GetFullName(this MethodInfo method)
+        /// <returns>格式：string GetStr(int,string)</returns>
+        public static string GetFullName(this MethodInfo method)
         {
             var builder = new StringBuilder();
             foreach (var p in method.GetParameters())
@@ -159,6 +159,211 @@ namespace BingoX.Helper
             builder.Insert(0, insert);
             builder.Append(")");
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// 从程序集反射出所有实现了指定类型的具体类型
+        /// </summary>
+        /// <typeparam name="TBaseType">指定类型</typeparam>
+        /// <param name="assembly">程序集</param>
+        /// <returns>类型集合</returns>
+        public static IEnumerable<Type> GetConcreteDescendentTypes<TBaseType>(this Assembly assembly)
+        {
+            return assembly.GetConcreteDescendentTypes(typeof(TBaseType));
+        }
+
+        /// <summary>
+        /// 从程序集反射出所有实现了指定类型的具体类型
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        /// <param name="baseType">指定类型</param>
+        /// <returns>类型集合</returns>
+        public static IEnumerable<Type> GetConcreteDescendentTypes(this Assembly assembly, Type baseType)
+        {
+            return assembly.GetTypes().Where(type => baseType.IsAssignableFrom(type) && IsConcreteType(type));
+        }
+
+        /// <summary>
+        /// 是否是具体类型，凡是能直接实例化的类型都是具体类型。
+        /// </summary>
+        public static bool IsConcreteType(this Type type)
+        {
+            return !type.IsGenericTypeDefinition && !type.IsAbstract && !type.IsInterface;
+        }
+
+        /// <summary>
+        /// 从程序集反射出所有实现指定类型的具体类型并实例化。
+        /// </summary>
+        /// <typeparam name="TBaseType">指定类型</typeparam>
+        /// <param name="assembly">程序集</param>
+        /// <returns>指定类型的对象集合</returns>
+        public static IEnumerable<TBaseType> CreateConcreteDescendentInstances<TBaseType>(this Assembly assembly)
+        {
+            return assembly.GetConcreteDescendentTypes<TBaseType>().Where(type => !type.ContainsGenericParameters).Select(type => type.CreateInstance<TBaseType>());
+        }
+        /// <summary>
+        /// 用于缓存类型的默认对象
+        /// </summary>
+        static readonly Dictionary<Type, object> DefaultValuesObjects = new Dictionary<Type, object>();
+        /// <summary>
+        /// 获取类型的默认对象
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static object GetDefaultValue(this Type type)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+            lock (LockObj)
+            {
+                var castType = RemoveNullable(type);
+                if (!castType.IsValueType) return null;
+                if (DefaultValuesObjects.ContainsKey(castType)) return DefaultValuesObjects[castType];
+                var obj = Activator.CreateInstance(castType);
+                DefaultValuesObjects.Add(castType, obj);
+                return obj;
+            }
+        }
+        /// <summary>
+        /// 对象锁
+        /// </summary>
+        private static readonly object LockObj = new object();
+
+
+        /// <summary>
+        /// 类型过滤规则枚举
+        /// </summary>
+        [Flags]
+        public enum ChildTypes
+        {
+            /// <summary>
+            /// 抽象类
+            /// </summary>
+            Abstract = 1,
+            /// <summary>
+            /// 接口
+            /// </summary>
+            Interface = 2,
+            /// <summary>
+            /// 类
+            /// </summary>
+            Class = 4,
+            /// <summary>
+            /// 结构
+            /// </summary>
+            Struct = 8,
+            /// <summary>
+            /// 所有
+            /// </summary>
+            All = Abstract | Interface | Class | Struct,
+        }
+
+        /// <summary>
+        /// 取当前类型的所有派生类
+        /// </summary>
+        /// <param name="type">当前类型</param>
+        /// <returns></returns>
+        public static Type[] GetChildTypes(this Type type)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+            List<Type> typeList = new List<Type>();
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var types = GetChildTypes(assembly, type, ChildTypes.All);
+                if (types.HasAny()) typeList.AddRange(types);
+            }
+            return typeList.ToArray();
+        }
+
+        /// <summary>
+        /// 取当前类型的所有派生类
+        /// </summary>
+        /// <param name="assembly">程序集</param>
+        /// <param name="type">当前类型</param>
+        /// <param name="child">类型过滤规则枚举</param>
+        /// <returns></returns>
+        public static Type[] GetChildTypes(this Assembly assembly, Type type, ChildTypes child)
+        {
+            if (assembly == null) throw new ArgumentNullException("assembly");
+            if (type == null) throw new ArgumentNullException("type");
+            if (type == Types.Object) throw new TypeAccessException("can't Object's Type");
+            List<Type> typeList = new List<Type>();
+            var types = assembly.GetTypes();
+            foreach (Type item in types)
+            {
+                if (!type.IsAssignableFrom(item)) continue;
+                bool canAdd = ChildTypes.All.InFlag(child) ||
+                              (ChildTypes.Abstract.InFlag(child) && item.IsAbstract) ||
+                              (ChildTypes.Interface.InFlag(child) && item.IsInterface) ||
+                              (ChildTypes.Class.InFlag(child) && item.IsClass) ||
+                              (ChildTypes.Struct.InFlag(child) && item.IsValueType);
+
+                if (canAdd) typeList.Add(item);
+            }
+            return typeList.ToArray();
+        }
+
+        /// <summary>
+        /// 取Dll库版本
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        public static Version GetVersion(this Assembly assembly)
+        {
+            return assembly.GetName().Version;
+        }
+        /// <summary>
+        /// 创建实例
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="types"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static TryResult<object> InovkeType(this Type type, Type[] types, params object[] parameters)
+        {
+            if (type == null) return new ArgumentNullException("type");
+            object setvalue = null;
+            try
+            {
+                var tryparse = type.GetMethod("TryParse", BindingFlags.Public | BindingFlags.Static);
+                if (tryparse != null && parameters.Length == 2)
+                {
+                    var obj = tryparse.FastInvoke(null, parameters);
+                    if (obj is bool) setvalue = parameters[1];
+                }
+                var parse = type.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static);
+                if (parse != null) setvalue = parse.FastInvoke(parameters);
+                if (setvalue != null) return setvalue;
+                if (types == null) return new ArgumentNullException("type");
+                var countst = type.GetConstructor(types);
+                if (countst == null) return new Exception("不能通过构造,Parse,TryParse等函数转换");
+                setvalue = countst.FastInvoke(parameters);
+                return setvalue;
+            }
+            catch (Exception ex)
+            {
+                return ex;
+            }
+        }
+
+        /// <summary>
+        /// 判断类型是否可空类型
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns></returns>
+        public static bool IsNullable(this Type type)
+        {
+            return type != null && (type.IsGenericType && type.GetGenericTypeDefinition() == Types.Nullable);
+        }
+        /// <summary>
+        /// 移除Nullable类型
+        /// </summary>
+        /// <param name="conversionType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Type RemoveNullable(this Type conversionType)
+        {
+            return (conversionType != null && IsNullable(conversionType)) ? Nullable.GetUnderlyingType(conversionType) : conversionType;
         }
     }
 }

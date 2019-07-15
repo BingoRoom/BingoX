@@ -1,4 +1,4 @@
-﻿using BingoX.Utility;
+﻿using BingoX.Helper;
 using System;
 
 namespace BingoX

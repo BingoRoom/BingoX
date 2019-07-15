@@ -16,18 +16,23 @@ namespace BingoX.Utility
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
-    public static class EnumUtility
+    public class EnumUtility
     {
-        //class EnumEntry
-        //{
-
-        //}
-        //private IDictionary<Type,>
+        /// <summary>
+        /// 获取枚举类型的对象的项的注释
+        /// </summary>
+        /// <param name="value">枚举对象</param>
+        /// <returns>注释</returns>
         public static string GetDescription(Enum value)
         {
-
             return GetDescription(value.GetType(), value.ToString());
         }
+        /// <summary>
+        /// 获取枚举类型的对象的项的注释
+        /// </summary>
+        /// <typeparam name="T">枚举类型</typeparam>
+        /// <param name="value">枚举的值</param>
+        /// <returns>注释</returns>
         public static string GetDescription<T>(int value)
         {
             if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
@@ -38,6 +43,18 @@ namespace BingoX.Utility
             var display = GetDescription<T>(str);
             return display;
         }
+        /// <summary>
+        /// 获取枚举类型的对象的项的注释
+        /// </summary>
+        /// <typeparam name="T">枚举类型</typeparam>
+        /// <param name="value">枚举的名称</param>
+        /// <returns>注释</returns>
+        public static string GetDescription<T>(string value)
+        {
+            if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
+            return GetDescription(typeof(T), value);
+        }
+
         private static string GetDescription(Type enumtype, string value)
         {
             var fields = enumtype.GetFields();
@@ -52,12 +69,6 @@ namespace BingoX.Utility
 
 #endif
             return att == null ? value : att.Description;
-        }
-
-        public static string GetDescription<T>(string value)
-        {
-            if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
-            return GetDescription(typeof(T), value);
         }
     }
 }
