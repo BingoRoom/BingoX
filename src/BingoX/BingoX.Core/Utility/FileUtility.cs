@@ -8,6 +8,9 @@ using System.Text;
 
 namespace BingoX.Utility
 {
+    /// <summary>
+    /// 提供一个针对文件的操作工具
+    /// </summary>
     public class FileUtility
     {
         static readonly string[] unit = { "KB", "MB", "GB", "TB", "PB" };

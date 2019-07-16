@@ -223,7 +223,7 @@ namespace BingoX.Utility
         /// <param name="startString">开始字符串</param>
         /// <param name="endString">结束字符串</param>
         /// <returns>项目值</returns>
-        public static string GetStringMiddleEx(string beseString, string startString, string endString)
+        public static string GetStringMiddleRegex(string beseString, string startString, string endString)
         {
             if (string.IsNullOrEmpty(beseString) || string.IsNullOrEmpty(startString) || string.IsNullOrEmpty(endString)) return string.Empty;
             try
@@ -265,12 +265,12 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 对指定的长度字符串，超过指定上长替换处理。
+        /// 把超过指定长度的字符串格式化为“XXX....”。
         /// 方便显示内容。
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="index"></param>
-        /// <param name="replaceString">默认...</param>
+        /// <param name="str">字符串</param>
+        /// <param name="index">最大显示长度</param>
+        /// <param name="replaceString">格式化代替符，默认...</param>
         /// <returns></returns>
         public static string GetBriefnessString(string str, int index, string replaceString = "...")
         {

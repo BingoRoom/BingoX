@@ -16,6 +16,9 @@ namespace BingoX.Utility
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    /// <summary>
+    /// 提供一个针对枚举类的操作工具
+    /// </summary>
     public class EnumUtility
     {
         /// <summary>

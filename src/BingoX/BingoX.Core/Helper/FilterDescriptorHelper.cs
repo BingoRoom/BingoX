@@ -7,8 +7,18 @@ using System.Linq;
 
 namespace BingoX.Helper
 {
+    /// <summary>
+    /// 表示一个针对筛选描述符的辅助
+    /// </summary>
     public static class FilterDescriptorHelper
     {
+        /// <summary>
+        /// 从FilterDescriptor[]中获取指定名称的从FilterDescriptor的值
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="filters"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static TValue GetValue<TValue>(this FilterDescriptor[] filters, string name)
         {
             if (filters == null) return default(TValue);
@@ -17,17 +27,27 @@ namespace BingoX.Helper
                 return default(TValue);
             return ObjectUtility.Cast<TValue>(str);
         }
+        /// <summary>
+        /// 从QueryDescriptor中获取指定名称的FilterDescriptor的值
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static TValue GetFilterValue<TValue>(this QueryDescriptor query, string name)
         {
             if (query.Filters == null) return default(TValue);
             var filter = query.Filters.FirstOrDefault(m => String.Equals(m.Key, name, StringComparison.InvariantCultureIgnoreCase));
-
             return GetValue<TValue>(filter);
         }
+        /// <summary>
+        /// 从FilterDescriptor获取值
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public static TValue GetValue<TValue>(this FilterDescriptor filter)
         {
-
-
             return GetValue<TValue>(filter.Value);
         }
         private static TValue GetValue<TValue>(string value)
@@ -45,7 +65,6 @@ namespace BingoX.Helper
             }
             try
             {
-
                 if (typeof(TValue).IsEnum)
                 {
                     return (TValue)Enum.Parse(typeof(TValue), value, true);
@@ -56,9 +75,14 @@ namespace BingoX.Helper
 
             }
             var newvalue = ObjectUtility.Cast<TValue>(item);
-
             return newvalue;
         }
+        /// <summary>
+        /// 从FilterDescriptor中获取可Split的值，并返回数组
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public static TValue[] GetValues<TValue>(this FilterDescriptor filter)
         {
             if (string.IsNullOrEmpty(filter.Value)) return EmptyUtility<TValue>.EmptyArray;
@@ -71,6 +95,13 @@ namespace BingoX.Helper
             }
             return list.ToArray();
         }
+        /// <summary>
+        /// 从QueryDescriptor中获取指定名称的FilterDescriptor，并且获取可Split的值，并返回数组
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static TValue[] GetFilterValues<TValue>(this QueryDescriptor query, string name)
         {
             if (query.Filters == null) return default(TValue[]);
@@ -86,7 +117,5 @@ namespace BingoX.Helper
             }
             return list.ToArray();
         }
-
-
     }
 }

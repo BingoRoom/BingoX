@@ -10,11 +10,14 @@ namespace BingoX.Utility
 {
     public class ReflectionUtility
     {
+        /// <summary>
+        /// 类型缓存
+        /// </summary>
         static readonly IDictionary<string, Type> TypeCache = new Dictionary<string, Type>(DelegateComparer.ComparerString());
         /// <summary>
-        /// 从程序集中取类型
+        /// 通过类型名称从程序集反射类型
         /// </summary>
-        /// <param name="typename"></param>
+        /// <param name="typename">类型名称</param>
         /// <returns></returns>
         public static Type GetType(string typename)
         {
@@ -40,10 +43,11 @@ namespace BingoX.Utility
         /// <summary>
         /// 创建对象
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="assemblyName"></param>
-        /// <param name="className"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">要创建的对象类型</typeparam>
+        /// <param name="assemblyName">程序集名称</param>
+        /// <param name="className">类型名称</param>
+        /// <typeparam name="T">指定类型</typeparam>
+        /// <returns>返回对象实例</returns>
         public static T CreateInstance<T>(string assemblyName, string className) where T : class
         {
             object obj = CreateInstance(assemblyName, className);
@@ -52,13 +56,29 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 执行方法
+        /// 通过程序集、类名创建对象
+        /// </summary>
+        /// <param name="assemblyName">程序集</param>
+        /// <param name="className">类名</param>
+        /// <returns>返回对象</returns>
+        public static object CreateInstance(string assemblyName, string className)
+        {
+            var assembly = CompareUtility.FirstOrDefault(assemblyName, AppDomain.CurrentDomain.GetAssemblies(), n => n.ManifestModule.Name);
+            if (assembly == null) throw new ArgumentNullException("assemblyName");
+            var objType = assembly.GetType(className);
+            if (objType == null) throw new ArgumentNullException("className");
+            var obj = objType.CreateInstance();
+            return obj;
+        }
+
+        /// <summary>
+        /// 通过指定程序集、类名、方法名、参数列表执行方法
         /// </summary>                     　
-        /// <param name="assemblyName"></param>
-        /// <param name="className"></param>
-        /// <param name="methodName"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="assemblyName">程序集名称</param>
+        /// <param name="className">类型名称</param>
+        /// <param name="methodName">方法名称</param>
+        /// <param name="parameters">方法列表</param>
+        /// <returns>返回对象实例</returns>
         public static TryResult<T> InvokeMethod<T>(string assemblyName, string className, string methodName, params object[] parameters)
         {
             var obj = InvokeMethod(assemblyName, className, methodName, parameters);
@@ -67,12 +87,12 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 执行方法
+        /// 通过对象实例、方法名、参数列表执行方法
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="methodName"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="obj">对象实例</param>
+        /// <param name="methodName">方法名称</param>
+        /// <param name="parameters">参数列表</param>
+        /// <returns>返回对象</returns>
         public static TryResult<object> InvokeMethod(object obj, string methodName, params object[] parameters)
         {
             if (obj == null) throw new ArgumentNullException("obj");
@@ -93,13 +113,13 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 执行方法
+        /// 通过指定程序集、类名、方法名、参数列表执行方法
         /// </summary>                    
-        /// <param name="assemblyName"></param>
-        /// <param name="className"></param>
-        /// <param name="methodName"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="assemblyName">程序集名称</param>
+        /// <param name="className">类型名称</param>
+        /// <param name="methodName">方法名称</param>
+        /// <param name="parameters">方法列表</param>
+        /// <returns>返回对象</returns>
         public static TryResult<object> InvokeMethod(string assemblyName, string className, string methodName, params object[] parameters)
         {
             try
@@ -114,26 +134,10 @@ namespace BingoX.Utility
         }
 
         /// <summary>
-        /// 创建对象
+        /// 加载程序集
         /// </summary>
-        /// <param name="assemblyName"></param>
-        /// <param name="className"></param>
-        /// <returns></returns>
-        public static object CreateInstance(string assemblyName, string className)
-        {
-            var assembly = CompareUtility.FirstOrDefault(assemblyName, AppDomain.CurrentDomain.GetAssemblies(), n => n.ManifestModule.Name);
-            if (assembly == null) throw new ArgumentNullException("assemblyName");
-            var objType = assembly.GetType(className);
-            if (objType == null) throw new ArgumentNullException("className");
-            var obj = objType.CreateInstance();
-            return obj;
-        }
-
-        /// <summary>
-        /// 添加程序集
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="path">程序集文件路径</param>
+        /// <returns>加载后的程序集</returns>
         public static TryResult<Assembly> AddAssembly(string path)
         {
             string assemblyName = Path.GetFileName(path);

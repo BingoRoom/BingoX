@@ -6,12 +6,12 @@ using System.Data;
 namespace BingoX.Helper
 {
     /// <summary>
-    /// 
+    /// 表示一个对Empty的辅助操作
     /// </summary>
     public static class EmptyHelper
     {
         /// <summary>
-        /// 
+        /// 判断当前字典是否为空
         /// </summary>
         /// <param name="dictionary"></param>
         /// <returns></returns>
@@ -20,7 +20,7 @@ namespace BingoX.Helper
             return dictionary == null || dictionary.Count == 0;
         }
         /// <summary>
-        /// 
+        /// 判断当前IList是否为空
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -29,7 +29,7 @@ namespace BingoX.Helper
             return list == null || list.Count == 0;
         }
         /// <summary>
-        /// 
+        /// 判断当前ICollection是否为空
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -38,7 +38,7 @@ namespace BingoX.Helper
             return list == null || list.Count == 0;
         }
         /// <summary>
-        /// 
+        /// 判断当前IEnumerable是否为空
         /// </summary>
         /// <param name="enumerable"></param>
         /// <returns></returns>
@@ -47,7 +47,7 @@ namespace BingoX.Helper
             return enumerable == null || !enumerable.GetEnumerator().MoveNext();
         }
         /// <summary>
-        /// 
+        /// 判断当前T[]是否为空
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -56,7 +56,7 @@ namespace BingoX.Helper
             return array == null || array.Length == 0;
         }
         /// <summary>
-        /// 
+        /// 判断当前Array是否为空
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
@@ -65,7 +65,7 @@ namespace BingoX.Helper
             return array == null || array.Length == 0;
         }
         /// <summary>
-        /// 
+        /// 判断当前DataTable是否为空
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
@@ -74,7 +74,7 @@ namespace BingoX.Helper
             return dt == null || dt.Rows.Count == 0;
         }
         /// <summary>
-        /// 
+        /// 判断当前DataView是否为空
         /// </summary>
         /// <param name="dv"></param>
         /// <returns></returns>
@@ -84,7 +84,7 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 
+        /// 判断当前DataSet的Table是否为空
         /// </summary>
         /// <param name="ds"></param>
         /// <returns></returns>

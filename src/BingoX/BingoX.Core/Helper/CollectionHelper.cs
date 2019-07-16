@@ -8,17 +8,19 @@ using System.Text;
 
 namespace BingoX.Helper
 {
-    
+    /// <summary>
+    /// 表示一个针对集合的辅助
+    /// </summary>
     public static class CollectionHelper
     {
         static object lockobj = new object();
         static readonly Dictionary<Type, object> DictionaryEmpty = new Dictionary<Type, object>();
         static readonly Dictionary<Type, object> ArrayEmpty = new Dictionary<Type, object>();
         /// <summary>
-        /// 
+        /// 返回一个指定类型的空数组
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">指定类型</typeparam>
+        /// <returns>空数组</returns>
         public static T[] EmptyOfArray<T>()
         {
             if (ArrayEmpty.ContainsKey(typeof(T))) return ArrayEmpty[typeof(T)] as T[];
@@ -27,16 +29,15 @@ namespace BingoX.Helper
                 if (ArrayEmpty.ContainsKey(typeof(T))) return ArrayEmpty[typeof(T)] as T[];
                 var arr = new T[] { };
                 ArrayEmpty.Add(typeof(T), arr);
-
                 return arr;
             }
         }
-        
+
         /// <summary>
-        /// 
+        /// 返回一个指定类型的空IList
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <returns>空IList</returns>
         public static IList<T> EmptyOfList<T>()
         {
             if (DictionaryEmpty.ContainsKey(typeof(T))) return DictionaryEmpty[typeof(T)] as IList<T>;
@@ -45,7 +46,7 @@ namespace BingoX.Helper
             return lis;
         }
         /// <summary>
-        /// 通过枚举返回集合
+        /// 返回当前枚举的List<T>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
@@ -171,7 +172,6 @@ namespace BingoX.Helper
             }
             return arr;
         }
-
 
         /// <summary>
         /// 对集合实现删除操作

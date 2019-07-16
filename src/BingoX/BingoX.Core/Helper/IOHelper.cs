@@ -4,8 +4,16 @@ using System.Text;
 
 namespace BingoX.Helper
 {
+    /// <summary>
+    /// 提供对输入输出流的辅助
+    /// </summary>
     public static class IOHelper
     {
+        /// <summary>
+        /// 把Stream转为byte[]
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public static byte[] ToArray(this Stream stream)
         {
             if (stream == null)
@@ -27,8 +35,28 @@ namespace BingoX.Helper
             }
             throw new IOException("不能转换成流");
         }
+
         /// <summary>
-        /// 
+        /// 从当前Stream中读取指定长度的byte[]
+        /// </summary>
+        /// <param name="stream">当前Stream中</param>
+        /// <param name="length">长度</param> 
+        /// <returns>byte[]</returns>
+        public static byte[] ToArray(this Stream stream, int length)
+        {
+            if (stream is MemoryStream) return ((MemoryStream)stream).ToArray();
+            if (stream == null || !stream.CanRead) return new byte[0];
+            if (!stream.CanSeek && stream.Position != 0) return new byte[0];
+            if (stream.CanSeek && stream.Position != 0) stream.Seek(0, SeekOrigin.Begin);
+
+            byte[] buffter = new byte[length];
+            stream.Read(buffter, 0, length);
+            //stream.Seek(0, SeekOrigin.Begin);
+            return buffter;
+        }
+
+        /// <summary>
+        /// 把Stream写入byte[]
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="bytes"></param>
@@ -38,10 +66,10 @@ namespace BingoX.Helper
             stream.Write(bytes, 0, bytes.Length);
         }
         /// <summary>
-        /// 
+        /// 复制一个Stream
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="traget"></param>
+        /// <param name="source">源Stream</param>
+        /// <param name="traget">目标Stream</param>
         public static TryResult Copy(this Stream source, Stream traget)
         {
             if (source == null) return new ArgumentNullException("source");
@@ -65,14 +93,12 @@ namespace BingoX.Helper
             return true;
         }
 
-
-
         /// <summary>
-        /// 
+        /// 使用指定编码向当前Stream写入字符串
         /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="str"></param>
-        /// <param name="encoding"></param>
+        /// <param name="stream">当前Stream</param>
+        /// <param name="str">要写入的字符串</param>
+        /// <param name="encoding">编码</param>
         public static TryResult WriteString(this Stream stream, string str, Encoding encoding = null)
         {
             if (stream == null) return new ArgumentNullException("stream");
@@ -84,13 +110,11 @@ namespace BingoX.Helper
             return true;
         }
 
-
-
         /// <summary>
-        /// 
+        /// 使用指定编码读出当前Stream所对应的字符串
         /// </summary>
-        /// <param name="stream"></param> 
-        /// <param name="encoding"></param>
+        /// <param name="stream">当前Stream</param> 
+        /// <param name="encoding">编码</param>
         public static string ReadString(this Stream stream, Encoding encoding = null)
         {
             var buffter = stream.ToArray();
@@ -98,14 +122,27 @@ namespace BingoX.Helper
             var useencoding = encoding ?? Encoding.UTF8;
             return useencoding.GetString(buffter, 0, buffter.Length);
         }
+
+        /// <summary>
+        /// 读取当前Stream所有byte
+        /// </summary>
+        /// <param name="stream">当前Stream</param>
+        /// <returns>字节数组</returns>
+        public static byte[] ReadToEnd(this Stream stream)
+        {
+            if (stream == null || !stream.CanRead) return new byte[0];
+            byte[] bytes = new byte[stream.Length - stream.Position];
+            stream.Read(bytes, 0, bytes.Length);
+            return bytes;
+        }
         const int Nchar = 10;
         const int Rchar = 13;
         const int Lenght = 2048;
         /// <summary>
-        /// 大文件时，读取最后一行
+        /// 使用指定编码读出当前Stream所对应的字符串，支持大文件
         /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="encoding"></param>
+        /// <param name="stream">当前Stream</param>
+        /// <param name="encoding">编码</param>
         /// <returns></returns>
         public static string ReadLastLine(this Stream stream, Encoding encoding = null)
         {
@@ -143,15 +180,14 @@ namespace BingoX.Helper
                 }
             }
             if (!hasMulLine) return useencoding.GetString(buffter, index, Lenght - index);
-
             stringBuilder.Insert(0, useencoding.GetString(buffter, index, Lenght - index));
             return stringBuilder.ToString();
         }
 
         /// <summary>
-        /// 跳到起始位置
+        /// 设置游标跳到当前Stream的起始位置
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="stream">当前Stream</param>
         /// <returns></returns>
         public static bool TrySeek(this Stream stream)
         {
@@ -159,36 +195,6 @@ namespace BingoX.Helper
             if (!stream.CanSeek && stream.Position != 0) return false;
             if (stream.CanSeek && stream.Position != 0) stream.Seek(0, SeekOrigin.Begin);
             return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="length"> </param> 
-        public static byte[] ToArray(this Stream stream, int length)
-        {
-            if (stream is MemoryStream) return ((MemoryStream)stream).ToArray();
-            if (stream == null || !stream.CanRead) return new byte[0];
-            if (!stream.CanSeek && stream.Position != 0) return new byte[0];
-            if (stream.CanSeek && stream.Position != 0) stream.Seek(0, SeekOrigin.Begin);
-
-            byte[] buffter = new byte[length];
-            stream.Read(buffter, 0, length);
-            //stream.Seek(0, SeekOrigin.Begin);
-            return buffter;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        public static byte[] ReadToEnd(this Stream stream)
-        {
-            if (stream == null || !stream.CanRead) return new byte[0];
-            byte[] bytes = new byte[stream.Length - stream.Position];
-            stream.Read(bytes, 0, bytes.Length);
-            return bytes;
         }
     }
 }

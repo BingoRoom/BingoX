@@ -10,7 +10,7 @@ namespace BingoX.Helper
     public static class DictionaryHelper
     {
         /// <summary>
-        /// 获取IDictionary字典对应键的值
+        /// 获取IDictionary字典对应键的值，并转型为T。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dictionary"></param>
@@ -22,7 +22,7 @@ namespace BingoX.Helper
             return ObjectUtility.Cast<T>(dictionary[key]);
         }
         /// <summary>
-        /// 获取IDictionary字典对应键的值
+        /// 获取IDictionary字典对应键的值，并用","拼接。
         /// </summary>
         /// <param name="dictionary"></param>
         /// <param name="key"></param>
@@ -33,7 +33,7 @@ namespace BingoX.Helper
             return string.Join(",", dictionary[key]);
         }
         /// <summary>
-        /// 获取IDictionary字典对应键的值，支持默认值
+        /// 获取IDictionary字典对应键的值，并转型为T，支持默认值。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="dictionary"></param>
@@ -46,7 +46,7 @@ namespace BingoX.Helper
             return ObjectUtility.Cast<T>(dictionary[key], defaultValue);
         }
         /// <summary>
-        /// 获取NameValueCollection字典对应键的值，支持默认值
+        /// 获取NameValueCollection字典对应键的值，并转型为T，支持默认值
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
@@ -61,7 +61,7 @@ namespace BingoX.Helper
             return ObjectUtility.Cast<T>(value, defaultValue);
         }
         /// <summary>
-        /// 
+        /// 获取一个空字典
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
@@ -72,32 +72,31 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 
+        /// 把一个字典的所有项以“{0}={1}{分隔符}”的格式打印出来
         /// </summary>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static string ToContent<TValue>(this IDictionary<string, TValue> source)
+        public static string ToContent<TValue>(this IDictionary<string, TValue> source, char splitChar)
         {
             if (source == null || source.Count == 0) return string.Empty;
             TextWriter writer = new StringWriter();
             foreach (KeyValuePair<string, TValue> keyValuePair in source)
             {
-                writer.WriteLine("{0}={1}", keyValuePair.Key, keyValuePair.Value);
-
+                writer.WriteLine("{0}={1}{2}", keyValuePair.Key, keyValuePair.Value, splitChar);
             }
             string str = writer.ToString();
             writer.Dispose();
             return str;
         }
         /// <summary>
-        /// 
+        /// 把两个字典合并
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="trage"></param>
-        /// <param name="isReplace"> </param>
+        /// <param name="source">源字典</param>
+        /// <param name="trage">被合并字典</param>
+        /// <param name="isReplace">字典项重复处理。true:替换源字典中的项目，false:保留原字典项目</param>
         public static void TryAddOtherDictionaryItems<TKey, TValue>(this IDictionary<TKey, TValue> source, IDictionary<TKey, TValue> trage, bool isReplace = true)
         {
             if (source == null || trage == null) return;
@@ -118,7 +117,7 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 
+        /// 创建忽略KEY大小写的新字典
         /// </summary>
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
@@ -126,8 +125,9 @@ namespace BingoX.Helper
         {
             return new Dictionary<string, TValue>(StringComparer.OrdinalIgnoreCase);
         }
+
         /// <summary>
-        /// 
+        /// 获取字典中指定Key的值，如果不存在则返回TValue的默认值。
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param> 
@@ -135,15 +135,13 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static TValue GetValueIgnoreCase<TValue>(this IDictionary<string, TValue> dict, string key)
         {
-            if (!dict.HasAny())
-                return default(TValue);
-            if (dict.ContainsKey(key))
-                return dict[key];
+            if (!dict.HasAny()) return default(TValue);
+            if (dict.ContainsKey(key)) return dict[key];
             var strkey = dict.Keys.FirstOrDefault(n => string.Equals(key, n, StringComparison.OrdinalIgnoreCase));
             return strkey != null ? dict[strkey] : default(TValue);
         }
         /// <summary>
-        /// 
+        /// 获取字典中指定Key的值，并转型为TValue。如果不存在则返回TValue的默认值。
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param> 
@@ -151,15 +149,13 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static TValue GetValueIgnoreCase<TValue>(this IDictionary<string, string> dict, string key)
         {
-            if (!dict.HasAny())
-                return default(TValue);
-            if (dict.ContainsKey(key))
-                return StringUtility.Cast<TValue>(dict[key]);
+            if (!dict.HasAny()) return default(TValue);
+            if (dict.ContainsKey(key)) return StringUtility.Cast<TValue>(dict[key]);
             var strkey = dict.Keys.FirstOrDefault(n => string.Equals(key, n, StringComparison.OrdinalIgnoreCase));
             return strkey != null ? StringUtility.Cast<TValue>(dict[strkey]).Value : default(TValue);
         }
         /// <summary>
-        /// 移除，对象条件符合则移除
+        /// 移除值符合条件的字典项
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
@@ -169,13 +165,12 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static IDictionary<TKey, TValue> Reomve<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TValue, bool> func)
         {
-            if (func != null && dict.ContainsKey(key) && func(dict[key]))
-                dict.Remove(key);
+            if (func != null && dict.ContainsKey(key) && func(dict[key])) dict.Remove(key);
             return dict;
         }
 
         /// <summary>
-        /// 
+        /// 通过选择器向当前字典添加项，如项存在则忽略
         /// </summary>
         /// <param name="source"></param>
         /// <param name="keySelector"> </param>
@@ -183,18 +178,14 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static void AddWithoutContains<TKey, TValue>(this IDictionary<TKey, TValue> source, Func<TValue, TKey> keySelector, TValue item)
         {
-            if (source == null || keySelector == null)
-                return;
+            if (source == null || keySelector == null) return;
             var obj = keySelector(item);
-            if (source.ContainsKey(obj))
-                return;
-
+            if (source.ContainsKey(obj)) return;
             source.Add(obj, item);
         }
 
-
         /// <summary>
-        /// 
+        /// 尝试向当前字典添加项，如项存在则忽略
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param>
@@ -210,7 +201,7 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 
+        /// 尝试向当前字典添加项，如项存在则覆盖
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param>
@@ -222,16 +213,20 @@ namespace BingoX.Helper
         {
             if (dict != null)
             {
-                if (dict.ContainsKey(key) == false)
+                if (!dict.ContainsKey(key))
+                {
                     dict.Add(key, value);
+                }
                 else
+                {
                     dict[key] = value;
+                }
             }
             return dict;
         }
 
         /// <summary>
-        /// 
+        /// 获取字典项
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param>
@@ -244,7 +239,21 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 
+        /// 获取字典项
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
+        public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue defaultValue)
+        {
+            return dict != null && dict.ContainsKey(key) ? dict[key] : defaultValue;
+        }
+
+        /// <summary>
+        /// 获取字典项，如项不存在则向字典添加defaultFunc生成的项
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param>
@@ -271,7 +280,7 @@ namespace BingoX.Helper
             return default(TValue);
         }
         /// <summary>
-        /// 
+        /// 获取字典项，如项不存在则向字典添加defaultFunc生成的项
         /// </summary>
         /// <param name="dict"></param>
         /// <param name="key"></param>
@@ -299,25 +308,11 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 
+        /// 把目标字典与当前字典合并
         /// </summary>
-        /// <param name="dict"></param>
-        /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <returns></returns>
-        public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue defaultValue)
-        {
-            return dict != null && dict.ContainsKey(key) ? dict[key] : defaultValue;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="dict"></param>
-        /// <param name="values"></param>
-        /// <param name="replaceExisted"></param>
+        /// <param name="dict">当前字典</param>
+        /// <param name="values">目标字典</param>
+        /// <param name="replaceExisted">合并规则；true：替换当前字典的值，false:不替换当前字典的值</param>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>

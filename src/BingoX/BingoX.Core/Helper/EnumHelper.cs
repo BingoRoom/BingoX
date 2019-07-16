@@ -9,7 +9,7 @@ namespace BingoX.Helper
     public static class EnumHelper
     {
         /// <summary>
-        /// 枚举的备注信息
+        /// 获取枚举的Remarks特性的信息
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -35,10 +35,10 @@ namespace BingoX.Helper
             return ClearFlags(variable, flag);
         }
         /// <summary>
-        /// 
+        /// 把当前枚举对象的类型的所有枚举项转为对应的枚举对象，并返回枚举对象数组
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
-        /// <param name="variable"></param>
+        /// <param name="variable">当前枚举对象</param>
         /// <returns></returns>
         public static TEnum[] GetValues<TEnum>(this Enum variable) where TEnum : struct
         {

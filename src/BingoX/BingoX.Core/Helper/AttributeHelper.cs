@@ -80,7 +80,7 @@ namespace BingoX.Helper
         }
     }
     /// <summary>
-    /// 
+    /// 备注标签
     /// </summary>
     [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
     public sealed class RemarksAttribute : Attribute
