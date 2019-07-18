@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -33,6 +34,17 @@ namespace BingoX.Utility
         public static string ByteToBase64(byte[] bytes)
         {
             return Convert.ToBase64String(bytes);
+        }
+
+        /// <summary>
+        /// 将 byte[] 转成 Stream
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static Stream BytesToStream(byte[] bytes)
+        {
+            Stream stream = new MemoryStream(bytes);
+            return stream;
         }
     }
 }

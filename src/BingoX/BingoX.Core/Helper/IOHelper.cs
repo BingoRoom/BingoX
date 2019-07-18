@@ -65,6 +65,7 @@ namespace BingoX.Helper
             if (stream == null || !stream.CanWrite || !bytes.HasAny()) return;
             stream.Write(bytes, 0, bytes.Length);
         }
+
         /// <summary>
         /// 复制一个Stream
         /// </summary>

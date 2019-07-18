@@ -44,8 +44,5 @@ namespace BingoX.Security
         /// 填充模式
         /// </summary>
         public PaddingMode PaddingMode { get; set; }
-
-
-
     }
 }
