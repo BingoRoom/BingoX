@@ -9,6 +9,8 @@ namespace BingoX.Repository
     /// <typeparam name="T"></typeparam>
     public interface ISpecification<T> where T : class
     {
+
+        bool OrderType { get; }
         /// <summary>
         /// 当前页码
         /// </summary>
@@ -92,6 +94,7 @@ namespace BingoX.Repository
         protected internal Expression<Func<T, object>> orderPredicate;
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
+        public bool OrderType { get; private set; }
         public virtual bool IsSatisfiedBy(T entity)
         {
             return searchPredicate.Compile().Invoke(entity);

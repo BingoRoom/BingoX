@@ -46,19 +46,28 @@ namespace BingoX.EF
         public EfRepository(EfDbContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
-            if (context is EfDbContext == false) throw new NotSupportedException("构造参数不支持此类型");
+            if (context is EfDbContext == false) throw new NotSupportedException("不支持此类型");
             Context = context;
-            Wrapper = new EfWrapper<T>(Context);
+            Wrapper = CreateWrapper<T>();
             UnitOfWork = new EfUnitOfWork(Context);
         }
         protected internal EfWrapper<T> Wrapper { get; private set; }
         public EfUnitOfWork UnitOfWork { get; private set; }
         public EfDbContext Context { get; private set; }
-        IUnitOfWork IRepository<T, pkType>.UnitOfWork { get { return UnitOfWork; } }
-        protected internal EfWrapper<TModel> CreateWapper<TModel>() where TModel : class, new()
+        IUnitOfWork IRepository.UnitOfWork { get { return UnitOfWork; } }
+        protected internal EfWrapper<TModel> CreateWrapper<TModel>() where TModel : class, new()
         {
             return new EfWrapper<TModel>(Context);
         }
+
+        protected virtual IQueryable<T> SetInclude(IQueryable<T> list)
+        {
+
+            return list;
+        }
+
+
+
 
         #region 新增 
         /// <summary>
@@ -66,10 +75,12 @@ namespace BingoX.EF
         /// </summary>
         /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entity"> 实体对象 </param> 
+
         /// <returns>操作影响的行数</returns>
         public int Add(T entity)
         {
             Wrapper.Add(entity);
+
             return 1;
         }
 
@@ -78,6 +89,7 @@ namespace BingoX.EF
         /// </summary>
         /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entites">泛型集合</param>
+
         /// <returns>操作影响的行数</returns>
         public int AddRange(IEnumerable<T> entites)
         {
@@ -85,6 +97,8 @@ namespace BingoX.EF
             Wrapper.AddRange(entites);
             return count;
         }
+
+
 
         #endregion
 
@@ -108,6 +122,8 @@ namespace BingoX.EF
             return 1;
         }
 
+
+
         /// <summary>
         /// 修改（主键是更新条件）
         /// </summary>
@@ -119,7 +135,7 @@ namespace BingoX.EF
         {
             var count = entites.Count();
 #if Standard
-           
+
             Context.UpdateRange(entites);
 #else
             foreach (var entity in entites)
@@ -131,10 +147,10 @@ namespace BingoX.EF
             return count;
 
         }
-
         #endregion
 
         #region 删除
+
 
         /// <summary>
         /// 删除
@@ -146,7 +162,7 @@ namespace BingoX.EF
         {
 #if Standard
             var entityEntry = Context.Remove(entity);
-     
+
 #else
             var entityEntry = Context.Entry(entity);
 #endif
@@ -160,6 +176,7 @@ namespace BingoX.EF
         /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <typeparam name="pkType">成员主键类型</typeparam>
         /// <param name="pkArray">待删主键集合</param>
+
         /// <returns>操作影响的行数</returns>
         public virtual int Delete(pkType[] pkArray)
         {
@@ -182,14 +199,19 @@ namespace BingoX.EF
 
         #region 查询
 
+
+
         /// <summary>
         /// 查询所有记录
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IList<T> QueryAll()
+        public virtual IList<T> QueryAll()
         {
-            return Wrapper.QueryAll().ToList();
+
+            var list = Wrapper.QueryAll();
+            list = SetInclude(list);
+            return list.ToList();
         }
 
         /// <summary>
@@ -198,10 +220,14 @@ namespace BingoX.EF
         /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="whereLambda">查询表达式</param>
         /// <returns>实体</returns>
-        public IList<T> Where(Expression<Func<T, bool>> whereLambda)
+        public virtual IList<T> Where(Expression<Func<T, bool>> whereLambda)
         {
-            return Wrapper.QueryAll().Where(whereLambda).ToList();
+            var list = Wrapper.QueryAll().Where(whereLambda);
+            list = SetInclude(list);
+            return list.ToList();
         }
+
+
 
         /// <summary>
         /// 查询前多少条数据
@@ -210,9 +236,11 @@ namespace BingoX.EF
         /// <param name="whereLambda">查询表达式</param>
         /// <param name="num">数量</param>
         /// <returns></returns>
-        public IList<T> Take(Expression<Func<T, bool>> whereLambda, int num)
+        public virtual IList<T> Take(Expression<Func<T, bool>> whereLambda, int num)
         {
-            return Wrapper.QueryAll().Where(whereLambda).Take(num).ToList();
+            var list = Wrapper.QueryAll().Where(whereLambda);
+            list = SetInclude(list);
+            return list.Take(num).ToList();
         }
 
         /// <summary>
@@ -221,9 +249,12 @@ namespace BingoX.EF
         /// <typeparam name="T">泛型参数(集合成员的类型</typeparam>
         /// <param name="whereLambda">查询表达式</param> 
         /// <returns></returns>
-        public T Get(Expression<Func<T, bool>> whereLambda)
+        public virtual T Get(Expression<Func<T, bool>> whereLambda)
         {
-            return Wrapper.Get(whereLambda);
+            var list = Wrapper.Find();
+            list = SetInclude(list);
+            return list.FirstOrDefault(whereLambda);
+
         }
         /// <summary>
         /// 查询单条数据
@@ -234,6 +265,7 @@ namespace BingoX.EF
         public virtual T GetId(pkType id)
         {
             var obj = Wrapper.DbSet.Find(id);
+
             return obj;
         }
         /// <summary>
@@ -242,24 +274,32 @@ namespace BingoX.EF
         /// <typeparam name="T">泛型参数(集合成员的类型</typeparam>
         /// <param name="whereLambda">查询表达式</param> 
         /// <returns></returns>
-        public bool IsExist(Expression<Func<T, bool>> whereLambda)
+        public virtual bool IsExist(Expression<Func<T, bool>> whereLambda)
         {
+
             return Wrapper.IsExist(whereLambda);
         }
 
-        public IList<T> PageList(ISpecification<T> specification, ref int total)
+        public virtual IList<T> PageList(ISpecification<T> specification, ref int total)
         {
             var list = Wrapper.QueryAll().Where(specification.ToExpression());
             var orderBy = specification.ToStorExpression();
-            if (orderBy != null) list = list.OrderBy(orderBy);
+            if (orderBy != null)
+            {
+                list = specification.OrderType ? list.OrderBy(orderBy) : list.OrderByDescending(orderBy);
+            }
             total = list.Count();
             if (specification.PageSize != 0)
             {
                 var skip = specification.PageIndex * specification.PageSize;
                 list = list.Skip(skip).Take(specification.PageSize);
             }
+            list = SetInclude(list);
             return list.ToList();
+
         }
+
+
 
         int IRepositoryExpression<T>.Update(Expression<Func<T, T>> update, Expression<Func<T, bool>> where)
         {
@@ -277,12 +317,16 @@ namespace BingoX.EF
 #else
                 var entityEntry = Context.Entry(obj);
 #endif
+
                 entityEntry.State = EntityState.Deleted;
             }
             return count;
         }
 
+
         #endregion
+
+
 
     }
 }

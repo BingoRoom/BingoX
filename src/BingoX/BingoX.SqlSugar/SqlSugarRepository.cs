@@ -45,7 +45,7 @@ namespace BingoX.SqlSugar
         protected internal SqlSugarWrapper<T> Wrapper { get; private set; }
         public SqlSugarUnitOfWork UnitOfWork { get; private set; }
         public SqlSugarDbContext Context { get; private set; }
-        IUnitOfWork IRepository<T, pkType>.UnitOfWork { get { return UnitOfWork; } }
+        IUnitOfWork IRepository.UnitOfWork { get { return UnitOfWork; } }
         protected internal SqlSugarWrapper<TModel> CreateWapper<TModel>() where TModel : class, new()
         {
             return new SqlSugarWrapper<TModel>(Context);
@@ -313,7 +313,7 @@ namespace BingoX.SqlSugar
         {
             var datas = Wrapper.PageList(specification.PageIndex, specification.PageSize,
                 specification.ToExpression(),
-                specification.ToStorExpression(), false,
+                specification.ToStorExpression(), specification.OrderType,
                 ref total);
             return datas;
         }

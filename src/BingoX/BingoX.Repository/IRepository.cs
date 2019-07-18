@@ -10,12 +10,9 @@ namespace BingoX.Repository
     /// </summary>
     /// <typeparam name="T">数据库实体类型</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
-    public interface IRepository<T, pkType> where T : class, IEntity<T, pkType>
+    public interface IRepository<T, pkType> : IRepository where T : class, IEntity<T, pkType>
     {
-        /// <summary>
-        /// 事务管理器
-        /// </summary>
-        IUnitOfWork UnitOfWork { get; }
+
         /// <summary>
         /// 批量新增记录
         /// </summary>
@@ -70,6 +67,11 @@ namespace BingoX.Repository
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
         int Delete(T entity);
+    }
+
+    public interface IRepository
+    {
+        IUnitOfWork UnitOfWork { get; }
     }
     /// <summary>
     /// 支持字符串主键的仓储接口
