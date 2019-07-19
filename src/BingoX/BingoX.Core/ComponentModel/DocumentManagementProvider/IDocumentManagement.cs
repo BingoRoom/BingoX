@@ -27,8 +27,7 @@ namespace BingoX.ComponentModel.DocumentManagementProvider
         byte[] GetFileBufferByURL(string APIFullName);
         DMSFileInfo GetFileInfo(string fileName);
         DMSFileInfo GetFileInfo(long fileid);
-        DMSFileInfo[] GetFiles(string dirPath);
-        DMSFileInfo[] GetFilesOnRoot();
+        DMSFileInfo[] GetFiles(string dirPath); 
         void Initialize();
         void UpdateFile(long id, byte[] fileBuffer, string fileName, NameValueCollection metas);
     }
