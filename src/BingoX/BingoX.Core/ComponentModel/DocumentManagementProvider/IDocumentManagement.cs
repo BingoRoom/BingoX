@@ -21,8 +21,7 @@ namespace BingoX.ComponentModel.DocumentManagementProvider
         void Dispose();
         bool ExistByMd5(string md5);
         NameValueCollection GetConfig();
-        DMSDirectoryInfo[] GetDirectories(string dirPath);
-        DMSDirectoryInfo[] GetDirectoriesOnRoot();
+        DMSDirectoryInfo[] GetDirectories(string dirPath); 
         byte[] GetFileBuffer(long fileid);
         byte[] GetFileBufferByURL(string APIFullName);
         DMSFileInfo GetFileInfo(string fileName);

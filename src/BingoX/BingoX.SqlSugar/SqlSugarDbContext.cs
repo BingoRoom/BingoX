@@ -10,7 +10,7 @@ namespace BingoX.SqlSugar
     public class SqlSugarDbContext : IDbContext
     {
         public SqlSugarDbContext(ConnectionConfig config)
-        {
+        {           
             Client = new SqlSugarClient(config);
         }
         /// <summary>

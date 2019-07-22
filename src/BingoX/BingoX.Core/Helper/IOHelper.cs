@@ -24,14 +24,27 @@ namespace BingoX.Helper
             if (stream is MemoryStream)
             {
                 var ms = stream as MemoryStream;
+                ms.Seek(0, SeekOrigin.Begin);
                 return ms.ToArray();
             }
-            if (stream.CanRead && stream.CanSeek)
+            stream.TrySeek();
+            if (stream.CanRead)
             {
-                stream.Seek(0, SeekOrigin.Begin);
-                byte[] buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, buffer.Length);
-                return buffer;
+          
+                const int maxbuffer = 1024000;
+           
+                var buffers = new byte[maxbuffer];
+                var ms = new MemoryStream();
+                while (true)
+                {
+
+                    var flag = stream.Read(buffers, 0, buffers.Length);
+
+                    ms.Write(buffers, 0, flag);
+                    if (flag == 0) break;
+                }
+                ms.Seek(0, SeekOrigin.Begin);
+                return ms.ToArray();
             }
             throw new IOException("不能转换成流");
         }
