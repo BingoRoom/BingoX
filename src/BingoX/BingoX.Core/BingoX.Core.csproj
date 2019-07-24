@@ -8,10 +8,11 @@
     <Authors>Bingo</Authors>
     <Company>Bingo</Company>
     <Description>基本类，接口定义、扩展方法、工具类</Description>
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.1</Version>
+    <FileVersion>1.0.1.1</FileVersion>
     <AssemblyOriginatorKeyFile>BingoX.Core.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>BingoX</RootNamespace>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>

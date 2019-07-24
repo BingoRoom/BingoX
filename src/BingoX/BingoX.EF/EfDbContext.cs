@@ -13,12 +13,13 @@ namespace BingoX.EF
 {
 #if Standard
     public abstract class EfDbContext : Microsoft.EntityFrameworkCore.DbContext, IDbContext
-      {
+    {
         public EfDbContext(DbContextOptions options) : base(options)
         {
 
         }
     }
+     
 
 #else
     public abstract class EfDbContext : System.Data.Entity.DbContext, IDbContext

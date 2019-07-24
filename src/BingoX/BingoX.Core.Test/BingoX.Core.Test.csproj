@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BingoX.Core\BingoX.Core.csproj" />
+    <ProjectReference Include="..\BingoX.EF\BingoX.EF.csproj" />
+    <ProjectReference Include="..\BingoX.Repository\BingoX.Repository.csproj" />
   </ItemGroup>
 
 </Project>

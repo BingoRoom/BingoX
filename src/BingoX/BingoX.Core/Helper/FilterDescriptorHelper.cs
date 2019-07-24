@@ -63,17 +63,7 @@ namespace BingoX.Helper
                     return (TValue)tobj;
                 }
             }
-            try
-            {
-                if (typeof(TValue).IsEnum)
-                {
-                    return (TValue)Enum.Parse(typeof(TValue), value, true);
-                }
-            }
-            catch
-            {
-
-            }
+          
             var newvalue = ObjectUtility.Cast<TValue>(item);
             return newvalue;
         }

@@ -9,6 +9,114 @@ namespace BingoX.Helper
 {
     public static class DictionaryHelper
     {
+
+        public static IDictionary<string, object> GetChanges(this IDictionary<string, object> currentValues, IDictionary<string, object> originalValues)
+        {
+            var changeValues = new Dictionary<string, object>();
+            foreach (var item in currentValues)
+            {
+                if (!originalValues.ContainsKey(item.Key))
+                {
+                    changeValues.Add(item.Key, item.Value);
+                    continue;
+                }
+                var currentValue = item.Value;
+
+                var originalValue = originalValues[item.Key];
+                var codetype = Convert.GetTypeCode(currentValue);
+                var originalCodetype = Convert.GetTypeCode(originalValue);
+                if (codetype != originalCodetype)
+                {
+                    changeValues.Add(item.Key, item.Value);
+                    continue;
+                }
+                switch (codetype)
+                {
+                    case TypeCode.Boolean:
+                        if ((bool)currentValue != (bool)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Byte:
+                        if ((byte)currentValue != (byte)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Char:
+                        if ((char)currentValue != (char)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.DateTime:
+
+                        if ((DateTime)currentValue != (DateTime)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.DBNull:
+                        if (!Convert.IsDBNull(originalValue) || currentValue != null)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Decimal:
+
+                        if ((decimal)currentValue != (decimal)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Double:
+                        if ((double)currentValue != (double)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Empty:
+                        if (currentValue != null)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Int16:
+                        if ((short)currentValue != (short)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Int32:
+                        if ((int)currentValue != (int)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Int64:
+
+                        if ((long)currentValue != (long)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Object:
+                        break;
+                    case TypeCode.SByte:
+                        if ((sbyte)currentValue != (sbyte)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.Single:
+                        if ((float)currentValue != (float)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.String:
+                        if (!string.Equals(currentValue, originalValue))
+
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.UInt16:
+
+                        if ((ushort)currentValue != (ushort)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.UInt32:
+
+                        if ((uint)currentValue != (uint)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    case TypeCode.UInt64:
+
+                        if ((ulong)currentValue != (ulong)originalValue)
+                            changeValues.Add(item.Key, currentValue);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            return changeValues;
+        }
         /// <summary>
         /// 获取IDictionary字典对应键的值，并转型为T。
         /// </summary>

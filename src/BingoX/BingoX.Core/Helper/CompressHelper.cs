@@ -1,5 +1,6 @@
 ﻿using BingoX.ComponentModel.Compress;
 using BingoX.Utility;
+using System;
 using System.IO;
 using System.Text;
 

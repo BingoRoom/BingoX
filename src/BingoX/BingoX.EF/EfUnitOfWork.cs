@@ -1,5 +1,9 @@
 ﻿#if Standard
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.ObjectModel;
+using Microsoft.AspNetCore.Builder;
 #else
 
 using System.Data.Entity;
@@ -13,6 +17,8 @@ using BingoX.Repository;
 
 namespace BingoX.EF
 {
+
+ 
     public class EfUnitOfWork : IUnitOfWork
     {
         private EfDbContext context;
@@ -23,52 +29,11 @@ namespace BingoX.EF
         }
 
 #if Standard
-        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction ContextTransaction;
-        /// <summary>
-        /// 初始化事务
-        /// </summary>
-        /// <param name="level"></param>
-        public void BeginTran(IsolationLevel level = IsolationLevel.ReadCommitted)
-        {
-            ContextTransaction = context.Database.BeginTransaction();
-        }
-
-        /// <summary>
-        /// 完成事务
-        /// </summary>
-        public void Commit()
-        {
-            if (ContextTransaction != null)
-            {
-                ContextTransaction.Commit();
-                ContextTransaction = null;
-            }
-            else
-            {
-                context.SaveChanges();
-            }
-
-        }
-
-        /// <summary>
-        /// 完成事务
-        /// </summary>
-        public void Rollback()
-        {
-            if (ContextTransaction != null)
-            {
-                ContextTransaction.Rollback();
-                ContextTransaction = null;
-            }
-            else
-            {
-                var items = this.context.ChangeTracker.Entries().ToList();
-                items.ForEach(o => o.State = EntityState.Unchanged);
-                context.Database.RollbackTransaction();
-            }
-        }
+        public Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction ContextTransaction { get; private set; }
 #else
         public DbContextTransaction ContextTransaction { get; private set; }
+
+#endif
         /// <summary>
         /// 初始化事务
         /// </summary>
@@ -77,26 +42,8 @@ namespace BingoX.EF
         {
             ContextTransaction = context.Database.BeginTransaction();
         }
-
         /// <summary>
-        /// 完成事务
-        /// </summary>
-        public void Commit()
-        {
-            if (ContextTransaction != null)
-            {
-                ContextTransaction.Commit();
-                ContextTransaction = null;
-            }
-            else
-            {
-                context.SaveChanges();
-            }
-
-        }
-
-        /// <summary>
-        /// 完成事务
+        /// 回滚事务
         /// </summary>
         public void Rollback()
         {
@@ -112,7 +59,35 @@ namespace BingoX.EF
 
             }
         }
+        /// <summary>
+        /// 完成事务
+        /// </summary>
+        public void Commit()
+        {
+            if (ContextTransaction != null)
+            {
+                ContextTransaction.Commit();
+                ContextTransaction = null;
+            }
+            else
+            {
+                DoTracker();
+                context.SaveChanges();
+            }
+
+        }
+        private void DoTracker()
+        {
+
+#if Standard
+            var entries = context.ChangeTracker.Entries();
+            var management = DbEntityInterceptServiceCollectionExtensions.ApplicationServices.GetService<EfDbEntityInterceptManagement>();
+            foreach (var entityEntry in entries)
+            {
+                management.Interceptor(entityEntry);
+            }
 #endif
+        }
 
     }
 }

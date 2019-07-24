@@ -67,6 +67,26 @@ namespace BingoX.Helper
             return ef.OfType<T>();
         }
         /// <summary>
+        /// 返回应用于此类型的指定自定义特性的集合,包含基类
+        /// </summary>
+        /// <param name="type"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetCustomAttributesIncludeBaseType<T>(this Type type, bool inherit = true) where T : Attribute
+        {
+            if (type == typeof(object)) return Utility.EmptyUtility<T>.EmptyArray;
+          
+            List<Type> alltype = new List<Type>() { };
+            while (type != typeof(object))
+            {
+                alltype.Add(type);
+                type = type.BaseType;
+            }
+            alltype.Reverse();
+            return alltype.SelectMany(n => n.GetCustomAttributes<T>()).Distinct().ToArray();
+        }
+
+        /// <summary>
         /// 返回应用于此类型的指定自定义特性
         /// </summary>
         /// <param name="type"></param>

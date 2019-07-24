@@ -294,7 +294,7 @@ namespace BingoX.Utility
             foreach (string s in value)
             {
                 var obj = Cast(s, type);
-                array.SetValue(obj.Value, index);
+                array.SetValue(obj, index);
                 index++;
             }
             return array;
@@ -315,7 +315,7 @@ namespace BingoX.Utility
             foreach (string s in value)
             {
                 var obj = Cast(s, type);
-                array.SetValue(obj.Value, index);
+                array.SetValue(obj, index);
                 index++;
             }
             return array;
@@ -365,12 +365,12 @@ namespace BingoX.Utility
         /// <param name="defaultValue">默认对象</param>
         /// <typeparam name="T">指定类型</typeparam>
         /// <returns>指定类型的对象或默认对象的隐式转换</returns>
-        public static TryResult<T> Cast<T>(string value, T defaultValue)
+        public static T Cast<T>(string value, T defaultValue)
         {
             if (string.IsNullOrWhiteSpace(value)) return defaultValue;
             var obj = Cast(value, typeof(T));
-            if (obj.Value is T) return (T)obj;
-            return new TryResult<T>(obj.Error, defaultValue);
+            if (obj is T) return (T)obj;
+            return defaultValue;
         }
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace BingoX.Utility
         /// <param name="value">字符串</param>
         /// <param name="type">指定类型</param>
         /// <returns>指定类型的隐式转换</returns>
-        public static TryResult<object> Cast(string value, Type type)
+        public static object Cast(string value, Type type)
         {
             return Cast(value, type, null);
         }
@@ -408,15 +408,15 @@ namespace BingoX.Utility
         /// <param name="type">指定类型</param>
         /// <param name="defaultValue">默认对象</param>
         /// <returns>指定类型的对象或默认对象的隐式转换</returns>
-        public static TryResult<object> Cast(string str, Type type, object defaultValue)
+        public static  object  Cast(string str, Type type, object defaultValue)
         {
-            if (type == null) return new TryResult<object>(new ArgumentNullException("type"), defaultValue);
+            if (type == null) return defaultValue;
             if (type == typeof(string)) return str;
             bool isNullableType = type.IsNullable();
             var castType = type.RemoveNullable();
             object setvalue = defaultValue;
             if (castType.IsValueType && !isNullableType && setvalue == null) setvalue = Activator.CreateInstance(castType);
-            if (string.IsNullOrWhiteSpace(str)) return new TryResult<object>(new ArgumentNullException("str"), setvalue);
+            if (string.IsNullOrWhiteSpace(str)) return setvalue;
             string value = str.Trim();
             if (castType.IsEnum)
             {
@@ -567,9 +567,9 @@ namespace BingoX.Utility
             }
             catch (Exception e)
             {
-                return new TryResult<object>(e, setvalue);
+                return setvalue;
             }
-            return new TryResult<object>(new NotSupportedException(type.FullName), setvalue);
+            return setvalue;
         }
         private static readonly Type[] ConvertConstructor = { typeof(string) };
         /// <summary>
