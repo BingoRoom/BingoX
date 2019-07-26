@@ -98,52 +98,6 @@ namespace BingoX.Helper
             if (ef != null && ef.Any()) return ef.FirstOrDefault();
             return null;
         }
-    }
-    /// <summary>
-    /// 备注标签
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
-    public sealed class RemarksAttribute : Attribute
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="remarks"></param>
-        public RemarksAttribute(string remarks)
-        {
-            Remarks = remarks;
-        }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string Remarks { get; private set; }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
-    public sealed class ImageAttribute : Attribute
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="imageAddress"></param>
-        /// <param name="remarks"></param>
-        public ImageAttribute(string imageAddress, string remarks)
-        {
-            ImageAddress = imageAddress;
-            Remarks = remarks;
-        }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string ImageAddress { get; private set; }
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string Remarks { get; private set; }
-    }
+    } 
+     
 }

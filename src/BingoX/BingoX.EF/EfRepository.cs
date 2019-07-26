@@ -21,24 +21,69 @@ namespace BingoX.EF
     {
         public EfRepositoryIdentity(EfDbContext context) : base(context)
         {
+        }  /// <summary>
+           /// 指定ID记录
+           /// </summary>
+           /// <typeparam name="T"></typeparam>
+           /// <returns></returns>
+        public override T GetId(int id)
+        {
+
+            var list = Wrapper.QueryAll();
+            list = SetInclude(list);
+            return list.FirstOrDefault(n => n.ID == id);
         }
     }
     public class EfRepositorySnowflake<T> : EfRepository<T, long>, IRepositorySnowflake<T> where T : class, ISnowflakeEntity<T>, new()
     {
         public EfRepositorySnowflake(EfDbContext context) : base(context)
         {
+        }  /// <summary>
+           /// 指定ID记录
+           /// </summary>
+           /// <typeparam name="T"></typeparam>
+           /// <returns></returns>
+        public override T GetId(long id)
+        {
+
+            var list = Wrapper.QueryAll();
+            list = SetInclude(list);
+            return list.FirstOrDefault(n => n.ID == id);
         }
     }
     public class EfRepositoryStringID<T> : EfRepository<T, string>, IRepositoryStringID<T> where T : class, IStringEntity<T>, new()
     {
         public EfRepositoryStringID(EfDbContext context) : base(context)
         {
+        }  /// <summary>
+           /// 指定ID记录
+           /// </summary>
+           /// <typeparam name="T"></typeparam>
+           /// <returns></returns>
+        public override T GetId(string id)
+        {
+
+            var list = Wrapper.QueryAll();
+            list = SetInclude(list);
+            return list.FirstOrDefault(n => n.ID == id);
         }
     }
     public class EfRepositoryGuid<T> : EfRepository<T, Guid>, IRepository<T, Guid>, IRepositoryGuid<T> where T : class, IGuidEntity<T>, new()
     {
         public EfRepositoryGuid(EfDbContext context) : base(context)
         {
+        }
+        /// <summary>
+        /// 指定ID记录
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public override T GetId(Guid id)
+        {
+
+            var list = Wrapper.QueryAll();
+            list = SetInclude(list);
+            return list.FirstOrDefault(n => n.ID == id);
         }
     }
     public class EfRepository<T, pkType> : IRepository<T, pkType>, IRepositoryExpression<T> where T : class, IEntity<T, pkType>, new()

@@ -16,8 +16,8 @@ namespace BingoX.Helper
         public static string Remarks(this Enum value)
         {
             FieldInfo info = value.GetType().GetField(value.ToString());
-            var attributes = info.GetAttribute<RemarksAttribute>();
-            return attributes == null ? value.ToString() : attributes.Remarks;
+            var attributes = info.GetAttribute<System.ComponentModel.DescriptionAttribute>();
+            return attributes == null ? value.ToString() : attributes.Description;
         }
 
         /// <summary>
