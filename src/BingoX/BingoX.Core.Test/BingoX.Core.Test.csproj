@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BingoX.Core.Extension\BingoX.Core.Extension.csproj" />
     <ProjectReference Include="..\BingoX.Core\BingoX.Core.csproj" />
     <ProjectReference Include="..\BingoX.EF\BingoX.EF.csproj" />
     <ProjectReference Include="..\BingoX.Repository\BingoX.Repository.csproj" />

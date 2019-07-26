@@ -10,6 +10,17 @@ namespace BingoX.Core.Test.Utility
 {
     [TestFixture]
     [Author("Dason")]
+    public class CompressUtilityUtilityTest
+    {
+        [Test]
+        public void TestNewUtility()
+        {
+            CompressUtility utility = new CompressUtility();
+        
+        }
+    }
+    [TestFixture]
+    [Author("Dason")]
     public class CompareUtilityTest
     {
         [Test, TestCaseSource(typeof(CompareUtilityDataClass), "TestFlaseCases")]
@@ -149,7 +160,7 @@ namespace BingoX.Core.Test.Utility
             Assert.IsFalse(CompareUtility.Compare(1.12345d, 1.123451m, 6));
             Assert.IsFalse(CompareUtility.Compare(1.12345d, 1.123451d, 6));
         }
-      
+
         [Test]
         public void TestNumberNullDigthCompare()
         {

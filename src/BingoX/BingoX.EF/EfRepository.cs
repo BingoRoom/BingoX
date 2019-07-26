@@ -21,15 +21,16 @@ namespace BingoX.EF
     {
         public EfRepositoryIdentity(EfDbContext context) : base(context)
         {
-        }  /// <summary>
-           /// 指定ID记录
-           /// </summary>
-           /// <typeparam name="T"></typeparam>
-           /// <returns></returns>
+        }
+        /// <summary>
+        /// 指定ID记录
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public override T GetId(int id)
         {
 
-            var list = Wrapper.QueryAll();
+            var list = Wrapper.Find();
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
         }
@@ -46,7 +47,7 @@ namespace BingoX.EF
         public override T GetId(long id)
         {
 
-            var list = Wrapper.QueryAll();
+            var list = Wrapper.Find();
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
         }
@@ -63,7 +64,7 @@ namespace BingoX.EF
         public override T GetId(string id)
         {
 
-            var list = Wrapper.QueryAll();
+            var list = Wrapper.Find();
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
         }
@@ -81,7 +82,7 @@ namespace BingoX.EF
         public override T GetId(Guid id)
         {
 
-            var list = Wrapper.QueryAll();
+            var list = Wrapper.Find();
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
         }

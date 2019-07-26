@@ -17,10 +17,10 @@ namespace BingoX.Utility
         {
             var assembly = Assembly.Load(new AssemblyName("BingoX.Core.Extension"));
             if (assembly == null) throw new FileNotFoundException("BingoX.Core.Extension");
-            var type = assembly.GetType("BingoX.ComponentModel.Compress.ZipCompress,BingoX.Core.Extension");
-            if (type == null) throw new TypeAccessException("BingoX.ComponentModel.Compress.ZipCompress");
+            var type = assembly.GetType("BingoX.ComponentModel.Compress.ZipCompress");
+            if (type == null) throw new TypeAccessException("找不到解压类：BingoX.ComponentModel.Compress.ZipCompress");
             _compress = type.CreateInstance<ICompress>();
-            if (_compress == null) throw new TypeAccessException("BingoX.ComponentModel.Compress.ZipCompress");
+            if (_compress == null) throw new TypeAccessException("解压类创建失败：BingoX.ComponentModel.Compress.ZipCompress");
         }
 #endif
         public CompressUtility(ICompress compress)

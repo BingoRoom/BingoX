@@ -15,10 +15,7 @@ namespace BingoX.EF
 #if Standard
     public static class DbEntityInterceptServiceCollectionExtensions
     {
-        static DbEntityInterceptServiceCollectionExtensions()
-        {
-            Options = new DbEntityInterceptOptions();
-        }
+      
         internal static DbEntityInterceptOptions Options { get; private set; }
         static IServiceProvider applicationServices;
         internal static IServiceProvider ApplicationServices
@@ -27,7 +24,8 @@ namespace BingoX.EF
             {
                 if (IsMVCWeb)
                 {
-                    return applicationServices.GetService<Microsoft.AspNetCore.Http.IHttpContextAccessor>().HttpContext.RequestServices;
+                    var accessor = applicationServices.GetService(typeof(Microsoft.AspNetCore.Http.IHttpContextAccessor)) as Microsoft.AspNetCore.Http.IHttpContextAccessor;
+                    return accessor.HttpContext.RequestServices;
                 }
                 return applicationServices;
             }
@@ -36,15 +34,15 @@ namespace BingoX.EF
         public static void AddDbEntityInterceptWithMVC(this IServiceCollection services, Action<DbEntityInterceptOptions> setupAction)
         {
             AddDbEntityIntercept(services, setupAction);
-            services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
+            services.AddHttpContextAccessor();//<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
             IsMVCWeb = true;
         }
 
         public static void AddDbEntityIntercept(this IServiceCollection services, Action<DbEntityInterceptOptions> setupAction)
         {
-
+            Options = new DbEntityInterceptOptions();
             setupAction(Options);
-            services.AddSingleton<EfDbEntityInterceptManagement>();
+            services.AddScoped<EfDbEntityInterceptManagement>();
         }
 
         public static void UseDbEntityIntercept(this IApplicationBuilder app)
