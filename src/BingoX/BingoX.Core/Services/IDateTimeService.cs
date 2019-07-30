@@ -126,7 +126,8 @@ namespace BingoX.Services
         /// <returns></returns>
         public DateTime ToDateTime(long timeStamp)
         {
-            DateTime dateTimeStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+        
+            DateTime dateTimeStart = System.TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
             long lTime = long.Parse(timeStamp + "0000000");
             TimeSpan toNow = new TimeSpan(lTime);
             return dateTimeStart.Add(toNow);

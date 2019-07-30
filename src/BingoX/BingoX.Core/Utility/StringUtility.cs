@@ -565,7 +565,7 @@ namespace BingoX.Utility
                         }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return setvalue;
             }

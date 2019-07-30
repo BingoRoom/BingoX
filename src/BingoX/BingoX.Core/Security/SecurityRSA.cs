@@ -87,15 +87,15 @@ namespace BingoX.Security
             }
         }
 #else
-        private string _oldPrivateKey;
-        private string _oldPublicKey;
+
 
         private RSACryptoServiceProvider _provide;
-
+        private string _oldPrivateKey;
+        private string _oldPublicKey;
         public SecurityRSA(AsymmetricAlgorithmConfig config)
         {
             Config = config;
-            
+
         }
 
         public override string Decrypt(string content)
@@ -126,13 +126,15 @@ namespace BingoX.Security
         {
             CheckConfig(Config);
             if (_provide == null) _provide = new RSACryptoServiceProvider();
-            if(Config.KeyType == KeyTypeEnum.pri && _oldPrivateKey != Config.PrivateKey)
+            if (Config.KeyType == KeyTypeEnum.pri && _oldPrivateKey != Config.PrivateKey)
             {
                 _provide.FromXmlString(Config.PrivateKey);
+                _oldPrivateKey = Config.PrivateKey;
             }
-            if(Config.KeyType == KeyTypeEnum.pub && _oldPublicKey != Config.PublicKey)
+            if (Config.KeyType == KeyTypeEnum.pub && _oldPublicKey != Config.PublicKey)
             {
                 _provide.FromXmlString(Config.PublicKey);
+                _oldPublicKey = Config.PublicKey;
             }
         }
 

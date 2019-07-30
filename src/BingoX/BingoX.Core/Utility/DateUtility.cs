@@ -11,7 +11,7 @@ namespace BingoX.Utility
         /// <summary>
         /// Timestamp开始时间
         /// </summary>
-        static readonly DateTime UnixTpStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+        static readonly DateTime UnixTpStart = System.TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);// TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
 
         /// <summary>
         /// 是否为数据库可用时间

@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Generator\DisposableAction.cs" />
+    <Compile Remove="Services\IUtilityServiceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ComponentModel\FastReflection\" />
