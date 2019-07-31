@@ -2,6 +2,7 @@
 
 namespace BingoX.ComponentModel.Compress
 {
+
     /// <summary>
     /// 文件压缩项目
     /// </summary>

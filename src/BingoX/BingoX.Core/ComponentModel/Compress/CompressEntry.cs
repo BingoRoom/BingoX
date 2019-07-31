@@ -19,5 +19,19 @@ namespace BingoX.ComponentModel.Compress
         /// 创建时间
         /// </summary>
         public DateTime? CreateTime { get; set; }
+
+
+        public static CompressEntry StringContent(string name, string content, System.Text.Encoding encoding)
+        {
+            return new CompressEntry
+            {
+                FileContent = encoding.GetBytes(content),
+                Name = name
+            };
+        }
+        public static CompressEntry StringContent(string name, string content)
+        {
+            return StringContent(name, content, System.Text.Encoding.UTF8);
+        }
     }
 }
