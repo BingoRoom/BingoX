@@ -16,6 +16,12 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
             VerifyContent = verifyContent;
             VerifyName = verifyName;
         }
+        public WeChatConfig(string appID, string appSecret)
+        {
+            AppID = appID;
+            AppSecret = appSecret;
+            GrantType = "client_credential";
+        }
 
         public string AppID { get; private set; }
         public string AppSecret { get; private set; }

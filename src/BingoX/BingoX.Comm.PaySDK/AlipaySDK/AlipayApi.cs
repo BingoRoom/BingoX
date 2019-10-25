@@ -1,4 +1,5 @@
 ﻿using Aop.Api;
+using Aop.Api.Domain;
 using Aop.Api.Request;
 using Aop.Api.Response;
 using BingoX.Cache;
@@ -60,6 +61,34 @@ namespace BingoX.Comm.PaySDK.AlipapSDK
             AlipayUserUserinfoShareResponse response = client.Execute(alipayRequest, oauthToken.AccessToken);
             return response;
 
+        }
+        public void GetOpenAuthTokenAppQuery()
+        {
+            AlipayOpenAuthTokenAppQueryRequest Alipayrequest = new AlipayOpenAuthTokenAppQueryRequest
+            {
+                BizContent = "{" + "\"app_auth_token\":\"authbseB9025275713f445e4985c90fb487d8D89\"" + "  }"
+            };
+            IAopClient client = CreateClient();
+            AlipayOpenAuthTokenAppQueryResponse response = client.Execute(Alipayrequest);
+
+        }
+        public IList<InvoiceTitleModel> GetAlipayEbppInvoiceTitleList(string userId)
+        {
+            var key = "AlipayOauthToken" + userId;
+            var oauthToken = cacheManager.Get<AlipayOauthToken>(key);
+            if (oauthToken == null) throw new LogicException("未授权");
+            IAopClient client = CreateClient();
+
+            AlipayEbppInvoiceTitleListGetRequest AlipayErequest = new AlipayEbppInvoiceTitleListGetRequest();
+            AlipayErequest.BizContent = "{" +
+                    "\"user_id\":\"" + userId + "\"" +
+                    "  }";
+            AlipayEbppInvoiceTitleListGetResponse response = client.Execute(AlipayErequest, oauthToken.AccessToken);
+            if (response.IsError)
+            {
+                throw new LogicException(response.SubMsg);
+            }
+            return response.TitleList;
         }
         IAccessToken IPaySDKApi.GetAccessToken(string auth_code)
         {
