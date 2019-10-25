@@ -1,4 +1,5 @@
-﻿using BingoX.Repository;
+﻿using BingoX.Domain;
+using BingoX.Repository;
 
 namespace BingoX.SqlSugar
 {

@@ -3,7 +3,7 @@
     /// <summary>
     /// 表示一个实现了某个文档管理提供程序的文档管理接口
     /// </summary>
-    public interface IDocumentManagementAPIProvider : IFileProvider
+    public interface IDocumentManagementAPIProvider : IDocumentManagementFileProvider
     {
         /// <summary>
         /// 获取文件字节数组

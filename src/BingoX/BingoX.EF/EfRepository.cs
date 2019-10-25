@@ -14,6 +14,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using BingoX.Repository;
+using BingoX.Domain;
 
 namespace BingoX.EF
 {
