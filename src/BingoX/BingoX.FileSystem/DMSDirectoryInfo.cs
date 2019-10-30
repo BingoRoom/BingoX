@@ -1,4 +1,4 @@
-﻿namespace BingoX.ComponentModel.DocumentManagementProvider
+﻿namespace BingoX.FileSystem
 {
     /// <summary>
     /// 表示一个文件夹信息

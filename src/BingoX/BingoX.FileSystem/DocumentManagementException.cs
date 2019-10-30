@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BingoX.ComponentModel.DocumentManagementProvider
+namespace BingoX.FileSystem
 {
     /// <summary>
     /// 表示一个文档操作过程中产生的错误

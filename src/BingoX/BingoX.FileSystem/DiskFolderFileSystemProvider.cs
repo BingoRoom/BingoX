@@ -3,10 +3,26 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 
-namespace BingoX.ComponentModel.DocumentManagementProvider
+namespace BingoX.FileSystem
 {
-    public class DiskFolderDMSAPI : IDocumentManagementAPIProvider
+    public class DiskFolderFileSystemProvider : IFileSystemProvider
     {
+
+        public DiskFolderFileSystemProvider(NameValueCollection collection)
+        {
+
+            _rootList = collection["RootList"];
+            if (string.IsNullOrEmpty(_rootList)) throw new DocumentManagementException("RootList 配置为空");
+
+            if (!Directory.Exists(_rootList)) Directory.CreateDirectory(_rootList);
+        }
+        public DiskFolderFileSystemProvider(string rootList)
+        {
+            if (string.IsNullOrEmpty(rootList)) throw new DocumentManagementException("RootList 配置为空");
+
+            if (!Directory.Exists(rootList)) Directory.CreateDirectory(rootList);
+            _rootList = rootList;
+        }
         private string _rootList;
 
         public DMSFileInfo AddFile(byte[] fileBuffer, string fileName, bool isOverWrite)
@@ -19,13 +35,7 @@ namespace BingoX.ComponentModel.DocumentManagementProvider
             return GetFileInfo(fileName);
         }
 
-        public void Close()
-        {
-        }
-
-        public void Connection()
-        {
-        }
+    
 
         public string CreateDirectory(string path)
         {
@@ -45,10 +55,7 @@ namespace BingoX.ComponentModel.DocumentManagementProvider
             if (File.Exists(readPath)) File.Delete(readPath);
         }
 
-        public void Dispose()
-        {
-        }
-
+      
         public bool ExistsDirectory(string dirPath)
         {
             return Directory.Exists(dirPath);
@@ -77,11 +84,7 @@ namespace BingoX.ComponentModel.DocumentManagementProvider
             return buffer;
         }
 
-        public byte[] GetFileBuffer(long attachmentId)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public DMSFileInfo GetFileInfo(string path)
         {
             string readPath = GetReadPath(path);
@@ -103,14 +106,6 @@ namespace BingoX.ComponentModel.DocumentManagementProvider
             return Path.Combine(_rootList, path);
         }
 
-
-
-        public void Initialize(NameValueCollection collection)
-        {
-            _rootList = Path.Combine(System.Environment.CurrentDirectory, "Documents");
-            //  _rootList = collection["RootList"];
-            //    StorageFile = System.IO.IsolatedStorage.IsolatedStorageFile.GetMachineStoreForAssembly();
-            if (!Directory.Exists(_rootList)) Directory.CreateDirectory(_rootList);
-        }
+     
     }
 }

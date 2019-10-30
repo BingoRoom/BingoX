@@ -50,7 +50,34 @@ namespace BingoX.Utility
 
         //    return targetConvter.ConvertFrom(str);
         //}
-
+        public static IEnumerable<string> SplitToCharacters(string input)
+        {
+            for (var i = 0; i < input.Length; ++i)
+            {
+                if (char.IsHighSurrogate(input[i]))
+                {
+                    int length = 0;
+                    while (true)
+                    {
+                        length += 2;
+                        if (i + length < input.Length && input[i + length] == 0x200D)
+                        {
+                            length += 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    yield return input.Substring(i, length);
+                    i += length - 1;
+                }
+                else
+                {
+                    yield return input[i].ToString();
+                }
+            }
+        }
         /// <summary>
         /// 判断是不是中文
         /// </summary>
@@ -408,7 +435,7 @@ namespace BingoX.Utility
         /// <param name="type">指定类型</param>
         /// <param name="defaultValue">默认对象</param>
         /// <returns>指定类型的对象或默认对象的隐式转换</returns>
-        public static  object  Cast(string str, Type type, object defaultValue)
+        public static object Cast(string str, Type type, object defaultValue)
         {
             if (type == null) return defaultValue;
             if (type == typeof(string)) return str;

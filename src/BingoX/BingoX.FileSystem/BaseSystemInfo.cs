@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BingoX.ComponentModel.DocumentManagementProvider
+namespace BingoX.FileSystem
 {
     /// <summary>
     /// 表示一个基础文件系统基信息

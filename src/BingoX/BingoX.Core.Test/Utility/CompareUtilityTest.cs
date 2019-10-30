@@ -19,6 +19,29 @@ namespace BingoX.Core.Test.Utility
         
         }
     }
+
+    [TestFixture]
+    [Author("Dason")]
+    public class StringUtilityUtilityTest
+    {
+        [Test]
+        public void TestSplitToCharacters()
+        {
+         var charts=  StringUtility. SplitToCharacters("AB吉𠮷😁👨‍👩‍👧‍👦").Select(x => new
+            {
+                Text = x,
+                Code = String.Join("", x.Select(y => ((short)y).ToString("X4"))),
+            }).ToArray();
+            Assert.AreEqual(6, charts.Length);
+            StringAssert.AreEqualIgnoringCase("A", charts[0].Text);
+            StringAssert.AreEqualIgnoringCase("B", charts[1].Text);
+            StringAssert.AreEqualIgnoringCase("吉", charts[2].Text);
+            StringAssert.AreEqualIgnoringCase("𠮷", charts[3].Text);
+            StringAssert.AreEqualIgnoringCase("😁", charts[4].Text);
+            StringAssert.AreEqualIgnoringCase("👨‍👩‍👧‍👦", charts[5].Text);
+          
+        }
+    }
     [TestFixture]
     [Author("Dason")]
     public class CompareUtilityTest
