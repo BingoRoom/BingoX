@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BingoX.Comm.PaySDK.AlipapSDK
+namespace BingoX.Comm.PaySDK.AlipaySDK
 {
     public class AlipayApi : IPaySDKApi
     {

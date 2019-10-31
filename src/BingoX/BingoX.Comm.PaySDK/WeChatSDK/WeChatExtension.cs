@@ -23,6 +23,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         public static void AddWeChat(this IServiceCollection services, Func<IServiceProvider, WeChatConfig> configureOptions)
         {
             services.AddSingleton<WeChatConfig>(configureOptions);
+            services.AddSingleton<WeChatApi>();
         }
 
         public static void AddWeChat(this IServiceCollection services)
@@ -44,6 +45,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
                 WeChatConfig config = new WeChatConfig(appID, appSecret, grantType, verifyContent, verifyName);
                 return config;
             });
+            services.AddSingleton<WeChatApi>();
         }
     }
 }

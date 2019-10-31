@@ -1,4 +1,4 @@
-﻿namespace BingoX.Comm.PaySDK.AlipapSDK
+﻿namespace BingoX.Comm.PaySDK.AlipaySDK
 {
     public class AlipayOauthToken : IAccessToken
     {

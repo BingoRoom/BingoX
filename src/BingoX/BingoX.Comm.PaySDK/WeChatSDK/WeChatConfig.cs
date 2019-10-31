@@ -29,7 +29,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         public string VerifyContent { get; private set; }
         public string GrantType { get; private set; }
 
-        internal const string AuthAccessTokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token";
+        internal const string SnsAccessTokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token";
         internal const string CgiBinTokenUrl = "https://api.weixin.qq.com/cgi-bin/token";
         internal const string ScantTitleUrl = "https://api.weixin.qq.com/card/invoice/scantitle";
         internal const string GetTicketUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
