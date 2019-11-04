@@ -12,19 +12,6 @@ using System.Linq;
 
 namespace BingoX.Comm.PaySDK.WeChatSDK
 {
-    internal class NewtonsoftJsonSerializer : IDeserializer
-    {
-
-
-
-
-
-
-        public T Deserialize<T>(IRestResponse response)
-        {
-            return JsonConvert.DeserializeObject<T>(response.Content);
-        }
-    }
     public class WeChatApi : IPaySDKApi
     {
 
@@ -32,29 +19,29 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         {
             Config = config;
             this.cacheManager = cacheManager;
+            Menu = new WeChatMenuApi(this);
+            User = new WeChatUserApi(this);
+            Invoice = new WeChatInvoiceApi(this);
+            Message = new WeChatMessageApi(this);
+            Media = new WeChatMediaApi(this);
+            Card = new WeChatCardApi(this);
+            OCR = new WeChatOCRApi(this);
+            CustomerService = new WeChatCustomerServiceApi(this);
         }
         static readonly IDeserializer deserializer = new NewtonsoftJsonSerializer();
         private readonly ICacheManager cacheManager;
         //     public WeChatAccessToken AccessToken { get;private set; }
         public WeChatConfig Config { get; set; }
-        public WeChatUserInfo GetUserInfo(string openid)
-        {
-            var accesstoken = GetAccessToken();
-            var url = string.Format("https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}&lang=zh_CN", accesstoken.AccessToken, openid);
-            RestClient client = GetClient();
-            var req = new RestRequest(url);
-            var obj = client.Execute<WeChatUserInfo>(req, Method.GET);
-            return obj.Data;
-        }
-        public WeChatUserInfo GetUserInfoBySns(string openid)
-        {
-            var accesstoken = GetAccessTokenCache(openid);
-            var url = string.Format("https://api.weixin.qq.com/sns/userinfo?access_token={0}&openid={1}&lang=zh_CN", accesstoken.AccessToken, openid);
-            RestClient client = GetClient();
-            var req = new RestRequest(url);
-            var obj = client.Execute<WeChatUserInfo>(req, Method.GET);
-            return obj.Data;
-        }
+
+        public WeChatMenuApi Menu { get; private set; }
+        public WeChatUserApi User { get; private set; }
+        public WeChatInvoiceApi Invoice { get; private set; }
+        public WeChatMessageApi Message { get; private set; }
+        public WeChatMediaApi Media { get; private set; }
+        public WeChatCardApi Card { get; private set; }
+        public WeChatOCRApi OCR { get; private set; }
+        public WeChatCustomerServiceApi CustomerService { get; private set; }
+
         IAccessToken IPaySDKApi.GetAccessToken(string auth_code)
         {
             var token = GetSnsAccessToken(auth_code);
@@ -63,7 +50,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         }
         IUserInfo IPaySDKApi.GetUserInfo(string openid)
         {
-            return GetUserInfo(openid);
+            return User.GetUserInfo(openid);
         }
 
         /// <summary>
@@ -91,14 +78,14 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
             return obj.Data;
         }
 
-        private static RestClient GetClient()
+        internal RestClient GetClient()
         {
             var client = new RestClient();
-            client.AddHandler(() => deserializer, "application/json", "json", "text/plain");
+            client.AddHandler(() => deserializer, "application/json; encoding=utf-8", "application/json", "json", "text/plain");
             return client;
         }
 
-        WechatSnsToken GetAccessTokenCache(string openid)
+        internal WechatSnsToken GetAccessTokenCache(string openid)
         {
             var key = "WeChatSnsAccessToken" + openid;
             var cacheitem = cacheManager.Get<WechatSnsToken>(key);
@@ -125,7 +112,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
             {
                 cacheManager.Remove(key);
                 var error = JsonConvert.DeserializeObject<WechatError>(obj.Content);
-                if (error.Code == 40001)
+                if (error.InvalidToken())
                 {
                     cacheManager.Remove(key);
 
@@ -211,43 +198,10 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
 
             return string.Empty;
         }
-        public string GetOpenId(string code)
-        {
-            RestClient client = GetClient();
-
-            var req = new RestRequest(WeChatConfig.SnsAccessTokenUrl);
-            req.AddParameter(new Parameter("appid", Config.AppID, ParameterType.QueryString));
-            req.AddParameter(new Parameter("secret", Config.AppSecret, ParameterType.QueryString));
-            req.AddParameter(new Parameter("code", code, ParameterType.QueryString));
-            req.AddParameter(new Parameter("grant_type", "authorization_code", ParameterType.QueryString));
-            var obj = client.Execute(req, Method.GET);
-            JsonReader reader = new JsonTextReader(new StringReader(obj.Content));
-            string openid = string.Empty;
-            while (reader.Read())
-            {
-                if (string.Equals(reader.Path, "openid"))
-                {
-                    openid = reader.ReadAsString();
-                    break;
-                }
-            }
-            reader.Close();
-            return openid;
-        }
 
 
-        public string ScanTitle(string content)
-        {
-            var AccessToken = GetAccessToken();
-            if (AccessToken == null) throw new WxPayException("没登陆授权");
-            RestClient client = GetClient();
-            var req = new RestRequest(WeChatConfig.ScantTitleUrl);
-            req.AddParameter(new Parameter("access_token", AccessToken.AccessToken, ParameterType.QueryString));
-            //    req.AddParameter("scan_text", content, ParameterType.RequestBody);
-            req.AddJsonBody(new { scan_text = content });
-            var obj = client.Execute(req, Method.POST);
-            return obj.Content;
-        }
+
+
     }
 }
 

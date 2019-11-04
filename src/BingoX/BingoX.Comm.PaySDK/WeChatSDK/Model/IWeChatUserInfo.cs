@@ -39,7 +39,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         /// <summary>
         /// 用户被打上的标签ID列表
         /// </summary>
-        string TagidList { get; set; }
+        int[] TagidList { get; set; }
         /// <summary>
         /// 返回用户关注的渠道来源，
         /// ADD_SCENE_SEARCH 公众号搜索，
@@ -56,6 +56,6 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         /// <summary>
         /// 用户关注时间，为时间戳。如果用户曾多次关注，则取最后关注时间
         /// </summary>
-        DateTime? SubscribeTime { get; set; }
+        string SubscribeTime { get; set; }
     }
 }
