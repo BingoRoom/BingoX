@@ -1,4 +1,6 @@
-﻿namespace BingoX.FileSystem
+﻿using System.Collections.Specialized;
+
+namespace BingoX.FileSystem
 {
     /// <summary>
     /// 表示一个实现了某个文档管理提供程序的文档管理接口
@@ -58,5 +60,13 @@
         /// <param name="isOverWrite">是否覆盖</param>
         /// <returns></returns>
         DMSFileInfo AddFile(byte[] fileBuffer, string fileName, bool isOverWrite);
+    }
+
+    public interface IFileSystemProvider<PID>
+    {
+        void DeleteFile(PID id);
+        byte[] GetFileBuffer(PID fileid);
+        DMSFileInfo GetFileInfo(PID fileid);
+        void UpdateFile(PID id, byte[] fileBuffer, string fileName, NameValueCollection metas);
     }
 }
