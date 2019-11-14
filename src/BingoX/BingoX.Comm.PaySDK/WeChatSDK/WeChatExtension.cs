@@ -15,7 +15,11 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
             var config = applicationBuilder.ApplicationServices.GetService<WeChatConfig>();
             applicationBuilder.Use(async (context, next) =>
             {
-                if (context.Request.Path.HasValue && context.Request.Path.Value == config.VerifyName) await context.Response.WriteAsync(config.VerifyContent);
+                if (context.Request.Path.HasValue && context.Request.Path.Value == config.VerifyName)
+                {
+                    await context.Response.WriteAsync(config.VerifyContent);
+                    return;
+                }
                 await next();
             });
         }

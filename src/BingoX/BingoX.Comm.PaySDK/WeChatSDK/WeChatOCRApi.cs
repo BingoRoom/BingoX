@@ -68,17 +68,17 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
             return obj.Data;
 
         }
-        //public OCRIDCard Text(string fileUrl)
-        //{
-        //    var accesstoken = weChatApi.GetAccessToken();
-        //    var url = string.Format("https://api.weixin.qq.com/cv/ocr/comm?img_url={1}&access_token={0}", accesstoken.AccessToken, System.Web.HttpUtility.UrlEncode(fileUrl));
-        //    var client = weChatApi.GetClient();
-        //    var req = new RestRequest(url);
+        public OCRPrintedText PrintedText(string fileUrl)
+        {
+            var accesstoken = weChatApi.GetAccessToken();
+            var url = string.Format("https://api.weixin.qq.com/cv/ocr/comm?img_url={1}&access_token={0}", accesstoken.AccessToken, System.Web.HttpUtility.UrlEncode(fileUrl));
+            var client = weChatApi.GetClient();
+            var req = new RestRequest(url);
 
-        //    var obj = client.Execute<OCRIDCard>(req, Method.GET);
-        //    return obj.Data;
+            var obj = client.Execute<OCRPrintedText>(req, Method.GET);
+            return obj.Data;
 
-        //}
+        }
     }
 }
 

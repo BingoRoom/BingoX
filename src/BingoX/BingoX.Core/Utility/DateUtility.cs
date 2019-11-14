@@ -11,8 +11,20 @@ namespace BingoX.Utility
         /// <summary>
         /// Timestamp开始时间
         /// </summary>
-        static readonly DateTime UnixTpStart = System.TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);// TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-
+        static readonly DateTime UnixTpStart = System.TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
+        // TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+        /// <summary>
+               /// 微信的CreateTime是当前与1970-01-01 00:00:00之间的秒数
+               /// </summary>
+               /// <param name=“dt”></param>
+               /// <returns></returns>
+        public static string DateTimeToInt(DateTime dt)
+        {
+            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0, 0));
+            //intResult = (time- startTime).TotalMilliseconds;
+            long t = (dt.Ticks - startTime.Ticks) / 10000000;            //现在是10位，除10000调整为13位
+            return t.ToString();
+        }
         /// <summary>
         /// 是否为数据库可用时间
         /// </summary>
