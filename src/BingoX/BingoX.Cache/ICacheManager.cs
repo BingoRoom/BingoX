@@ -16,5 +16,9 @@ namespace BingoX.Cache
         TItem GetOrAdd<TItem>(string key, Func<string, CacheItem<TItem>> p);
         void Add<TItem>(string key, CacheItem<TItem> p);
         TItem Get<TItem>(string key);
+
+
+        void Add(string key, CacheItem p);
+        object Get(string key,Type type);
     }
 }

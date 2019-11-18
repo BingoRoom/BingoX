@@ -28,6 +28,19 @@ namespace BingoX.Cache
             if (obj is TItem) return (TItem)obj;
             return default;
         }
+        public void Add(string key, CacheItem item)
+        {
+            if (Convert.GetTypeCode(item.Value) == TypeCode.DBNull) return;
+            var opt = new MemoryCacheEntryOptions();
+            if (item.ExpirationMode == ExpirationMode.Absolute) opt.AbsoluteExpirationRelativeToNow = item.ExpirationTimeout;
+            if (item.ExpirationMode == ExpirationMode.Sliding) opt.SlidingExpiration = item.ExpirationTimeout;
+
+            memoryCache.Set(key, item.Value, opt);
+        }
+        public object Get(string key, Type type)
+        {
+            return memoryCache.Get(key);
+        }
 
         public TItem GetOrAdd<TItem>(string key, Func<string, CacheItem<TItem>> p)
         {
