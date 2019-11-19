@@ -94,6 +94,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         /// <summary>
         /// 获取微信接口调用全局票据
         /// </summary>
+        [CacheAbleAttribute(Expiration = 30000, CacheKeyName = "WeChatAccessToken")]
         public WeChatAccessToken GetAccessToken()
         {
             const string key = "WeChatAccessToken";

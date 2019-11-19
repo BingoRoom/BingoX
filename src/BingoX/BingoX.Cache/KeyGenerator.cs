@@ -17,7 +17,7 @@ namespace BingoX.Cache
             }
             return cacheKey.ToString();
         }
-        public static string GetCacheKeyName(MethodInfo methodInfo, object[] args, string keyname)
+        public static string GetCacheKeyName(object[] args, string keyname)
         {
             StringBuilder cacheKey = new StringBuilder();
             cacheKey.Append($"{keyname}");
@@ -28,6 +28,8 @@ namespace BingoX.Cache
             }
             return cacheKey.ToString();
         }
+
+
         public static string GetCacheKeyPrefix(MethodInfo methodInfo, string prefix)
         {
             StringBuilder cacheKey = new StringBuilder();
@@ -38,11 +40,21 @@ namespace BingoX.Cache
 
         public static string GetCacheKeyName(CacheAbleAttribute attribute, MethodInfo methodInfo, object[] args)
         {
+            if (attribute.GeneratorType == KeyGeneratorType.Parameters)
+            {
+                if (!string.IsNullOrEmpty(attribute.CacheKeyName))
+                {
+                    return GetCacheKeyName(args, attribute.CacheKeyName);
+                }
+                return GetCacheKey(methodInfo, args, attribute.CacheKeyPrefix);
+            }
+            if (string.IsNullOrEmpty(attribute.CacheKeyName) && string.IsNullOrEmpty(attribute.CacheKeyPrefix)) throw new Exception("没有配置相关 CacheKeyName CacheKeyPrefix");
             if (!string.IsNullOrEmpty(attribute.CacheKeyName))
             {
-                return GetCacheKeyName(methodInfo, args, attribute.CacheKeyName);
+                return attribute.CacheKeyName;
             }
-            return GetCacheKey(methodInfo, args, attribute.CacheKeyPrefix);
+
+            return GetCacheKeyPrefix(methodInfo, attribute.CacheKeyPrefix);
         }
     }
 }

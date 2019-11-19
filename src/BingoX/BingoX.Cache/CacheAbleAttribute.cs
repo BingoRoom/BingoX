@@ -18,6 +18,7 @@ namespace BingoX.Cache
         /// 过期时间（秒）
         /// </summary>
         public ExpirationMode ExpirationMode { get; set; }
+        public KeyGeneratorType GeneratorType { get; set; }
 
         /// <summary>
         /// Key值前缀
@@ -25,6 +26,15 @@ namespace BingoX.Cache
         public string CacheKeyPrefix { get; set; }
 
         public string CacheKeyName { get; set; }
+
+      
+
+    }
+
+    public enum KeyGeneratorType
+    {
+        None,
+        Parameters,
 
     }
 }
