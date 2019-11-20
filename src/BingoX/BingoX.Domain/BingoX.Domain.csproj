@@ -12,6 +12,7 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <RootNamespace>BingoX.Domain</RootNamespace>
     <AssemblyName>BingoX.Domain</AssemblyName>
+    <AssemblyOriginatorKeyFile>BingoX.Domain.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>

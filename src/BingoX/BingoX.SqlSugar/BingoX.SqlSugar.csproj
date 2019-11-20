@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <DelaySign>false</DelaySign>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Bingo</Authors>
@@ -17,6 +17,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='net40|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Framework</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net40|AnyCPU'">
+    <DocumentationFile>D:\Code\Git\Bingo\BingoX\src\BingoX\BingoX.SqlSugar\BingoX.SqlSugar.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
