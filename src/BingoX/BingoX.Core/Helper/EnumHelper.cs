@@ -15,10 +15,21 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static string Remarks(this Enum value)
         {
-            FieldInfo info = value.GetType().GetField(value.ToString());
-            var attributes = info.GetAttribute<System.ComponentModel.DescriptionAttribute>();
-            return attributes == null ? value.ToString() : attributes.Description;
+            lock (lockobj)
+            {
+                var type = value.GetType();
+                var dickey = type.FullName + value;
+                if (dicRemarks.ContainsKey(dickey)) return dicRemarks[dickey];
+                FieldInfo info = type.GetField(value.ToString());
+                var attributes = info.GetAttribute<System.ComponentModel.DescriptionAttribute>();
+
+                var dislpayname = attributes == null ? value.ToString() : attributes.Description;
+                dicRemarks.Add(dickey, dislpayname);
+                return dislpayname;
+            }
         }
+        static object lockobj = new object();
+        readonly static IDictionary<string, string> dicRemarks = new Dictionary<string, string>();
 
         /// <summary>
         /// Removes a flag and returns the new value
@@ -114,7 +125,7 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static bool InFlag<E>(this Enum variable, E flags) where E : struct, IComparable, IFormattable, IConvertible
         {
-            if (!typeof(E).IsEnum)  throw new ArgumentException("variable must be an Enum", "variable");
+            if (!typeof(E).IsEnum) throw new ArgumentException("variable must be an Enum", "variable");
             var comper = Convert.ToInt64(variable);
             long numFlag = Convert.ToInt64(flags);
             if (numFlag == comper) return true;

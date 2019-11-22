@@ -81,6 +81,7 @@ namespace BingoX.EF
 
 #if Standard
             var entries = context.ChangeTracker.Entries();
+            if (DbEntityInterceptServiceCollectionExtensions.ApplicationServices == null) return;
             var management = DbEntityInterceptServiceCollectionExtensions.ApplicationServices.GetService<EfDbEntityInterceptManagement>();
             foreach (var entityEntry in entries)
             {
