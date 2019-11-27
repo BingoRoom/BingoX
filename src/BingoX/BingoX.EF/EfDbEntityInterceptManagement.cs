@@ -96,10 +96,10 @@ namespace BingoX.EF
 
         private static IDictionary<string, object> ToDic(PropertyValues dbPropertyValues)
         {
-            IDictionary<string, object> dic = new Dictionary<string, object>();
+            IDictionary<string, object> dic = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
             foreach (var item in dbPropertyValues.Properties)
             {
-                dic.Add(item.Name, dbPropertyValues[item]);
+                if (!dic.ContainsKey(item.Name)) dic.Add(item.Name, dbPropertyValues[item]);
             }
             return dic;
         }
