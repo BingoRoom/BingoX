@@ -9,46 +9,35 @@ using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 #endif
 using System;
+using BingoX.Repository;
+using System.Linq;
 
 namespace BingoX.EF
 {
-#if Standard
+
     public static class DbEntityInterceptServiceCollectionExtensions
     {
-      
-        internal static DbEntityInterceptOptions Options { get; private set; }
-        static IServiceProvider applicationServices;
-        internal static IServiceProvider ApplicationServices
-        {
-            get
-            {
-                if (IsMVCWeb)
-                {
-                    var accessor = applicationServices.GetService(typeof(Microsoft.AspNetCore.Http.IHttpContextAccessor)) as Microsoft.AspNetCore.Http.IHttpContextAccessor;
-                    return accessor.HttpContext.RequestServices;
-                }
-                return applicationServices;
-            }
-        }
-        static bool IsMVCWeb;
-        public static void AddDbEntityInterceptWithMVC(this IServiceCollection services, Action<DbEntityInterceptOptions> setupAction)
-        {
-            AddDbEntityIntercept(services, setupAction);
-            services.AddHttpContextAccessor();//<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
-            IsMVCWeb = true;
-        }
-
-        public static void AddDbEntityIntercept(this IServiceCollection services, Action<DbEntityInterceptOptions> setupAction)
+        static DbEntityInterceptServiceCollectionExtensions()
         {
             Options = new DbEntityInterceptOptions();
+        }
+
+        public static DbEntityInterceptOptions Options { get; private set; } 
+        public static EfDbEntityInterceptManagement InterceptManagement { get; private set; }
+
+        #if Standard
+        public static void AddDbEntityIntercept(this IServiceCollection services, Action<DbEntityInterceptOptions> setupAction)
+        {
+
             setupAction(Options);
-            services.AddScoped<EfDbEntityInterceptManagement>();
+            services.AddSingleton<EfDbEntityInterceptManagement>();
         }
 
         public static void UseDbEntityIntercept(this IApplicationBuilder app)
         {
-            applicationServices = app.ApplicationServices;
-        }
-    }
+            InterceptManagement = app.ApplicationServices.GetService<EfDbEntityInterceptManagement>();
+            InterceptManagement.AddRangeGlobalIntercepts(Options.Intercepts.OfType<DbEntityInterceptAttribute>());
+        } 
 #endif
+    }
 }

@@ -18,7 +18,7 @@ using BingoX.Repository;
 namespace BingoX.EF
 {
 
- 
+
     public class EfUnitOfWork : IUnitOfWork
     {
         private EfDbContext context;
@@ -29,6 +29,7 @@ namespace BingoX.EF
         }
 
 #if Standard
+        //  public EfDbEntityInterceptManagement InterceptManagement { get; set; }
         public Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction ContextTransaction { get; private set; }
 #else
         public DbContextTransaction ContextTransaction { get; private set; }
@@ -81,11 +82,13 @@ namespace BingoX.EF
 
 #if Standard
             var entries = context.ChangeTracker.Entries();
-            if (DbEntityInterceptServiceCollectionExtensions.ApplicationServices == null) return;
-            var management = DbEntityInterceptServiceCollectionExtensions.ApplicationServices.GetService<EfDbEntityInterceptManagement>();
-            foreach (var entityEntry in entries)
+            var interceptManagement = DbEntityInterceptServiceCollectionExtensions.InterceptManagement;
+            if (interceptManagement != null)
             {
-                management.Interceptor(entityEntry);
+                foreach (var entityEntry in entries)
+                {
+                    interceptManagement.Interceptor(entityEntry);
+                }
             }
 #endif
         }

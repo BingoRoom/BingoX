@@ -47,7 +47,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
         }
         public void Text(string openId, string message)
         {
-            RestClient client = new RestClient();
+            RestClient client = weChatApi.GetClient();
             var url = string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", weChatApi.GetAccessToken().AccessToken);
             var request = new RestRequest(url);
             request.AddJsonBody(new { touser = openId, msgtype = "text", text = new { content = message } });
@@ -59,7 +59,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
 
         public void Image(string openId, string mediaId)
         {
-            RestClient client = new RestClient();
+            RestClient client = weChatApi.GetClient();
             var url = string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}", weChatApi.GetAccessToken().AccessToken);
             var request = new RestRequest(url);
             request.AddJsonBody(new { touser = openId, msgtype = "image", image = new { media_id = mediaId } });
@@ -91,7 +91,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
 
         private void Typing(string openId, bool isTyping)
         {
-            RestClient client = new RestClient();
+            RestClient client = weChatApi.GetClient();
             var apiurl = string.Format("https://api.weixin.qq.com/cgi-bin/message/custom/typing?access_token={0}", weChatApi.GetAccessToken().AccessToken);
             var request = new RestRequest(apiurl);
             request.AddJsonBody(new { touser = openId, command = isTyping ? "Typing" : "CancelTyping" });

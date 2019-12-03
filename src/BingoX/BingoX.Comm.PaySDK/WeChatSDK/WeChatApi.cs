@@ -78,7 +78,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
             return obj.Data;
         }
 
-        internal RestClient GetClient()
+        public RestClient GetClient()
         {
             var client = new RestClient();
             client.AddHandler(() => deserializer, "application/json; encoding=utf-8", "application/json", "json", "text/plain");

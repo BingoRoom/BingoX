@@ -7,8 +7,10 @@
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
     <Description>数据库仓储EF实现</Description>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <AssemblyOriginatorKeyFile>BingoX.EF.snk</AssemblyOriginatorKeyFile>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
@@ -22,6 +24,9 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.EntityFrameworkCore">
       <Version>2.2.6</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <Version>3.0.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

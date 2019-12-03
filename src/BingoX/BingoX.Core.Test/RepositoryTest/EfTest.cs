@@ -1,7 +1,11 @@
-﻿using BingoX.Repository;
+﻿using BingoX.EF;
+using BingoX.Repository;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BingoX.Core.Test.RepositoryTest
@@ -14,16 +18,33 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
 
         public void TestAopAtt()
+
         {
-            var manage = new EF.EfDbEntityInterceptManagement();
-            var aops = manage.GetAops(typeof(UserTest));
+
+            Microsoft.Extensions.DependencyInjection.ServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+            services.AddDbEntityIntercept(n =>
+            {
+                n.Intercepts.Add<AopCreatedInfo>();
+            });
+            //services.AddScoped<AopUser>();
+            //services.AddScoped<AopCreatedInfo>();
+            var factory = new Microsoft.Extensions.DependencyInjection.DefaultServiceProviderFactory();
+            var serviceProvider = factory.CreateServiceProvider(services);
+          
+            var manage = new EF.EfDbEntityInterceptManagement(serviceProvider);
+
+            var global = DbEntityInterceptServiceCollectionExtensions.Options.Intercepts.OfType<DbEntityInterceptAttribute>();
+            manage.AddRangeGlobalIntercepts(global);
+            var attributes = manage.GetAttributes(typeof(UserTest)).ToArray();
+
+            var aops = manage.GetAops(typeof(UserTest)).ToArray();
             Assert.IsNotNull(aops);
             Assert.IsNotEmpty(aops);
-            Assert.AreEqual(aops.Length, 2);
+            Assert.AreEqual(aops.Length, attributes.Length);
         }
 
 
-        [DbEntityInterceptAttribute(typeof(AopCreatedInfo))]
+       
         class BaseEntityTest
         {
             public int Id { get; set; }
@@ -33,12 +54,12 @@ namespace BingoX.Core.Test.RepositoryTest
         }
 
         [DbEntityInterceptAttribute(typeof(AopUser))]
-        [DbEntityInterceptAttribute(typeof(AopUser))]
         class UserTest : BaseEntityTest
         {
             public string Name { get; set; }
             public int Age { get; set; }
         }
+    
         class AopUser : IDbEntityIntercept
         {
             public bool AllowDelete { get { return false; } }

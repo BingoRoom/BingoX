@@ -17,24 +17,37 @@ using System.Collections.Generic;
 
 namespace BingoX.EF
 {
-#if Standard
 
     public class EfDbEntityDeleteInfo : DbEntityDeleteInfo
     {
+#if Standard
         private readonly EntityEntry entityEntry;
+
 
         public EfDbEntityDeleteInfo(EntityEntry entityEntry) : base(entityEntry.Entity)
         {
+#else
+        private readonly DbEntityEntry entityEntry;
+        public EfDbEntityDeleteInfo(DbEntityEntry entityEntry) : base(entityEntry.Entity)
+        {
+#endif
             this.entityEntry = entityEntry;
         }
     }
     public class EfDbEntityCreateInfo : DbEntityCreateInfo
     {
+#if Standard
         private readonly EntityEntry entityEntry;
 
         public EfDbEntityCreateInfo(EntityEntry entityEntry, IDictionary<string, object> currentValues)
             : base(entityEntry.Entity, currentValues)
         {
+#else
+        private readonly DbEntityEntry entityEntry;
+        public EfDbEntityCreateInfo(DbEntityEntry entityEntry, IDictionary<string, object> currentValues)
+            : base(entityEntry.Entity, currentValues)
+        {
+#endif
             this.entityEntry = entityEntry;
         }
         public override void SetValue(string name, object value)
@@ -45,11 +58,18 @@ namespace BingoX.EF
     }
     public class EfDbEntityChangeInfo : DbEntityChangeInfo
     {
+#if Standard
         private readonly EntityEntry entityEntry;
-
         public EfDbEntityChangeInfo(EntityEntry entityEntry, IDictionary<string, object> currentValues, IDictionary<string, object> originalValues, IDictionary<string, object> changeValues)
-            : base(entityEntry.Entity, currentValues, originalValues, changeValues)
+         : base(entityEntry.Entity, currentValues, originalValues, changeValues)
         {
+#else
+        private readonly DbEntityEntry entityEntry;
+        public EfDbEntityChangeInfo(DbEntityEntry entityEntry, IDictionary<string, object> currentValues, IDictionary<string, object> originalValues, IDictionary<string, object> changeValues)
+           : base(entityEntry.Entity, currentValues, originalValues, changeValues)
+        {
+#endif
+
             this.entityEntry = entityEntry;
         }
         public override void SetValue(string name, object value)
@@ -63,37 +83,106 @@ namespace BingoX.EF
     }
     public class EfDbEntityInterceptManagement
     {
-        readonly IDictionary<Type, IDbEntityIntercept[]> dictionary = new Dictionary<Type, IDbEntityIntercept[]>();
+        private readonly IDictionary<Type, IEnumerable<DbEntityInterceptAttribute>> dictionary = new Dictionary<Type, IEnumerable<DbEntityInterceptAttribute>>();
+        private readonly List<DbEntityInterceptAttribute> global = new List<DbEntityInterceptAttribute>();
+        private readonly IServiceProvider serviceProvider;
 
-        public IDbEntityIntercept[] GetAops(Type entityType)
+        public EfDbEntityInterceptManagement(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+
+        }
+        T GetService<T>(Type type)
+        {
+            object obj = null;
+#if Standard
+            obj = serviceProvider.GetRequiredService(type);
+#else
+            obj = serviceProvider.GetService(type);
+#endif
+            if (obj is T) return (T)obj;
+            return default(T);
+        }
+        object GetService(Type type)
+        {
+            object obj = null;
+#if Standard
+            obj = serviceProvider.GetRequiredService(type);
+#else
+            obj = serviceProvider.GetService(type);
+#endif
+
+            return obj;
+        }
+
+        public IEnumerable<IDbEntityIntercept> GetAops(Type entityType)
+        {
+            var attributes = GetAttributes(entityType);
+            if (attributes.IsEmpty()) return null;
+            var aops = attributes.Select(n =>
+            {
+                var intercept = GetService<IDbEntityIntercept>(n.AopType);
+
+                if (intercept == null)
+                {
+                    var constructor = n.AopType.GetConstructors().FirstOrDefault();
+                    var par = constructor.GetParameters();
+                    if (par.Length == 0) intercept = constructor.Invoke(null) as IDbEntityIntercept;
+                    else
+                    {
+                        var parms = par.Select(x =>  GetService(x.ParameterType)).ToArray();
+                        intercept = constructor.Invoke(parms) as IDbEntityIntercept;
+                    }
+                }
+
+                return intercept;
+            }).Where(n => n != null);
+            return aops;
+        }
+
+        public IEnumerable<DbEntityInterceptAttribute> GetAttributes(Type entityType)
         {
             if (entityType == null)
             {
                 throw new ArgumentNullException(nameof(entityType));
             }
 
-
+            IEnumerable<DbEntityInterceptAttribute> intercepts;
             if (dictionary.ContainsKey(entityType))
             {
-                return dictionary[entityType];
+                intercepts = dictionary[entityType];
             }
-
-            //var allatts = entityType.GetCustomAttributes<AopEntityAttribute>();
-            var atts = DbEntityInterceptServiceCollectionExtensions.Options.Intercepts.Union(entityType.GetCustomAttributesIncludeBaseType<DbEntityInterceptAttribute>()).OfType<DbEntityInterceptAttribute>();
-
-            if (atts.IsEmpty()) return BingoX.Utility.EmptyUtility<IDbEntityIntercept>.EmptyArray;
-            var aops = atts.Select(n =>
+            else
             {
-                var constructor = n.AopType.GetConstructors().First();
-                var paramters = constructor.GetParameters().Select(x => DbEntityInterceptServiceCollectionExtensions.ApplicationServices.GetRequiredService(x.ParameterType)).ToArray();
-                return constructor.FastInvoke<IDbEntityIntercept>(paramters);
-            }
-            ).ToArray();
 
-            dictionary.Add(entityType, aops);
-            return aops;
+                //var allatts = entityType.GetCustomAttributes<AopEntityAttribute>();
+                intercepts = entityType.GetCustomAttributesIncludeBaseType<DbEntityInterceptAttribute>().ToArray();
+
+
+                dictionary.Add(entityType, intercepts);
+            }
+            return global.Union(intercepts).ToArray();
         }
 
+        public void AddGlobalIntercept(Type dbEntityIntercept)
+        {
+            if (!typeof(IDbEntityIntercept).IsAssignableFrom(dbEntityIntercept)) throw new LogicException("类型不为IDbEntityIntercept");
+
+            global.Add(new DbEntityInterceptAttribute(dbEntityIntercept));
+        }
+        public void AddGlobalIntercept(DbEntityInterceptAttribute dbEntityIntercept)
+        {
+
+
+            global.Add(dbEntityIntercept);
+        }
+        public void AddRangeGlobalIntercepts(IEnumerable<DbEntityInterceptAttribute> dbEntityIntercepts)
+        {
+
+
+            global.AddRange(dbEntityIntercepts);
+        }
+#if Standard
         private static IDictionary<string, object> ToDic(PropertyValues dbPropertyValues)
         {
             IDictionary<string, object> dic = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
@@ -103,6 +192,18 @@ namespace BingoX.EF
             }
             return dic;
         }
+#else
+        private static IDictionary<string, object> ToDic(DbPropertyValues dbPropertyValues)
+        {
+            IDictionary<string, object> dic = new Dictionary<string, object>(StringComparer.CurrentCultureIgnoreCase);
+            foreach (var item in dbPropertyValues.PropertyNames)
+            {
+                if (!dic.ContainsKey(item)) dic.Add(item, dbPropertyValues[item]);
+            }
+            return dic;
+        }
+#endif
+
 
 
         //private static IDictionary<string, object> ToDic(DbPropertyValues dbPropertyValues)
@@ -116,15 +217,21 @@ namespace BingoX.EF
         //}
 
 
-
+#if Standard
         public void Interceptor(EntityEntry entityEntry)
-
+#else
+        public void Interceptor(DbEntityEntry entityEntry)
+#endif
         //public static void EntityInterceptor(DbEntityEntry entityEntry)
 
         {
-            var aops = GetAops(entityEntry.Entity.GetType());
-            if (aops.IsEmpty()) return;
-
+            var attributes = GetAttributes(entityEntry.Entity.GetType());
+            if (attributes.IsEmpty()) return;
+            var aops = attributes.Select(n =>
+            {
+                var intercept = serviceProvider.GetService(n.AopType) as IDbEntityIntercept;
+                return intercept;
+            });
             switch (entityEntry.State)
             {
                 case EntityState.Detached:
@@ -141,6 +248,8 @@ namespace BingoX.EF
                             return info.Accept;
                         });
                         if (!flagAccept) entityEntry.State = EntityState.Unchanged;
+
+
                         break;
                     }
                 case EntityState.Modified:
@@ -163,7 +272,11 @@ namespace BingoX.EF
                         }
                         else
                         {
+
+
+
                             entityEntry.State = EntityState.Unchanged;
+
                         }
                         break;
                     }
@@ -184,7 +297,10 @@ namespace BingoX.EF
                         }
                         else
                         {
+
+
                             entityEntry.State = EntityState.Unchanged;
+
                         }
                         break;
                     }
@@ -197,5 +313,7 @@ namespace BingoX.EF
 
 
     }
+
+#if Standard
 #endif
 }

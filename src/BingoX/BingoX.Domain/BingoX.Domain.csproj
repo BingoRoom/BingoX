@@ -9,10 +9,11 @@
     <Product>Bingo</Product>
     <Description></Description>
     <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <RootNamespace>BingoX.Domain</RootNamespace>
     <AssemblyName>BingoX.Domain</AssemblyName>
     <AssemblyOriginatorKeyFile>BingoX.Domain.snk</AssemblyOriginatorKeyFile>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
