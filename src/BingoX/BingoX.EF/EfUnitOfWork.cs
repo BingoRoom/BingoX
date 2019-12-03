@@ -2,8 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
-using Microsoft.AspNetCore.Builder;
+using System.Collections.ObjectModel; 
 #else
 
 using System.Data.Entity;

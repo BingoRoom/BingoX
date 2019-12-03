@@ -6,11 +6,11 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
-    <Description>数据库仓储定义</Description>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2.1</AssemblyVersion>
+    <Description>数据库仓储定义 Standard2 移除 .net core mvc2</Description>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3.1</AssemblyVersion>
     <AssemblyOriginatorKeyFile>BingoX.Repository.snk</AssemblyOriginatorKeyFile>
-    <FileVersion>1.0.2.1</FileVersion>
+    <FileVersion>1.0.3.1</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
@@ -22,9 +22,6 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core">
-      <Version>2.2.5</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BingoX.Domain\BingoX.Domain.csproj" />

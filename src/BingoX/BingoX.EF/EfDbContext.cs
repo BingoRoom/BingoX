@@ -24,11 +24,12 @@ namespace BingoX.EF
 #else
     public abstract class EfDbContext : System.Data.Entity.DbContext, IDbContext
     {
-        public EfDbContext(string nameOrConnectionString) : base() { }
-        public EfDbContext(string nameOrConnectionString, DbCompiledModel model) : base() { }
-        public EfDbContext(DbConnection existingConnection, bool contextOwnsConnection) : base() { }
-        public EfDbContext(ObjectContext objectContext, bool dbContextOwnsObjectContext) : base() { }
-        public EfDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection) : base() { }
+        public EfDbContext(string nameOrConnectionString) : base(nameOrConnectionString) { }
+        public EfDbContext(string nameOrConnectionString, DbCompiledModel model) : base(nameOrConnectionString, model) { }
+        public EfDbContext(DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection) { }
+        public EfDbContext(ObjectContext objectContext, bool dbContextOwnsObjectContext) : base(objectContext, dbContextOwnsObjectContext) { }
+        public EfDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection,model,contextOwnsConnection) { } 
+            
 
     }
 

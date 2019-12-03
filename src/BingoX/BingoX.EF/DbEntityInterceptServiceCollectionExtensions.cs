@@ -1,6 +1,5 @@
 ﻿#if Standard
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection; 
 #else
 
 using System.Data.Entity;
@@ -33,9 +32,9 @@ namespace BingoX.EF
             services.AddSingleton<EfDbEntityInterceptManagement>();
         }
 
-        public static void UseDbEntityIntercept(this IApplicationBuilder app)
+        public static void UseDbEntityIntercept(this IServiceProvider app)
         {
-            InterceptManagement = app.ApplicationServices.GetService<EfDbEntityInterceptManagement>();
+            InterceptManagement = app.GetService<EfDbEntityInterceptManagement>();
             InterceptManagement.AddRangeGlobalIntercepts(Options.Intercepts.OfType<DbEntityInterceptAttribute>());
         } 
 #endif
