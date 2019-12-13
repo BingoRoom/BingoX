@@ -82,6 +82,99 @@ namespace BingoX.Repository
         /// <returns></returns>
         Specification<T> Not(Expression<Func<T, bool>> expression);
     }
+    public class AndSpecification<T> : Specification<T> where T : class
+    {
+        private readonly Specification<T> _left;
+        private readonly Specification<T> _right;
+        private Expression<Func<T, bool>> rightExpression;
+
+        public AndSpecification(Specification<T> left, Specification<T> right)
+        {
+            _right = right;
+            _left = left;
+        }
+        public AndSpecification(Specification<T> left, Expression<Func<T, bool>> right)
+        {
+            rightExpression = right;
+            _left = left;
+        }
+
+        public override Expression<Func<T, bool>> ToExpression()
+        {
+            Expression<Func<T, bool>> leftExpression = _left.ToExpression();
+            if (rightExpression == null) rightExpression = _right.ToExpression();
+
+            var paramExpr = Expression.Parameter(typeof(T));
+            var exprBody = Expression.AndAlso(leftExpression.Body, rightExpression.Body);
+            exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
+            var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
+
+            return finalExpr;
+
+        }
+    }
+    public class OrSpecification<T> : Specification<T> where T : class
+    {
+        private readonly Specification<T> _left;
+        private readonly Specification<T> _right;
+        private Expression<Func<T, bool>> rightExpression;
+
+
+        public OrSpecification(Specification<T> left, Specification<T> right)
+        {
+            _right = right;
+            _left = left;
+        }
+        public OrSpecification(Specification<T> left, Expression<Func<T, bool>> right)
+        {
+            rightExpression = right;
+            _left = left;
+        }
+
+
+        public override Expression<Func<T, bool>> ToExpression()
+        {
+            var leftExpression = _left.ToExpression();
+            if (rightExpression == null) rightExpression = _right.ToExpression();
+            var paramExpr = Expression.Parameter(typeof(T));
+            var exprBody = Expression.OrElse(leftExpression.Body, rightExpression.Body);
+            exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
+            var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
+
+            return finalExpr;
+        }
+    }
+    public class NotSpecification<T> : Specification<T> where T : class
+    {
+        private readonly Specification<T> _left;
+        private readonly Specification<T> _right;
+        private Expression<Func<T, bool>> rightExpression;
+
+        public NotSpecification(Specification<T> left, Specification<T> right)
+        {
+            _right = right;
+            _left = left;
+        }
+        public NotSpecification(Specification<T> left, Expression<Func<T, bool>> right)
+        {
+            rightExpression = right;
+            _left = left;
+        }
+
+        public override Expression<Func<T, bool>> ToExpression()
+        {
+            var leftExpression = _left.ToExpression();
+            if (rightExpression == null) rightExpression = _right.ToExpression();
+            var paramExpr = Expression.Parameter(typeof(T));
+            var exprBody = Expression.NotEqual(leftExpression.Body, rightExpression.Body);
+            exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
+            var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
+
+            return finalExpr;
+
+
+        }
+    }
     public class Specification<T> : ISpecification<T> where T : class
     {
         public Specification()
@@ -89,73 +182,67 @@ namespace BingoX.Repository
             PageIndex = 0;
             PageSize = 20;
         }
-
-        protected internal Expression<Func<T, bool>> searchPredicate = PredicateExtensionses.True<T>();
-        protected internal Expression<Func<T, object>> orderPredicate;
+        static Expression<Func<T, bool>> True() { return f => true; }
+        protected internal Expression<Func<T, bool>> SearchPredicate = True();
+        protected internal Expression<Func<T, object>> OrderPredicate;
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
         public bool OrderType { get; private set; }
         public virtual bool IsSatisfiedBy(T entity)
         {
-            return searchPredicate.Compile().Invoke(entity);
+            return SearchPredicate.Compile().Invoke(entity);
 
         }
         public virtual Expression<Func<T, object>> ToStorExpression()
         {
-            return orderPredicate;
+            return OrderPredicate;
         }
         public virtual Expression<Func<T, bool>> ToExpression()
         {
-            return searchPredicate;
+            return SearchPredicate;
         }
 
         public virtual Specification<T> And(Specification<T> specification)
         {
-            var ex = specification.ToExpression();
-            searchPredicate = searchPredicate.And(ex);
-            return this;
+
+            return new AndSpecification<T>(this, specification);
         }
         public virtual Specification<T> Not(Specification<T> specification)
         {
-            var ex = specification.ToExpression();
-            searchPredicate = searchPredicate.NotEqual(ex);
-            return this;
+            return new NotSpecification<T>(this, specification);
         }
 
         public virtual Specification<T> Or(Specification<T> specification)
         {
-            var ex = specification.ToExpression();
-            searchPredicate = searchPredicate.Or(ex);
-            return this;
+
+            return new OrSpecification<T>(this, specification);
         }
 
         public virtual Specification<T> And(Expression<Func<T, bool>> expression)
         {
-            searchPredicate = searchPredicate.And(expression);
-            return this;
+            return new AndSpecification<T>(this, expression);
         }
 
         public virtual Specification<T> Or(Expression<Func<T, bool>> expression)
         {
-            searchPredicate = searchPredicate.Or(expression);
-            return this;
+            return new OrSpecification<T>(this, expression);
         }
 
         public virtual Specification<T> Not(Expression<Func<T, bool>> expression)
         {
-            searchPredicate = searchPredicate.NotEqual(expression);
-            return this;
+            return new NotSpecification<T>(this, expression);
         }
 
         public virtual void Orderby(Expression<Func<T, object>> orderExpression)
         {
-            orderPredicate = orderExpression;
+            OrderPredicate = orderExpression;
 
         }
         public virtual void OrderbyDesc(Expression<Func<T, object>> orderExpression)
         {
-            orderPredicate = orderExpression;
+            OrderPredicate = orderExpression;
 
         }
+
     }
 }
