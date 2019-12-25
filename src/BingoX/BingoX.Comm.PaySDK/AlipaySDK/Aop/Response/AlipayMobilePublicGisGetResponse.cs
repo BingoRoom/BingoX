@@ -19,12 +19,7 @@ namespace Aop.Api.Response
         /// </summary>
         [XmlElement("city")]
         public string City { get; set; }
-
-        /// <summary>
-        /// 结果码
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
+         
 
         /// <summary>
         /// 纬度信息
@@ -37,12 +32,7 @@ namespace Aop.Api.Response
         /// </summary>
         [XmlElement("longitude")]
         public string Longitude { get; set; }
-
-        /// <summary>
-        /// 结果信息
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
+         
 
         /// <summary>
         /// 经纬度对应位置所在的省份

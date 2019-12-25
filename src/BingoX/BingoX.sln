@@ -49,7 +49,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 Other", "5 Other", "{F07A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.Tax", "BingoX.Tax\BingoX.Tax.csproj", "{2F14E6A1-373F-4F38-997B-6C1A832DF6AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.FileSystem", "BingoX.FileSystem\BingoX.FileSystem.csproj", "{58626B4F-D364-434F-A737-CF5BDA80B0CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.FileSystem", "BingoX.FileSystem\BingoX.FileSystem.csproj", "{58626B4F-D364-434F-A737-CF5BDA80B0CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3381556D-C657-48B4-9E96-EE81007B3932}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

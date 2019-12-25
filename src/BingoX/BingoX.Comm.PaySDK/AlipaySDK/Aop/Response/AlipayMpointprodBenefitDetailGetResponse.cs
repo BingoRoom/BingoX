@@ -17,16 +17,5 @@ namespace Aop.Api.Response
         [XmlArrayItem("benefit_info")]
         public List<BenefitInfo> BenefitInfos { get; set; }
 
-        /// <summary>
-        /// 响应码
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
-
-        /// <summary>
-        /// 响应描述
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
     }
 }

@@ -9,32 +9,109 @@ using System.Linq.Expressions;
 
 namespace BingoX.SqlSugar
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SqlSugarRepositoryStringID<T> : SqlSugarRepository<T, string>, IRepositoryStringID<T> where T : class, IStringEntity<T>, new()
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public SqlSugarRepositoryStringID(SqlSugarDbContext context) : base(context)
         {
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public override bool Exist(string id)
+        {
+            return IsExist(n => n.ID == id);
+        }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SqlSugarRepositoryGuid<T> : SqlSugarRepository<T, Guid>, IRepositoryGuid<T> where T : class, IGuidEntity<T>, new()
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public SqlSugarRepositoryGuid(SqlSugarDbContext context) : base(context)
         {
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public override bool Exist(Guid id)
+        {
+            return IsExist(n => n.ID == id);
+        }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SqlSugarRepositorySnowflake<T> : SqlSugarRepository<T, long>, IRepositorySnowflake<T> where T : class, ISnowflakeEntity<T>, new()
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public SqlSugarRepositorySnowflake(SqlSugarDbContext context) : base(context)
         {
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public override bool Exist(long id)
+        {
+            return IsExist(n => n.ID == id);
+        }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SqlSugarRepositoryIdentity<T> : SqlSugarRepository<T, int>, IRepositoryIdentity<T> where T : class, IIdentityEntity<T>, new()
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public SqlSugarRepositoryIdentity(SqlSugarDbContext context) : base(context)
         {
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public override bool Exist(int id)
+        {
+            return IsExist(n => n.ID == id);
+        }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="pkType"></typeparam>
     public class SqlSugarRepository<T, pkType> : IRepository<T, pkType>, IRepositoryReturn<T>, IRepositorySql<T>, IRepositoryExpression<T> where T : class, IEntity<T, pkType>, new()
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public SqlSugarRepository(SqlSugarDbContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -43,15 +120,32 @@ namespace BingoX.SqlSugar
             Wrapper = new SqlSugarWrapper<T>(Context);
             UnitOfWork = new SqlSugarUnitOfWork(Context);
         }
+        /// <summary>
+        /// 
+        /// </summary>
         protected internal SqlSugarWrapper<T> Wrapper { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public SqlSugarUnitOfWork UnitOfWork { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public SqlSugarDbContext Context { get; private set; }
         IUnitOfWork IRepository.UnitOfWork { get { return UnitOfWork; } }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <returns></returns>
         protected internal SqlSugarWrapper<TModel> CreateWapper<TModel>() where TModel : class, new()
         {
             return new SqlSugarWrapper<TModel>(Context);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsLock
         {
             get { return Wrapper.IsLock; }
@@ -65,7 +159,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 新增
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entity"> 实体对象 </param> 
         /// <returns>操作影响的行数</returns>
         public int Add(T entity)
@@ -77,7 +170,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 新增
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entites">泛型集合</param>
         /// <returns>操作影响的行数</returns>
         public int AddRange(IEnumerable<T> entites)
@@ -92,7 +184,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 新增
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entity"> 实体对象 </param> 
         /// <returns>返回实体</returns>
         public T AddReturnEntity(T entity)
@@ -104,7 +195,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 新增
         /// </summary> 
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entity"> 实体对象 </param> 
         /// <returns>返回bool, 并将identity赋值到实体</returns>
         public bool AddReturnBool(T entity)
@@ -116,7 +206,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 新增
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entites">泛型集合</param>
         /// <returns>返回bool, 并将identity赋值到实体</returns>
         public bool AddReturnBool(List<T> entites)
@@ -132,9 +221,7 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 修改（主键是更新条件）
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entity"> 实体对象 </param> 
-        /// <param name="isLock"> 是否加锁 </param> 
         /// <returns>操作影响的行数</returns>
         public int Update(T entity)
         {
@@ -145,10 +232,8 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 修改
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="update"> 实体对象 </param> 
         /// <param name="where"> 条件 </param> 
-        /// <param name="isLock"> 是否加锁 </param> 
         /// <returns>操作影响的行数</returns>
         public int Update(Expression<Func<T, T>> update, Expression<Func<T, bool>> where)
         {
@@ -159,9 +244,7 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 修改（主键是更新条件）
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
-        /// <param name="entitys"> 实体对象集合 </param> 
-        /// <param name="isLock"> 是否加锁 </param> 
+        /// <param name="entites"> 实体对象集合 </param> 
         /// <returns>操作影响的行数</returns>
         public int UpdateRange(IEnumerable<T> entites)
         {
@@ -179,9 +262,7 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 删除
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="entity"> 实体对象 </param> 
-        /// <param name="isLock"> 是否加锁 </param> 
         /// <returns>操作影响的行数</returns>
         public int Delete(T entity)
         {
@@ -191,9 +272,7 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 删除
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="where"> 条件 </param> 
-        /// <param name="isLock"> 是否加锁 </param> 
         /// <returns>操作影响的行数</returns>
         public int Delete(Expression<Func<T, bool>> where)
         {
@@ -203,8 +282,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 删除
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
-        /// <typeparam name="pkType">成员主键类型</typeparam>
         /// <param name="pkArray">待删主键集合</param>
         /// <returns>操作影响的行数</returns>
         public int Delete(pkType[] pkArray)
@@ -220,7 +297,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="whereLambda">查询表达式</param>
         /// <returns></returns>
         public T Query(Expression<Func<T, bool>> whereLambda)
@@ -231,7 +307,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询所有记录
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public IList<T> QueryAll()
         {
@@ -241,7 +316,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询集合
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="whereLambda">查询表达式</param>
         /// <returns>实体</returns>
         public IList<T> Where(Expression<Func<T, bool>> whereLambda)
@@ -251,7 +325,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询集合
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型)</typeparam>
         /// <param name="sql">sql</param>
         /// <returns>实体</returns>
         public IList<T> Where(string sql)
@@ -261,7 +334,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询前多少条数据
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型</typeparam>
         /// <param name="whereLambda">查询表达式</param>
         /// <param name="num">数量</param>
         /// <returns></returns>
@@ -274,7 +346,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询单条数据
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型</typeparam>
         /// <param name="whereLambda">查询表达式</param> 
         /// <returns></returns>
         public T Get(Expression<Func<T, bool>> whereLambda)
@@ -285,8 +356,7 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 查询单条数据
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型</typeparam>
-        /// <param name="whereLambda">查询表达式</param> 
+        /// <param name="id">泛型参数(集合成员的类型</param>
         /// <returns></returns>
         public T GetId(pkType id)
         {
@@ -296,7 +366,6 @@ namespace BingoX.SqlSugar
         /// <summary>
         /// 是否存在
         /// </summary>
-        /// <typeparam name="T">泛型参数(集合成员的类型</typeparam>
         /// <param name="whereLambda">查询表达式</param> 
         /// <returns></returns>
         public bool IsExist(Expression<Func<T, bool>> whereLambda)
@@ -317,6 +386,15 @@ namespace BingoX.SqlSugar
                 specification.ToStorExpression(), specification.OrderType,
                 ref total);
             return datas;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Exist(pkType id)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

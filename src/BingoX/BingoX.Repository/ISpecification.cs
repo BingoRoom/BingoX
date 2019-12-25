@@ -235,11 +235,13 @@ namespace BingoX.Repository
 
         public virtual void Orderby(Expression<Func<T, object>> orderExpression)
         {
+            OrderType = true;
             OrderPredicate = orderExpression;
 
         }
         public virtual void OrderbyDesc(Expression<Func<T, object>> orderExpression)
         {
+            OrderType = false;
             OrderPredicate = orderExpression;
 
         }

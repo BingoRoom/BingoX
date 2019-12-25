@@ -28,11 +28,6 @@ namespace Aop.Api.Response
         [XmlElement("auth_trade_pay_mode")]
         public string AuthTradePayMode { get; set; }
 
-        /// <summary>
-        /// 订单描述;  只在间连场景下返回；
-        /// </summary>
-        [XmlElement("body")]
-        public string Body { get; set; }
 
         /// <summary>
         /// 买家支付宝账号

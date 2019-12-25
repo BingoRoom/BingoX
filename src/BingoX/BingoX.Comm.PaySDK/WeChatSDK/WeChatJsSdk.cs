@@ -36,10 +36,7 @@ namespace BingoX.Comm.PaySDK.WeChatSDK
 
         long GetTimeStamp()
         {
-            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0, 0));
-            DateTime nowTime = DateTime.Now;
-            long unixTime = (long)System.Math.Round((nowTime - startTime).TotalMilliseconds, MidpointRounding.AwayFromZero);
-            return unixTime;
+            return Utility.DateUtility.GetTimeStamp(DateTime.Now);
         }
 
         /// <summary>

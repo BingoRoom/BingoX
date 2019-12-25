@@ -8,8 +8,8 @@
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
     <Description></Description>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <RootNamespace>BingoX.Comm.PaySDK</RootNamespace>
     <AssemblyName>BingoX.Comm.PaySDK</AssemblyName>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
@@ -17,6 +17,7 @@
     <OutputType>Library</OutputType>
     <StartupObject />
     <AssemblyOriginatorKeyFile>BingoX.Comm.PaySDK.snk</AssemblyOriginatorKeyFile>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

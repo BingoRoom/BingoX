@@ -8,11 +8,6 @@ namespace Aop.Api.Response
     /// </summary>
     public class AlipayMobilePublicMessagePushResponse : AopResponse
     {
-        /// <summary>
-        /// 成功
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
 
         /// <summary>
         /// 消息ID
@@ -20,10 +15,5 @@ namespace Aop.Api.Response
         [XmlElement("data")]
         public string Data { get; set; }
 
-        /// <summary>
-        /// 成功
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
     }
 }

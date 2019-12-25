@@ -48,7 +48,7 @@ namespace Aop.Api
         private string charset = "utf-8";
         private string alipayPublicKey;
         private bool keyFromFile = false;
-        private string httpmethod;
+        
         public string return_url;
 
         public string notify_url;

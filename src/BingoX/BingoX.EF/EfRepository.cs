@@ -35,6 +35,15 @@ namespace BingoX.EF
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
         }
+        /// <summary>
+        /// 根据主键判断记录是否存在
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns>是否存在</returns>
+        public override bool Exist(int id)
+        {
+            return Wrapper.DbSet.Any(n => n.ID == id);
+        }
     }
     public class EfRepositorySnowflake<T> : EfRepository<T, long>, IRepositorySnowflake<T> where T : class, ISnowflakeEntity<T>, new()
     {
@@ -51,6 +60,15 @@ namespace BingoX.EF
             var list = Wrapper.Find();
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
+        }
+        /// <summary>
+        /// 根据主键判断记录是否存在
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns>是否存在</returns>
+        public override bool Exist(long id)
+        {
+            return Wrapper.DbSet.Any(n => n.ID == id);
         }
     }
     public class EfRepositoryStringID<T> : EfRepository<T, string>, IRepositoryStringID<T> where T : class, IStringEntity<T>, new()
@@ -69,6 +87,16 @@ namespace BingoX.EF
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
         }
+
+        /// <summary>
+        /// 根据主键判断记录是否存在
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns>是否存在</returns>
+        public override bool Exist(string id)
+        {
+            return Wrapper.DbSet.Any(n => n.ID == id);
+        }
     }
     public class EfRepositoryGuid<T> : EfRepository<T, Guid>, IRepository<T, Guid>, IRepositoryGuid<T> where T : class, IGuidEntity<T>, new()
     {
@@ -86,6 +114,15 @@ namespace BingoX.EF
             var list = Wrapper.Find();
             list = SetInclude(list);
             return list.FirstOrDefault(n => n.ID == id);
+        }
+        /// <summary>
+        /// 根据主键判断记录是否存在
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns>是否存在</returns>
+        public override bool Exist(Guid id)
+        {
+            return Wrapper.DbSet.Any(n => n.ID == id);
         }
     }
     public class EfRepository<T, pkType> : IRepository<T, pkType>, IRepositoryExpression<T> where T : class, IEntity<T, pkType>, new()
@@ -215,6 +252,17 @@ namespace BingoX.EF
 #endif
             entityEntry.State = EntityState.Deleted;
             return 1;
+        }
+
+        /// <summary>
+        /// 根据主键判断记录是否存在
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns>是否存在</returns>
+        public virtual bool Exist(pkType id)
+        {
+            var obj = Wrapper.DbSet.Find(id);
+            return obj != null;
         }
 
         /// <summary>

@@ -10,6 +10,7 @@
     <Version>1.0.1</Version>
     <FileVersion>1.0.1.0</FileVersion>
     <RootNamespace>BingoX.Extension</RootNamespace>
+    <AssemblyOriginatorKeyFile>BingoX.Core.Extension.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>

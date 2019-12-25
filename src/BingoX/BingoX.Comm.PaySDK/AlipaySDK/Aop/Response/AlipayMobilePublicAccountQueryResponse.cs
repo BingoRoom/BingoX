@@ -9,24 +9,14 @@ namespace Aop.Api.Response
     /// AlipayMobilePublicAccountQueryResponse.
     /// </summary>
     public class AlipayMobilePublicAccountQueryResponse : AopResponse
-    {
-        /// <summary>
-        /// 结果码
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
+    { 
 
         /// <summary>
         /// 菜单唯一标识
         /// </summary>
         [XmlElement("menu_key")]
         public string MenuKey { get; set; }
-
-        /// <summary>
-        /// 结果描述
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
+         
 
         /// <summary>
         /// 绑定账户列表

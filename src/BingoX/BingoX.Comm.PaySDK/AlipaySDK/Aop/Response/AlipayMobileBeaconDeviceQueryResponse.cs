@@ -15,16 +15,6 @@ namespace Aop.Api.Response
         [XmlElement("beacon_device_info")]
         public BeaconDeviceInfo BeaconDeviceInfo { get; set; }
 
-        /// <summary>
-        /// 操作返回码，200为成功
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
-
-        /// <summary>
-        /// 请求处理结果
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
+      
     }
 }

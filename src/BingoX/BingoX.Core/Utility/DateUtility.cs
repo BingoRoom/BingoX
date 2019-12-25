@@ -25,6 +25,14 @@ namespace BingoX.Utility
             long t = (dt.Ticks - startTime.Ticks) / 10000000;            //现在是10位，除10000调整为13位
             return t.ToString();
         }
+        public static long GetTimeStamp(DateTime dt)
+        {
+
+            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0, 0));
+         ;
+            long unixTime = (long)System.Math.Round((dt - startTime).TotalMilliseconds, MidpointRounding.AwayFromZero);
+            return unixTime;
+        }
         /// <summary>
         /// 是否为数据库可用时间
         /// </summary>

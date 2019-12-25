@@ -7,10 +7,10 @@
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
     <Description>数据库仓储定义 Standard2 移除 .net core mvc2</Description>
-    <Version>1.0.3</Version>
-    <AssemblyVersion>1.0.3.1</AssemblyVersion>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.4.4</AssemblyVersion>
     <AssemblyOriginatorKeyFile>BingoX.Repository.snk</AssemblyOriginatorKeyFile>
-    <FileVersion>1.0.3.1</FileVersion>
+    <FileVersion>1.0.4.4</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>

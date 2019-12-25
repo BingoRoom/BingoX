@@ -33,6 +33,12 @@ namespace BingoX.Repository
         /// <returns>查询结果</returns>
         T GetId(pkType id);
         /// <summary>
+        /// 根据主键判断记录是否存在
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns>是否存在</returns>
+        bool Exist(pkType id);
+        /// <summary>
         /// 查询所有记录
         /// </summary>
         /// <returns>查询结果集合</returns>

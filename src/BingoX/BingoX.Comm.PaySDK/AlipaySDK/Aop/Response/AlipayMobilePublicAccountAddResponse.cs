@@ -14,16 +14,6 @@ namespace Aop.Api.Response
         [XmlElement("agreement_id")]
         public string AgreementId { get; set; }
 
-        /// <summary>
-        /// 成功
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
-
-        /// <summary>
-        /// 成功
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
+      
     }
 }

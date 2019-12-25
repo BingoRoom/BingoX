@@ -92,8 +92,6 @@ namespace Aop.Api.Util
 
         public static string RSASignCharSet(string data, string privateKeyPem, string charset, bool keyFromFile, string signType)
         {
-
-            byte[] signatureBytes = null;
             try
             {
                 string sprivateKeyPem;
@@ -110,47 +108,14 @@ namespace Aop.Api.Util
                 }
                 RSAHelper helper = new RSAHelper("RSA2".Equals(signType) ? RSAType.RSA2 : RSAType.RSA, Encoding.GetEncoding(charset), privateKeyPem);
                 return helper.Sign(data);
-                //RSACryptoServiceProvider rsaCsp = null;
-                //if (keyFromFile)
-                //{//文件读取
-                //    rsaCsp = LoadCertificateFile(privateKeyPem, signType);
-                //}
-                //else
-                //{
-                //    //字符串获取
-                //    rsaCsp = LoadCertificateString(privateKeyPem, signType);
-                //}
 
-                //byte[] dataBytes = null;
-                //if (string.IsNullOrEmpty(charset))
-                //{
-                //    dataBytes = Encoding.UTF8.GetBytes(data);
-                //}
-                //else
-                //{
-                //    dataBytes = Encoding.GetEncoding(charset).GetBytes(data);
-                //}
-                //if (null == rsaCsp)
-                //{
-                //    throw new AopException("您使用的私钥格式错误，请检查RSA私钥配置" + ",charset = " + charset);
-                //}
-                //if ("RSA2".Equals(signType))
-                //{
-
-                //    signatureBytes = rsaCsp.SignData(dataBytes, "SHA256");
-
-                //}
-                //else
-                //{
-                //    signatureBytes = rsaCsp.SignData(dataBytes, "SHA1");
-                //}
 
             }
             catch (Exception ex)
             {
-                throw new AopException("您使用的私钥格式错误，请检查RSA私钥配置" + ",charset = " + charset);
+                throw new AopException("您使用的私钥格式错误，请检查RSA私钥配置" + ",charset = " + charset, ex);
             }
-            return Convert.ToBase64String(signatureBytes);
+            //       return Convert.ToBase64String(signatureBytes);
         }
 
 
@@ -270,13 +235,13 @@ namespace Aop.Api.Util
                 if (keyFromFile)
                 {
                     sPublicKeyPEM = File.ReadAllText(publicKeyPem);
-                    sPublicKeyPEM = sPublicKeyPEM.Replace( "-----BEGIN PUBLIC KEY-----\r\n",string.Empty);
+                    sPublicKeyPEM = sPublicKeyPEM.Replace("-----BEGIN PUBLIC KEY-----\r\n", string.Empty);
                     sPublicKeyPEM = sPublicKeyPEM.Replace("-----END PUBLIC KEY-----\r\n\r\n", string.Empty);
                 }
                 else
                 {
-          
-                    sPublicKeyPEM = publicKeyPem; 
+
+                    sPublicKeyPEM = publicKeyPem;
                 }
 
                 RSAHelper helper = new RSAHelper("RSA2".Equals(signType) ? RSAType.RSA2 : RSAType.RSA, Encoding.GetEncoding(charset), null, sPublicKeyPEM);
@@ -676,7 +641,7 @@ namespace Aop.Api.Util
                     RSACryptoServiceProvider rsa = DecodeRSAPrivateKey(res, signType);
                     return rsa;
                 }
-                catch (Exception ex)
+                catch (Exception )
                 {
                 }
                 return null;
@@ -696,9 +661,9 @@ namespace Aop.Api.Util
             }
             catch (Exception ex)
             {
-                //    throw new AopException("EncryptContent = woshihaoren,zheshiyigeceshi,wanerde", ex);
+                throw new AopException("EncryptContent = woshihaoren,zheshiyigeceshi,wanerde", ex);
             }
-            return null;
+           
         }
 
         private static RSACryptoServiceProvider DecodeRSAPrivateKey(byte[] privkey, string signType)
@@ -778,7 +743,7 @@ namespace Aop.Api.Util
                 RSA.ImportParameters(RSAparams);
                 return RSA;
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return null;
             }

@@ -8,11 +8,7 @@ namespace Aop.Api.Response
     /// </summary>
     public class AlipayMobilePublicQrcodeCreateResponse : AopResponse
     {
-        /// <summary>
-        /// 返回结果码，如200，标识成功
-        /// </summary>
-        [XmlElement("code")]
-        public string Code { get; set; }
+     
 
         /// <summary>
         /// 图片地址
@@ -26,10 +22,6 @@ namespace Aop.Api.Response
         [XmlElement("expire_second")]
         public long ExpireSecond { get; set; }
 
-        /// <summary>
-        /// 结果吗描述信息
-        /// </summary>
-        [XmlElement("msg")]
-        public string Msg { get; set; }
+       
     }
 }
