@@ -50,37 +50,37 @@ namespace BingoX.Repository
         /// </summary>
         /// <param name="specification">规格操作数</param>
         /// <returns></returns>
-        Specification<T> And(Specification<T> specification);
+        ISpecification<T> And(ISpecification<T> specification);
         /// <summary>
         /// 构建逻辑非规格
         /// </summary>
         /// <param name="specification">规格操作数</param>
         /// <returns></returns>
-        Specification<T> Not(Specification<T> specification);
+        ISpecification<T> Not(ISpecification<T> specification);
         /// <summary>
         /// 构建逻辑或规格
         /// </summary>
         /// <param name="specification">规格操作数</param>
         /// <returns></returns>
-        Specification<T> Or(Specification<T> specification);
+        ISpecification<T> Or(ISpecification<T> specification);
         /// <summary>
         /// 构建逻辑与规格
         /// </summary>
         /// <param name="expression">表达式操作数</param>
         /// <returns></returns>
-        Specification<T> And(Expression<Func<T, bool>> expression);
+        ISpecification<T> And(Expression<Func<T, bool>> expression);
         /// <summary>
         /// 构建逻辑或规格
         /// </summary>
         /// <param name="expression">表达式操作数</param>
         /// <returns></returns>
-        Specification<T> Or(Expression<Func<T, bool>> expression);
+        ISpecification<T> Or(Expression<Func<T, bool>> expression);
         /// <summary>
         /// 构建逻辑非规格
         /// </summary>
         /// <param name="expression">表达式操作数</param>
         /// <returns></returns>
-        Specification<T> Not(Expression<Func<T, bool>> expression);
+        ISpecification<T> Not(Expression<Func<T, bool>> expression);
     }
     public class AndSpecification<T> : Specification<T> where T : class
     {
@@ -111,7 +111,7 @@ namespace BingoX.Repository
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
             _left.SearchPredicate = finalExpr;
-            this.SetOrderby(_left);
+            this.CopyFrom(_left);
             return finalExpr;
 
         }
@@ -146,7 +146,7 @@ namespace BingoX.Repository
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
             _left.SearchPredicate = finalExpr;
-            this.SetOrderby(_left);
+            this.CopyFrom(_left);
             return finalExpr;
         }
     }
@@ -178,7 +178,7 @@ namespace BingoX.Repository
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
             _left.SearchPredicate = finalExpr;
-            this.SetOrderby(_left);
+            this.CopyFrom(_left);
             return finalExpr;
 
 
@@ -211,42 +211,44 @@ namespace BingoX.Repository
             return SearchPredicate;
         }
 
-        public virtual Specification<T> And(Specification<T> specification)
+        public virtual AndSpecification<T> And(Specification<T> specification)
         {
 
             return new AndSpecification<T>(this, specification);
         }
-        public virtual Specification<T> Not(Specification<T> specification)
+        public virtual NotSpecification<T> Not(Specification<T> specification)
         {
             var sp = new NotSpecification<T>(this, specification);
 
             return sp; ;
         }
 
-        public virtual Specification<T> Or(Specification<T> specification)
+        public virtual OrSpecification<T> Or(Specification<T> specification)
         {
 
             return new OrSpecification<T>(this, specification);
         }
 
-        public virtual Specification<T> And(Expression<Func<T, bool>> expression)
+        public virtual AndSpecification<T> And(Expression<Func<T, bool>> expression)
         {
             return new AndSpecification<T>(this, expression);
         }
 
-        public virtual Specification<T> Or(Expression<Func<T, bool>> expression)
+        public virtual OrSpecification<T> Or(Expression<Func<T, bool>> expression)
         {
             return new OrSpecification<T>(this, expression);
         }
 
-        public virtual Specification<T> Not(Expression<Func<T, bool>> expression)
+        public virtual NotSpecification<T> Not(Expression<Func<T, bool>> expression)
         {
             return new NotSpecification<T>(this, expression);
         }
-        internal void SetOrderby(Specification<T> specification)
+        internal void CopyFrom(Specification<T> specification)
         {
             this.OrderType = specification.OrderType;
             this.OrderPredicate = specification.OrderPredicate;
+            this.PageSize = specification.PageSize;
+            this.PageIndex = specification.PageIndex;
         }
         public virtual void Orderby(Expression<Func<T, object>> orderExpression)
         {
@@ -261,5 +263,34 @@ namespace BingoX.Repository
 
         }
 
+        ISpecification<T> ISpecification<T>.Not(ISpecification<T> specification)
+        {
+            return Not(specification as Specification<T>);
+        }
+
+        ISpecification<T> ISpecification<T>.Or(ISpecification<T> specification)
+        {
+            return Not(specification as Specification<T>);
+        }
+
+        ISpecification<T> ISpecification<T>.And(Expression<Func<T, bool>> expression)
+        {
+            return Not(expression);
+        }
+
+        ISpecification<T> ISpecification<T>.Or(Expression<Func<T, bool>> expression)
+        {
+            return Not(expression);
+        }
+
+        ISpecification<T> ISpecification<T>.Not(Expression<Func<T, bool>> expression)
+        {
+            return Not(expression);
+        }
+
+        ISpecification<T> ISpecification<T>.And(ISpecification<T> specification)
+        {
+            return Not(specification as Specification<T>);
+        }
     }
 }
