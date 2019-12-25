@@ -11,27 +11,28 @@ namespace BingoX.Utility
         /// <summary>
         /// Timestamp开始时间
         /// </summary>
-        static readonly DateTime UnixTpStart = System.TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1), TimeZoneInfo.Local);
-        // TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+        public static readonly DateTime UnixTpStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+
+
         /// <summary>
-               /// 微信的CreateTime是当前与1970-01-01 00:00:00之间的秒数
-               /// </summary>
-               /// <param name=“dt”></param>
-               /// <returns></returns>
+        /// 微信的CreateTime是当前与1970-01-01 00:00:00之间的秒数
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
         public static string DateTimeToInt(DateTime dt)
         {
-            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0, 0));
-            //intResult = (time- startTime).TotalMilliseconds;
-            long t = (dt.Ticks - startTime.Ticks) / 10000000;            //现在是10位，除10000调整为13位
+
+            long t = (dt.Ticks - UnixTpStart.Ticks) / 10000000;
             return t.ToString();
         }
         public static long GetTimeStamp(DateTime dt)
         {
-
-            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0, 0));
-         ;
-            long unixTime = (long)System.Math.Round((dt - startTime).TotalMilliseconds, MidpointRounding.AwayFromZero);
+            long unixTime = (long)Math.Round((dt - UnixTpStart).TotalMilliseconds, MidpointRounding.AwayFromZero);
             return unixTime;
+        }
+        public static double GetSecondsSince(DateTimeOffset time)
+        {
+            return Math.Round((time - UnixTpStart).TotalSeconds);
         }
         /// <summary>
         /// 是否为数据库可用时间

@@ -92,11 +92,13 @@ namespace BingoX.Repository
         {
             _right = right;
             _left = left;
+            ToExpression();
         }
         public AndSpecification(Specification<T> left, Expression<Func<T, bool>> right)
         {
             rightExpression = right;
             _left = left;
+            ToExpression();
         }
 
         public override Expression<Func<T, bool>> ToExpression()
@@ -108,7 +110,8 @@ namespace BingoX.Repository
             var exprBody = Expression.AndAlso(leftExpression.Body, rightExpression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
+            _left.SearchPredicate = finalExpr;
+            this.SetOrderby(_left);
             return finalExpr;
 
         }
@@ -124,11 +127,13 @@ namespace BingoX.Repository
         {
             _right = right;
             _left = left;
+            ToExpression();
         }
         public OrSpecification(Specification<T> left, Expression<Func<T, bool>> right)
         {
             rightExpression = right;
             _left = left;
+            ToExpression();
         }
 
 
@@ -140,7 +145,8 @@ namespace BingoX.Repository
             var exprBody = Expression.OrElse(leftExpression.Body, rightExpression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
+            _left.SearchPredicate = finalExpr;
+            this.SetOrderby(_left);
             return finalExpr;
         }
     }
@@ -154,11 +160,13 @@ namespace BingoX.Repository
         {
             _right = right;
             _left = left;
+            ToExpression();
         }
         public NotSpecification(Specification<T> left, Expression<Func<T, bool>> right)
         {
             rightExpression = right;
             _left = left;
+            ToExpression();
         }
 
         public override Expression<Func<T, bool>> ToExpression()
@@ -169,7 +177,8 @@ namespace BingoX.Repository
             var exprBody = Expression.NotEqual(leftExpression.Body, rightExpression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             var finalExpr = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
+            _left.SearchPredicate = finalExpr;
+            this.SetOrderby(_left);
             return finalExpr;
 
 
@@ -209,7 +218,9 @@ namespace BingoX.Repository
         }
         public virtual Specification<T> Not(Specification<T> specification)
         {
-            return new NotSpecification<T>(this, specification);
+            var sp = new NotSpecification<T>(this, specification);
+
+            return sp; ;
         }
 
         public virtual Specification<T> Or(Specification<T> specification)
@@ -232,7 +243,11 @@ namespace BingoX.Repository
         {
             return new NotSpecification<T>(this, expression);
         }
-
+        internal void SetOrderby(Specification<T> specification)
+        {
+            this.OrderType = specification.OrderType;
+            this.OrderPredicate = specification.OrderPredicate;
+        }
         public virtual void Orderby(Expression<Func<T, object>> orderExpression)
         {
             OrderType = true;
