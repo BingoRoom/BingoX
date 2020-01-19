@@ -241,7 +241,6 @@ namespace BingoX.EF
                     break;
                 case EntityState.Deleted:
                     {
-
                         var flagAccept = aops.OfType<IDbEntityDeleteIntercept>().All(n =>
                         {
                             var info = new EfDbEntityDeleteInfo(entityEntry);
@@ -249,13 +248,10 @@ namespace BingoX.EF
                             return info.Accept;
                         });
                         if (!flagAccept) entityEntry.State = EntityState.Unchanged;
-
-
                         break;
                     }
                 case EntityState.Modified:
                     {
-
                         var currentValues = ToDic(entityEntry.CurrentValues);
                         var originalValues = ToDic(entityEntry.OriginalValues);
                         var changeValues = currentValues.GetChanges(originalValues);
@@ -265,54 +261,39 @@ namespace BingoX.EF
                             n.OnModifiy(info);
                             return info.Accept;
                         });
-
-
                         if (flagAccept)
                         {
                             entityEntry.CurrentValues.SetValues(changeValues);
                         }
                         else
                         {
-
-
-
                             entityEntry.State = EntityState.Unchanged;
-
                         }
                         break;
                     }
                 case EntityState.Added:
                     {
                         var currentValues = ToDic(entityEntry.CurrentValues);
-
                         var flagAccept = aops.OfType<IDbEntityAddIntercept>().All(n =>
                         {
                             var info = new EfDbEntityCreateInfo(entityEntry, currentValues);
                             n.OnAdd(info);
                             return info.Accept;
                         });
-
                         if (flagAccept)
                         {
                             entityEntry.CurrentValues.SetValues(currentValues);
                         }
                         else
                         {
-
-
                             entityEntry.State = EntityState.Unchanged;
-
                         }
                         break;
                     }
                 default:
                     break;
             }
-
-
         }
-
-
     }
 
 #if Standard
