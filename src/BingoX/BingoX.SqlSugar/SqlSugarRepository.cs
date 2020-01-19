@@ -383,7 +383,7 @@ namespace BingoX.SqlSugar
         {
             var datas = Wrapper.PageList(specification.PageIndex, specification.PageSize,
                 specification.ToExpression(),
-                specification.ToStorExpression(), specification.OrderType,
+                specification.ToStorExpression(),
                 ref total);
             return datas;
         }

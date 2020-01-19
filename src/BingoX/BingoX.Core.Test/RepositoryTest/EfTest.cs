@@ -24,13 +24,12 @@ namespace BingoX.Core.Test.RepositoryTest
             Microsoft.Extensions.DependencyInjection.ServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
             services.AddDbEntityIntercept(n =>
             {
-                n.Intercepts.Add<AopCreatedInfo>();
+                n.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
             });
-            //services.AddScoped<AopUser>();
-            //services.AddScoped<AopCreatedInfo>();
+            services.AddScoped<AopUser>();
             var factory = new Microsoft.Extensions.DependencyInjection.DefaultServiceProviderFactory();
             var serviceProvider = factory.CreateServiceProvider(services);
-          
+
             var manage = new EF.EfDbEntityInterceptManagement(serviceProvider);
 
             var global = DbEntityInterceptServiceCollectionExtensions.Options.Intercepts.OfType<DbEntityInterceptAttribute>();
@@ -44,7 +43,7 @@ namespace BingoX.Core.Test.RepositoryTest
         }
 
 
-       
+
         class BaseEntityTest
         {
             public int Id { get; set; }
@@ -59,7 +58,7 @@ namespace BingoX.Core.Test.RepositoryTest
             public string Name { get; set; }
             public int Age { get; set; }
         }
-    
+
         class AopUser : IDbEntityIntercept
         {
             public bool AllowDelete { get { return false; } }

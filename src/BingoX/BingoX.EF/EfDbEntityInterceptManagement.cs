@@ -121,7 +121,8 @@ namespace BingoX.EF
             if (attributes.IsEmpty()) return null;
             var aops = attributes.Select(n =>
             {
-                var intercept = GetService<IDbEntityIntercept>(n.AopType);
+                var intercept = n.Intercept;
+                if (intercept == null) intercept = GetService<IDbEntityIntercept>(n.AopType);
 
                 if (intercept == null)
                 {
@@ -130,7 +131,7 @@ namespace BingoX.EF
                     if (par.Length == 0) intercept = constructor.Invoke(null) as IDbEntityIntercept;
                     else
                     {
-                        var parms = par.Select(x =>  GetService(x.ParameterType)).ToArray();
+                        var parms = par.Select(x => GetService(x.ParameterType)).ToArray();
                         intercept = constructor.Invoke(parms) as IDbEntityIntercept;
                     }
                 }
