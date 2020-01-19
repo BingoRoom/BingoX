@@ -44,9 +44,9 @@ namespace BingoX.Helper
         /// <summary>
         /// 从当前程序集反射指定类型的所有派生类型
         /// </summary>
-        /// <param name="assembly"></param>
-        /// <param name="interfaceType"></param>
-        /// <param name="typeArguments"></param>
+        /// <param name="assembly">要反射的程序集</param>
+        /// <param name="interfaceType">要反射的指定类型（支持泛型）</param>
+        /// <param name="typeArguments">泛型的替代类型数组</param>
         /// <returns>类型数组</returns>
         public static Type[] GetImplementedClass(this Assembly assembly, Type interfaceType, params Type[] typeArguments)
         {
@@ -63,11 +63,11 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 从当前程序集反射指定类型的所有派生类型
+        /// 从当前程序集反射指定泛型的所有派生类型
         /// </summary>
-        /// <param name="assembly"></param>
-        /// <param name="interfaceType"></param>
-        /// <param name="genericType"></param>
+        /// <param name="assembly">程序集</param>
+        /// <param name="interfaceType">要反射的类型（必须为泛型，否则返回Type[0]）。</param>
+        /// <param name="genericType">泛型的替代类型数组</param>
         /// <returns>类型数组</returns>
         public static Type[] GetImplementedClassWithOneArgumentGenericType(this Assembly assembly, Type genericType, Type[] entities)
         {

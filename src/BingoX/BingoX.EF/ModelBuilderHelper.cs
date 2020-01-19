@@ -34,8 +34,6 @@ namespace BingoX.EF
                 var obj = item.CreateInstance();
                 var addmethod = method.MakeGenericMethod(genericTypes.GenericTypeArguments);
                 addmethod.FastInvoke(modelBuilder, obj);
-
-
             }
         }
 
@@ -44,8 +42,6 @@ namespace BingoX.EF
             var assembly = Assembly.Load(configAssemblyName);
             var genericType = typeof(IEntityTypeConfiguration<>);
             return assembly.GetImplementedClassWithOneArgumentGenericType(genericType, entityclass);
-
-
         }
 #endif
         private static Type[] GetEntities(string entityAssemblyName, Type baseEntity)
