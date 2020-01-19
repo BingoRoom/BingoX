@@ -8,8 +8,10 @@ namespace BingoX.EF
         public DbEntityInterceptOptions()
         {
             Intercepts = new InterceptCollection();
+           ;
         }
         public InterceptCollection Intercepts { get; private set; }
+      
     }
 
 }

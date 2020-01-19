@@ -14,11 +14,11 @@ namespace BingoX.EF
 {
     public class InterceptCollection : Collection<IDbEntityIntercept>
     {
-        public IDbEntityIntercept Add<TFilterType>() where TFilterType : IDbEntityIntercept
+        
+        public IDbEntityIntercept Add<TFilterType>(InterceptDIEnum interceptDI = InterceptDIEnum.None) where TFilterType : IDbEntityIntercept
         {
-            return Add(typeof(TFilterType));
+            return Add(typeof(TFilterType), order: 0, interceptDI: interceptDI);
         }
-
         public IDbEntityIntercept Add(Type filterType)
         {
             if (filterType == null)
@@ -39,7 +39,7 @@ namespace BingoX.EF
         /// <see cref="Microsoft.Extensions.DependencyInjection.ActivatorUtilities"/>.
         /// Use <see cref="AddService(Type)"/> to register a service as a filter.
         /// </remarks>
-        public IDbEntityIntercept Add(Type filterType, int order)
+        public IDbEntityIntercept Add(Type filterType, int order, InterceptDIEnum interceptDI = InterceptDIEnum.None)
         {
             if (filterType == null)
             {
@@ -52,7 +52,7 @@ namespace BingoX.EF
                 throw new ArgumentException("", nameof(filterType));
             }
 
-            var filter = new DbEntityInterceptAttribute(filterType, order);
+            var filter = new DbEntityInterceptAttribute(filterType, order, interceptDI);
             Add(filter);
             return filter;
         }

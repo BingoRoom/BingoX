@@ -1,11 +1,12 @@
-﻿using SqlSugar;
+﻿using BingoX.Repository;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace BingoX.SqlSugar
 {
-    public class SqlSugarWrapper<T> where T : class ,new()
+    public class SqlSugarWrapper<T> where T : class, new()
     {
         public SqlSugarWrapper(SqlSugarDbContext context)
         {
@@ -102,10 +103,17 @@ namespace BingoX.SqlSugar
             return Context.Client.SqlQueryable<T>(sql).With(SqlWith.NoLock);
         }
 
-        public IList<T> PageList(int pageIndex, int pageSize, Expression<Func<T, bool>> whereExpression, Expression<Func<T, object>> orderbyExpression, bool isdesc, ref int total)
+        public IList<T> PageList(int pageIndex, int pageSize, Expression<Func<T, bool>> whereExpression, OrderModelField<T>[] orderbyExpression, ref int total)
         {
             var quey = Queryable().Where(whereExpression);
-            if (orderbyExpression != null) quey = quey.OrderBy(orderbyExpression, isdesc ? OrderByType.Desc : OrderByType.Asc);
+            if (orderbyExpression != null)
+            {
+                foreach (var item in orderbyExpression)
+                {
+                    quey = quey.OrderBy(item.OrderPredicates, item.IsDesc ? OrderByType.Desc : OrderByType.Asc);
+                }
+            }
+            //     if (orderbyExpression != null) quey = quey.OrderBy(orderbyExpression, isdesc ? OrderByType.Desc : OrderByType.Asc);
             if (pageIndex > -1 && pageSize != 0)
             {
                 return quey.ToPageList(pageIndex, pageSize, ref total);

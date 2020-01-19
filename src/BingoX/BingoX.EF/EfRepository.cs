@@ -15,6 +15,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using BingoX.Repository;
 using BingoX.Domain;
+using BingoX.Helper;
 
 namespace BingoX.EF
 {
@@ -378,11 +379,9 @@ namespace BingoX.EF
         public virtual IList<T> PageList(ISpecification<T> specification, ref int total)
         {
             var list = Wrapper.QueryAll().Where(specification.ToExpression());
-            var orderBy = specification.ToStorExpression();
-            if (orderBy != null)
-            {
-                list = specification.OrderType ? list.OrderBy(orderBy) : list.OrderByDescending(orderBy);
-            }
+            var orderBys = specification.ToStorExpression();
+
+            list = OrderBy(list, orderBys);
             total = list.Count();
             if (specification.PageSize != 0)
             {
@@ -391,6 +390,22 @@ namespace BingoX.EF
             }
             list = SetInclude(list);
             return list.ToList();
+
+        }
+
+        IQueryable<T> OrderBy(IQueryable<T> source, params OrderModelField<T>[] orderByPropertyList)
+        {
+            if (orderByPropertyList.IsEmpty()) return source;
+            IOrderedQueryable<T> orderedQueryable;
+            OrderModelField<T> item = orderByPropertyList.First();
+            orderedQueryable = item.IsDesc ? source.OrderByDescending(item.OrderPredicates) : source.OrderBy(item.OrderPredicates);
+            for (int i = 1; i < orderByPropertyList.Length; i++)
+            {
+                item = orderByPropertyList[i];
+                orderedQueryable = item.IsDesc ? orderedQueryable.ThenBy(item.OrderPredicates) : orderedQueryable.ThenByDescending(item.OrderPredicates);
+            }
+
+            return orderedQueryable;
 
         }
 

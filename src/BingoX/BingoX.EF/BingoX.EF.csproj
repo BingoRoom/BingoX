@@ -7,10 +7,10 @@
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
     <Description>数据库仓储EF实现,升级Standard</Description>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <AssemblyOriginatorKeyFile>BingoX.EF.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>1.0.5.6</AssemblyVersion>
-    <FileVersion>1.0.5.6</FileVersion>
+    <AssemblyVersion>1.0.6.7</AssemblyVersion>
+    <FileVersion>1.0.6.7</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.1|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
