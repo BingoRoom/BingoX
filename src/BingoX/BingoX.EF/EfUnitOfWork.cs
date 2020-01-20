@@ -80,8 +80,12 @@ namespace BingoX.EF
         {
 
 #if Standard
+           
             var entries = context.ChangeTracker.Entries();
-            var interceptManagement = DbEntityInterceptServiceCollectionExtensions.InterceptManagement;
+            if (!context.RootContextData.ContainsKey(EfDbContext.DIConst)) return;
+            var serviceProvider = context.RootContextData[EfDbContext.DIConst] as System.IServiceProvider;
+            if (serviceProvider == null) return;
+            var interceptManagement = serviceProvider.GetService<EfDbEntityInterceptManagement>();
             if (interceptManagement != null)
             {
                 foreach (var entityEntry in entries)

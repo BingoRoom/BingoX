@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 
 namespace BingoX.Utility
@@ -12,6 +13,30 @@ namespace BingoX.Utility
     /// </summary>
     public class ObjectUtility
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="ignoreName"></param>
+        public static void CopeyTo(object source, object destination, params string[] ignoreName)
+        {
+            if (source == null) throw new System.ArgumentNullException(nameof(source));
+            if (destination == null) throw new System.ArgumentNullException(nameof(destination));
+            var soucreProperties = source.GetType().GetProperties();
+            var destinationProperties = destination.GetType().GetProperties();
+            foreach (var item in soucreProperties)
+            {
+                if (ignoreName != null && ignoreName.Contains(item.Name)) continue;
+                var desProperty = destinationProperties.FirstOrDefault(n => n.Name == item.Name);
+                if (desProperty == null) continue;
+                var value = FastReflectionExtensions.FastGetValue(item, source);
+                if (item.PropertyType != desProperty.PropertyType && value != null) value = ObjectUtility.Cast(value, desProperty.PropertyType, null);
+                FastReflectionExtensions.FastSetValue(desProperty, destination, value);
+            }
+        }
+
         /// <summary>
         /// 把对象转型为指定的类型，如果转型失败则返回默认类型。
         /// 默认类型默认为null
@@ -92,180 +117,6 @@ namespace BingoX.Utility
             var toConvter = TypeDescriptor.GetConverter(valueType);
             if (toConvter.CanConvertTo(tmpType)) return toConvter.ConvertTo(value, tmpType);
             throw new NotSupportedException();
-        }
-        /// <summary>
-        /// 执行对象的数值自增
-        /// </summary>
-        /// <param name="number">可自增的对象</param>
-        /// <returns>自增后的对象</returns>
-        public static object MunberIncrement(object number)
-        {
-            TypeCode code = Convert.GetTypeCode(number);
-            switch (code)
-            {
-                default:
-                    throw new Exception("类型不能自增");
-                case TypeCode.Single:
-                    {
-                        var a = (Single)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.Byte:
-                    {
-                        var a = (int)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.Char:
-                    {
-                        var a = (Char)number;
-                        a++;
-                        return a;
-                    }
-
-                case TypeCode.Decimal:
-                    {
-                        var a = (Decimal)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.Double:
-                    {
-                        var a = (Double)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.Int16:
-                    {
-                        var a = (Int16)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.Int32:
-                    {
-                        var a = (Int32)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.Int64:
-                    {
-                        var a = (Int64)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.SByte:
-                    {
-                        var a = (SByte)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.UInt16:
-                    {
-                        var a = (UInt16)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.UInt32:
-                    {
-                        var a = (UInt32)number;
-                        a++;
-                        return a;
-                    }
-                case TypeCode.UInt64:
-                    {
-                        var a = (UInt64)number;
-                        a++;
-                        return a;
-                    }
-            }
-        }
-
-        /// <summary>
-        /// 执行对象的数值自减
-        /// </summary>
-        /// <param name="number">可自减的对象</param>
-        /// <returns>自减后的对象</returns>
-        public static object MunberDecrement(object number)
-        {
-
-            TypeCode code = Convert.GetTypeCode(number);
-            switch (code)
-            {
-                default:
-                    throw new Exception("类型不能自增");
-                case TypeCode.Single:
-                    {
-                        var a = (Single)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Byte:
-                    {
-                        var a = (Byte)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Char:
-                    {
-                        var a = (Char)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Decimal:
-                    {
-                        var a = (Decimal)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Double:
-                    {
-                        var a = (Double)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Int16:
-                    {
-                        var a = (Int16)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Int32:
-                    {
-                        var a = (Int32)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.Int64:
-                    {
-                        var a = (Int64)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.SByte:
-                    {
-                        var a = (SByte)number;
-                        return a--;
-                    }
-                case TypeCode.UInt16:
-                    {
-                        var a = (UInt16)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.UInt32:
-                    {
-                        var a = (UInt32)number;
-                        a--;
-                        return a;
-                    }
-                case TypeCode.UInt64:
-                    {
-                        var a = (UInt64)number;
-                        a--;
-                        return a;
-                    }
-            }
         }
     }
 }

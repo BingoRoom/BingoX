@@ -1,11 +1,14 @@
-﻿using BingoX.EF;
+﻿using BingoX.Domain;
+using BingoX.EF;
 using BingoX.Repository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace BingoX.Core.Test.RepositoryTest
@@ -22,17 +25,29 @@ namespace BingoX.Core.Test.RepositoryTest
         {
 
             Microsoft.Extensions.DependencyInjection.ServiceCollection services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-            services.AddDbEntityIntercept(n =>
+            BingoEFOptions<DbBoundedContext> options = null;
+            services.AddBingoEF<DbBoundedContext>(n =>
             {
+                options = n;
+                //   
+                var opt = new DbContextOptionsBuilder<DbBoundedContext>();
+                //   opt.UseMySql("");
+                n.DbContextOptions = opt.Options;
+
+                n.AssemblyRepository = this.GetType().Assembly;
                 n.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
+                n.Intercepts.Add(new AopUser());
             });
             services.AddScoped<AopUser>();
+
+
+
             var factory = new Microsoft.Extensions.DependencyInjection.DefaultServiceProviderFactory();
             var serviceProvider = factory.CreateServiceProvider(services);
 
-            var manage = new EF.EfDbEntityInterceptManagement(serviceProvider);
+            var manage = serviceProvider.GetService<EF.EfDbEntityInterceptManagement>();
 
-            var global = DbEntityInterceptServiceCollectionExtensions.Options.Intercepts.OfType<DbEntityInterceptAttribute>();
+            var global = options.Intercepts.OfType<DbEntityInterceptAttribute>();
             manage.AddRangeGlobalIntercepts(global);
             var attributes = manage.GetAttributes(typeof(UserTest)).ToArray();
 
@@ -44,14 +59,27 @@ namespace BingoX.Core.Test.RepositoryTest
 
 
 
-        class BaseEntityTest
+        public class BaseEntityTest
         {
-            public int Id { get; set; }
+            public long ID { get; set; }
 
             public DateTime CreatedDate { get; set; }
             public string Created { get; set; }
         }
+        public interface IAccountRepository : IRepositorySnowflake<Account>
+        {
 
+        }
+        public class AccountRepository : EfRepositorySnowflake<Account>, IAccountRepository
+        {
+            public AccountRepository(EfDbContext context) : base(context)
+            {
+            }
+        }
+        public class Account : BaseEntityTest, ISnowflakeEntity<Account>
+        {
+
+        }
         [DbEntityInterceptAttribute(typeof(AopUser))]
         class UserTest : BaseEntityTest
         {
@@ -59,6 +87,12 @@ namespace BingoX.Core.Test.RepositoryTest
             public int Age { get; set; }
         }
 
+        public class DbBoundedContext : EfDbContext
+        {
+            public DbBoundedContext(DbContextOptions options) : base(options)
+            {
+            }
+        }
         class AopUser : IDbEntityIntercept
         {
             public bool AllowDelete { get { return false; } }

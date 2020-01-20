@@ -15,24 +15,19 @@ namespace BingoX.EF
     public class InterceptCollection : Collection<IDbEntityIntercept>
     {
 
-        public IDbEntityIntercept Add<TFilterType>(InterceptDIEnum interceptDI = InterceptDIEnum.None) where TFilterType : IDbEntityIntercept
+        public void Add<TFilterType>(InterceptDIEnum interceptDI = InterceptDIEnum.None) where TFilterType : IDbEntityIntercept
         {
-            return Add(typeof(TFilterType), order: 0, interceptDI: interceptDI);
+            Add(typeof(TFilterType), order: 0, interceptDI: interceptDI);
         }
-        public IDbEntityIntercept Add<TFilterType>(TFilterType intercept, InterceptDIEnum interceptDI = InterceptDIEnum.None) where TFilterType : IDbEntityIntercept
-        {
-            var filter = new DbEntityInterceptAttribute(intercept, order: 0, interceptDI: interceptDI);
-            Add(filter);
-            return filter;
-        }
-        public IDbEntityIntercept Add(Type filterType)
+
+        public void Add(Type filterType)
         {
             if (filterType == null)
             {
                 throw new ArgumentNullException(nameof(filterType));
             }
 
-            return Add(filterType, order: 0);
+            Add(filterType, order: 0);
         }
         /// <summary>
         /// Adds a type representing an <see cref="IFilterMetadata"/>.
@@ -63,11 +58,11 @@ namespace BingoX.EF
             return filter;
         }
 
-        new public void Add(IDbEntityIntercept intercept)
+        public void Add<TFilterType>(TFilterType intercept) where TFilterType : IDbEntityIntercept
         {
             if (intercept is DbEntityInterceptAttribute)
             {
-                Add(intercept);
+                base.Add(intercept);
                 return;
             }
             var filter = new DbEntityInterceptAttribute(intercept);

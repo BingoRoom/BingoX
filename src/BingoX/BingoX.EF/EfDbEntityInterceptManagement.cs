@@ -72,6 +72,11 @@ namespace BingoX.EF
 
             this.entityEntry = entityEntry;
         }
+
+        public virtual void Remove(string name)
+        {
+            if (ChangeValues.ContainsKey(name)) ChangeValues.Remove(name);
+        }
         public override void SetValue(string name, object value)
         {
             if (ChangeValues.ContainsKey(name)) ChangeValues[name] = value;
@@ -223,7 +228,7 @@ namespace BingoX.EF
 #else
         public void Interceptor(DbEntityEntry entityEntry)
 #endif
-        //public static void EntityInterceptor(DbEntityEntry entityEntry)
+       
 
         {
             var attributes = GetAttributes(entityEntry.Entity.GetType());
