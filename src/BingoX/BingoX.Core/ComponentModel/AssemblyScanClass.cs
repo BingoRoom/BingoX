@@ -35,30 +35,39 @@ namespace BingoX.ComponentModel
 
         public Type[] Find()
         {
-
-            var typeGenericArguments = ConstraintType.GetGenericArguments();
-            if (ConstraintGenericArguments != null)
+            if (ConstraintType.IsGenericType)
             {
-                if (ConstraintGenericArguments.Length != typeGenericArguments.Length) throw new LogicException("约束的泛型参数不一致");
-                for (int i = 0; i < ConstraintGenericArguments.Length; i++)
+                var typeGenericArguments = ConstraintType.GetGenericArguments();
+                if (ConstraintGenericArguments != null)
                 {
-                    var genericArgument = ConstraintGenericArguments[i];
-                    var genericArgumentConstraintType = ConstraintGenericArguments[i];
-                    if (!genericArgumentConstraintType.IsAssignableFrom(genericArgument)) throw new LogicException($"约束的泛型参数无一致性${genericArgument.FullName} ${genericArgumentConstraintType.FullName} ");
+                    if (ConstraintGenericArguments.Length != typeGenericArguments.Length) throw new LogicException("约束的泛型参数不一致");
+                    for (int i = 0; i < ConstraintGenericArguments.Length; i++)
+                    {
+                        var genericArgument = ConstraintGenericArguments[i];
+                        var genericArgumentConstraintType = ConstraintGenericArguments[i];
+                        if (!genericArgumentConstraintType.IsAssignableFrom(genericArgument)) throw new LogicException($"约束的泛型参数无一致性${genericArgument.FullName} ${genericArgumentConstraintType.FullName} ");
+                    }
                 }
-            }
-            List<Type> list = new List<Type>();
-            foreach (var interfaceType in Assembly.GetExportedTypes().Where(AssemblyHelper.IsInterfacePredicate))
-            {
+                List<Type> list = new List<Type>();
+                foreach (var interfaceType in Assembly.GetExportedTypes().Where(AssemblyHelper.IsInterfacePredicate))
+                {
 
-                if (!interfaceType.IsGenericType) continue;
-                var genericArguments = interfaceType.GetGenericArguments();
-                if (genericArguments.Length != typeGenericArguments.Length) continue;
-                var genericType = ConstraintType.MakeGenericType(genericArguments);
-                if (genericType != interfaceType) continue;
-                list.Add(interfaceType);
+                    if (!interfaceType.IsGenericType) continue;
+                    var genericArguments = interfaceType.GetGenericArguments();
+                    if (genericArguments.Length != typeGenericArguments.Length) continue;
+                    var genericType = ConstraintType.MakeGenericType(genericArguments);
+                    if (genericType != interfaceType) continue;
+                    list.Add(interfaceType);
+                }
+                return list.ToArray();
             }
-            return list.ToArray();
+            else
+            {
+                var list = Assembly.GetExportedTypes().Where(n => AssemblyHelper.IsInterfacePredicate(n) && AssemblyHelper.IsFromAndNotSelfPredicate(n, ConstraintType)).ToArray();
+
+
+                return list;
+            }
         }
     }
 
@@ -69,7 +78,7 @@ namespace BingoX.ComponentModel
         {
             if (!constraintType.IsInterface) throw new LogicException("约束类型不为接口");
         }
-
+        public bool BaseTypeIsGeneric { get; set; }
         public AssemblyScanResult[] Find()
         {
 
@@ -86,14 +95,35 @@ namespace BingoX.ComponentModel
                     if (genericArguments.Length != typeGenericArguments.Length) continue;
                     var genericType = ConstraintType.MakeGenericType(genericArguments);
                     if (genericType != interfaceType) continue;
-                    list.Add(new AssemblyScanResult { BaseType = interfaceType, ImplementedType = item });
+                    IEnumerable<AssemblyScanResult> tmpTypes = null;
+                    if (!BaseTypeIsGeneric)
+                    {
+                        tmpTypes = item.GetInterfaces().Where(o => AssemblyHelper.IsFromAndNotSelfPredicate(o, genericType) && o.IsGenericType == false).Select(n => new AssemblyScanResult { BaseType = n, ImplementedType = item });
+
+
+                    }
+                    else
+                    {
+                        tmpTypes = item.GetInterfaces().Where(o => AssemblyHelper.IsFromAndNotSelfPredicate(o, genericType)).Select(n => new AssemblyScanResult { BaseType = n, ImplementedType = item });
+
+
+                    }
+                    if (tmpTypes.Count() == 0)
+                    {
+                        list.Add(new AssemblyScanResult { BaseType = genericType, ImplementedType = item });
+                    }
+                    else
+                    {
+                        list.AddRange(tmpTypes);
+                    }
+
                 }
             }
             else
             {
                 foreach (var item in Assembly.GetExportedTypes().Where(n => AssemblyHelper.IsClassPredicate(n) && AssemblyHelper.IsFromPredicate(n, ConstraintType)))
                 {
-                    var interfaceType = item.GetInterfaces().FirstOrDefault(o => AssemblyHelper.IsFromAndNotSelfPredicate(o, ConstraintType));
+                    var interfaceType = item.GetInterfaces().FirstOrDefault(o => AssemblyHelper.IsFromAndNotSelfPredicate(o, ConstraintType) && o.IsGenericType == BaseTypeIsGeneric);
                     if (interfaceType != null)
                     {
 

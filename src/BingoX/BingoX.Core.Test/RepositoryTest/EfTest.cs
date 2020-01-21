@@ -1,5 +1,4 @@
-﻿using BingoX.ComponentModel;
-using BingoX.Domain;
+﻿using BingoX.Domain;
 using BingoX.EF;
 using BingoX.Helper;
 using BingoX.Repository;
@@ -14,31 +13,11 @@ using System.Text;
 
 namespace BingoX.Core.Test.RepositoryTest
 {
+
     [Author("Dason")]
     [TestFixture]
     public class EfTest
     {
-        [Test]
-        public void TestFindEntity()
-        {
-            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IEntity<,>));
-            var types = scaner.Find();
-            Assert.AreEqual(2, types.Length);
-        }
-        [Test]
-        public void TestFindEntity2()
-        {
-            var scaner = new AssemblyScanInterface(this.GetType().Assembly, typeof(IEntity<,>));
-            var types = scaner.Find();
-            Assert.AreEqual(0, types.Length);
-        }
-        [Test]
-        public void TestFindRepository()
-        {
-            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IRepository<,>));
-            var types = scaner.Find();
-            Assert.AreEqual(1, types.Length);
-        }
         [Test]
 
         public void TestAopAtt()
@@ -50,10 +29,10 @@ namespace BingoX.Core.Test.RepositoryTest
             services.AddBingoEF<DbBoundedContext>(n =>
             {
                 options = n;
-                //   
-                var opt = new DbContextOptionsBuilder<DbBoundedContext>();
-                //   opt.UseMySql("");
-                n.DbContextOptions = opt.Options;
+                    //   
+                    var opt = new DbContextOptionsBuilder<DbBoundedContext>();
+                    //   opt.UseMySql("");
+                    n.DbContextOptions = opt.Options;
 
                 n.AssemblyRepository = this.GetType().Assembly;
                 n.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
@@ -83,89 +62,91 @@ namespace BingoX.Core.Test.RepositoryTest
 
 
 
-        public class BaseEntityTest
-        {
-            public long ID { get; set; }
+    }
 
-            public DateTime CreatedDate { get; set; }
-            public string Created { get; set; }
+
+    public class BaseEntityTest
+    {
+        public long ID { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+        public string Created { get; set; }
+    }
+    public interface IAccountRepository : IRepositorySnowflake<Account>
+    {
+
+    }
+    public class AccountRepository : EfRepositorySnowflake<Account>, IAccountRepository
+    {
+        public AccountRepository(EfDbContext context) : base(context)
+        {
         }
-        public interface IAccountRepository : IRepositorySnowflake<Account>
-        {
+    }
+    public class Role : BaseEntityTest, ISnowflakeEntity<Role>
+    {
 
+    }
+    public class Account : BaseEntityTest, ISnowflakeEntity<Account>
+    {
+
+    }
+    [DbEntityInterceptAttribute(typeof(AopUser))]
+    class UserTest : BaseEntityTest
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+    }
+
+    public class DbBoundedContext : EfDbContext
+    {
+        public DbBoundedContext(DbContextOptions options) : base(options)
+        {
         }
-        public class AccountRepository : EfRepositorySnowflake<Account>, IAccountRepository
-        {
-            public AccountRepository(EfDbContext context) : base(context)
-            {
-            }
-        }
-        public class Role : BaseEntityTest, ISnowflakeEntity<Role>
-        {
+    }
+    class AopUser : IDbEntityIntercept
+    {
+        public bool AllowDelete { get { return false; } }
 
-        }
-        public class Account : BaseEntityTest, ISnowflakeEntity<Account>
-        {
+        public bool AllowModifiy { get { return true; } }
 
-        }
-        [DbEntityInterceptAttribute(typeof(AopUser))]
-        class UserTest : BaseEntityTest
+        public bool AllowAdd { get { return true; } }
+
+        public void OnAdd(DbEntityCreateInfo info)
         {
-            public string Name { get; set; }
-            public int Age { get; set; }
+            throw new NotImplementedException();
         }
 
-        public class DbBoundedContext : EfDbContext
+        public void OnDelete(DbEntityDeleteInfo info)
         {
-            public DbBoundedContext(DbContextOptions options) : base(options)
-            {
-            }
+            throw new NotImplementedException();
         }
-        class AopUser : IDbEntityIntercept
+
+        public void OnModifiy(DbEntityChangeInfo info)
         {
-            public bool AllowDelete { get { return false; } }
-
-            public bool AllowModifiy { get { return true; } }
-
-            public bool AllowAdd { get { return true; } }
-
-            public void OnAdd(DbEntityCreateInfo info)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnDelete(DbEntityDeleteInfo info)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnModifiy(DbEntityChangeInfo info)
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
-        class AopCreatedInfo : IDbEntityIntercept
+    }
+    class AopCreatedInfo : IDbEntityIntercept
+    {
+        public bool AllowDelete { get { return true; } }
+
+        public bool AllowModifiy { get { return true; } }
+
+        public bool AllowAdd { get { return true; } }
+
+        public void OnAdd(DbEntityCreateInfo info)
         {
-            public bool AllowDelete { get { return true; } }
+            throw new NotImplementedException();
+        }
 
-            public bool AllowModifiy { get { return true; } }
+        public void OnDelete(DbEntityDeleteInfo info)
+        {
+            throw new NotImplementedException();
+        }
 
-            public bool AllowAdd { get { return true; } }
-
-            public void OnAdd(DbEntityCreateInfo info)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnDelete(DbEntityDeleteInfo info)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnModifiy(DbEntityChangeInfo info)
-            {
-                throw new NotImplementedException();
-            }
+        public void OnModifiy(DbEntityChangeInfo info)
+        {
+            throw new NotImplementedException();
         }
     }
 }
