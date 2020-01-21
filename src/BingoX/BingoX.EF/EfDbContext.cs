@@ -41,16 +41,8 @@ namespace BingoX.EF
             if (serviceProvider == null) return;
             var option = serviceProvider.GetService(typeof(BingoEFOptions)) as BingoEFOptions;
             if (option == null || option.AssemblyMappingConfig == null) return;
-            var method = typeof(ModelBuilder).GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(n => n.Name == "ApplyConfiguration" && n.GetParameters()[0].ParameterType.Name == "IEntityTypeConfiguration`1");
-            var scaner = new AssemblyScanClass(option.AssemblyMappingConfig, typeof(IEntityTypeConfiguration<>));
-            foreach (var item in scaner.Find())
-            {
-                var genericTypes = item.BaseType;
-                var obj = item.ImplementedType.CreateInstance();
-                var addmethod = method.MakeGenericMethod(genericTypes.GenericTypeArguments);
-                addmethod.FastInvoke(modelBuilder, obj);
-            }
-            //   modelBuilder.ModelCreating(new ModelMappingOption { BaseEntity = typeof(BaseEntity), ConfigAssemblyName = "YinYun.Application.Data", EntityAssemblyName = "YinYun.Application.Domain" });
+            modelBuilder.ModelCreating(option.AssemblyMappingConfig);
+          
         }
     }
 

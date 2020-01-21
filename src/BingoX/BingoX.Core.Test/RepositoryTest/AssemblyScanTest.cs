@@ -17,9 +17,11 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestFindEntity()
         {
-            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IEntity<,>));
-            var types = scaner.Find();
+            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IEntity<,>)) ;
+            var types = scaner.Find(null);
             Assert.AreEqual(2, types.Length);
+            Assert.AreSame(typeof(IEntity<Role, long>), types[0].BaseType);
+            Assert.AreSame(typeof(IEntity<Account, long>), types[1].BaseType);
         }
         [Test]
         public void TestFindEntity2()
@@ -31,17 +33,14 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestFindRepository()
         {
-            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IRepository<,>));
+       
+            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IRepository<,>)) ;
             var types = scaner.Find();
             Assert.AreEqual(1, types.Length);
-            Assert.AreSame(typeof(IAccountRepository), types[0].BaseType);
-            scaner.BaseTypeIsGeneric = true;
-            types = scaner.Find();
-            Assert.AreEqual(2, types.Length);
-            Assert.AreSame(typeof(IRepositorySnowflake<Account>), types[0].BaseType);
+            Assert.AreSame(typeof(IRepository<Account, long>), types[0].BaseType);
         }
         [Test]
-        public void TestFindRepository2()
+        public void TestFindRepository3()
         {
             var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IRepository));
             var types = scaner.Find();
