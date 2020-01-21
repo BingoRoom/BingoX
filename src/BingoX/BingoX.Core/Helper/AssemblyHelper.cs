@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace BingoX.Helper
 {
+
     /// <summary>
     /// 提供一个针对程序集的辅助
     /// </summary>
     public static class AssemblyHelper
     {
+        public readonly static Func<Type, bool> IsClassPredicate = (source) => source.IsClass && !source.IsAbstract;
+        public readonly static Func<Type, bool> IsInterfacePredicate = (source) => source.IsInterface;
+        public readonly static Func<Type, Type, bool> IsFromPredicate = (source, compare) => compare.IsAssignableFrom(source) ;
+        public readonly static Func<Type, Type, bool> IsFromAndNotSelfPredicate = (source, compare) => compare.IsAssignableFrom(source) && source != compare;
         /// <summary>
         /// 
         /// </summary>
@@ -63,19 +68,40 @@ namespace BingoX.Helper
         }
 
         /// <summary>
-        /// 从当前程序集反射指定泛型的所有派生类型
+        /// 从当前程序集反射指定类型的所有派生类型
         /// </summary>
-        /// <param name="assembly">程序集</param>
-        /// <param name="interfaceType">要反射的类型（必须为泛型，否则返回Type[0]）。</param>
-        /// <param name="genericType">泛型的替代类型数组</param>
+        /// <param name="assembly">要反射的程序集</param>
+        /// <param name="scouceType">要反射的指定类型（支持泛型）</param>
+        /// <param name="typeArguments">泛型的替代类型数组</param>
         /// <returns>类型数组</returns>
-        public static Type[] GetImplementedClassWithOneArgumentGenericType(this Assembly assembly, Type genericType, Type[] entities)
+        public static Type[] GetGeneric(this Assembly assembly, Type scouceType, Type[] typeGenericArguments, FindType type)
         {
-            if (!genericType.IsGenericType) return BingoX.Utility.EmptyUtility<Type>.EmptyArray;
-            var types = assembly.GetTypes().Where(o => o.IsClass && !o.IsAbstract);
-            var maketype = entities.Select(n => genericType.MakeGenericType(n)).ToArray();
-            return types.Where(o => maketype.Any(x => x.IsAssignableFrom(o))).ToArray();
+            if (!scouceType.IsGenericType) throw new LogicException("不为泛型接口");
+            if (typeGenericArguments.IsEmpty()) throw new LogicException("泛型参数为空");
+            if (type == FindType.Interface && scouceType.IsClass) throw new LogicException("查找派生接口时，基础类型不能为类");
+            IEnumerable<Type> types = null;
+            switch (type)
+            {
+                case FindType.Interface:
+                    types = assembly.GetTypes().Where(IsInterfacePredicate);
+                    break;
+                case FindType.Class:
+                    types = assembly.GetTypes().Where(IsClassPredicate);
+                    break;
+                default:
+                    break;
+            }
+
+            var arguments = scouceType.GetGenericArguments();
+            var maketype = scouceType.MakeGenericType(typeGenericArguments);
+            return types.Where(o => IsFromPredicate(maketype, o)).ToArray();
         }
+        public enum FindType
+        {
+            Interface,
+            Class
+        }
+  
         /// <summary>
         /// 从当前程序集反射指定类型的所有派生类型
         /// </summary>
@@ -95,7 +121,7 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static Type[] GetImplementedClass(this Assembly assembly, Type[] types)
         {
-            var implementedClass = assembly.GetTypes().Where(o => o.IsClass && !o.IsAbstract && types.Any(x => x.IsAssignableFrom(o))).ToArray();
+            var implementedClass = assembly.GetTypes().Where(o => IsClassPredicate(o) && types.Any(x => IsFromPredicate(o,x))).ToArray();
             return implementedClass;
         }
     }

@@ -1,9 +1,10 @@
-﻿using BingoX.Domain;
+﻿using BingoX.ComponentModel;
+using BingoX.Domain;
 using BingoX.EF;
+using BingoX.Helper;
 using BingoX.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,27 @@ namespace BingoX.Core.Test.RepositoryTest
     [TestFixture]
     public class EfTest
     {
-
+        [Test]
+        public void TestFindEntity()
+        {
+            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IEntity<,>));
+            var types = scaner.Find();
+            Assert.AreEqual(2, types.Length);
+        }
+        [Test]
+        public void TestFindEntity2()
+        {
+            var scaner = new AssemblyScanInterface(this.GetType().Assembly, typeof(IEntity<,>));
+            var types = scaner.Find();
+            Assert.AreEqual(0, types.Length);
+        }
+        [Test]
+        public void TestFindRepository()
+        {
+            var scaner = new AssemblyScanClass(this.GetType().Assembly, typeof(IRepository<,>));
+            var types = scaner.Find();
+            Assert.AreEqual(1, types.Length);
+        }
         [Test]
 
         public void TestAopAtt()
@@ -55,6 +76,9 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.IsNotNull(aops);
             Assert.IsNotEmpty(aops);
             Assert.AreEqual(aops.Length, attributes.Length);
+
+            var dbBoundedContext = serviceProvider.GetService<DbBoundedContext>();
+            Assert.IsNotNull(dbBoundedContext);
         }
 
 
@@ -75,6 +99,10 @@ namespace BingoX.Core.Test.RepositoryTest
             public AccountRepository(EfDbContext context) : base(context)
             {
             }
+        }
+        public class Role : BaseEntityTest, ISnowflakeEntity<Role>
+        {
+
         }
         public class Account : BaseEntityTest, ISnowflakeEntity<Account>
         {

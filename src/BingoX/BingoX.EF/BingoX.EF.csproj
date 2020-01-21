@@ -30,6 +30,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="ModelBuilderHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\BingoX.Core\BingoX.Core.csproj" />
     <ProjectReference Include="..\BingoX.Repository\BingoX.Repository.csproj" />
   </ItemGroup>

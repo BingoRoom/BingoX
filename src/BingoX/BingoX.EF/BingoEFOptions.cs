@@ -1,12 +1,12 @@
 ﻿
 
+#if Standard
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace BingoX.EF
 {
-
-    public class BingoEFOptions<TContext> where TContext : EfDbContext
+    public abstract class BingoEFOptions
     {
         public BingoEFOptions()
         {
@@ -16,8 +16,14 @@ namespace BingoX.EF
 
         public Assembly AssemblyRepository { get; set; }
         public Assembly AssemblyFactory { get; set; }
+        public Assembly AssemblyMappingConfig { get; set; }
         public Assembly AssemblyDomainEventHandler { get; set; }
+    }
+    public class BingoEFOptions<TContext> : BingoEFOptions where TContext : EfDbContext
+    {
+
 
         public DbContextOptions<TContext> DbContextOptions { get; set; }
     }
 }
+#endif

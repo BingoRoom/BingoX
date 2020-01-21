@@ -32,6 +32,7 @@ namespace BingoX.EF
 
             setupAction(options);
             if (options.DbContextOptions == null) throw new BingoX.Repository.RepositoryException("DbContextOptions为空");
+            services.AddSingleton<BingoEFOptions>(n => options);
             services.AddSingleton<DbContextOptions>(options.DbContextOptions);
             services.AddSingleton<DbContextOptions<TContext>>(options.DbContextOptions);
             dbContextConstructor = typeof(TContext).GetConstructors().FirstOrDefault();
@@ -77,8 +78,7 @@ namespace BingoX.EF
         {
             var optarg = serviceProvider.GetService(optParameter.ParameterType);
             TContext dbContext = FastReflectionExtensions.FastInvoke(dbContextConstructor, optarg) as TContext;
-            const string DIConst = "ServiceProvider";
-            dbContext.RootContextData.Add(DIConst, serviceProvider);
+            dbContext.SetServiceProvider(serviceProvider);
             return dbContext;
         }
         private static void RegeditTypes<T>(IServiceCollection services, Assembly ass, params Type[] ignoreInterfaceTypes)
