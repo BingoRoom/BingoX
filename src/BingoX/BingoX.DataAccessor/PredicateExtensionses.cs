@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace BingoX.Repository
+namespace BingoX.DataAccessor
 {
     /// <summary>
     /// 表达式扩展
     /// </summary>
-     static class PredicateExtensionses
+    static class PredicateExtensionses
     {
         /// <summary>
         /// 返回真表达式

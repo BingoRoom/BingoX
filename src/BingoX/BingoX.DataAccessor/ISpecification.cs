@@ -1,16 +1,17 @@
-﻿using System;
+﻿using BingoX.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace BingoX.Repository
+namespace BingoX.DataAccessor
 {
     /// <summary>
     /// 数据操作规格
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ISpecification<T> where T : class
+    public interface ISpecification<TEntity> where TEntity : class 
     {
 
         /// <summary>
@@ -25,98 +26,98 @@ namespace BingoX.Repository
         /// 数据操作规格表达式
         /// </summary>
         /// <returns></returns>
-        Expression<Func<T, bool>> ToExpression();
+        Expression<Func<TEntity, bool>> ToExpression();
         /// <summary>
         /// 数据排序规格表达式
         /// </summary>
         /// <returns></returns>
-        OrderModelField<T>[] ToStorExpression();
+        OrderModelField<TEntity>[] ToStorExpression();
         /// <summary>
         /// 判断数据操作规格是否有效
         /// </summary>
         /// <param name="entity">数据库实体</param>
         /// <returns>是否有效</returns>
-        bool IsSatisfiedBy(T entity);
+        bool IsSatisfiedBy(TEntity entity);
 
 
         /// <summary>
         /// 升序排序
         /// </summary>
         /// <param name="orderExpression">排序规格表达式</param>
-        ISpecification<T> Orderby(Expression<Func<T, object>> orderExpression, bool desc = false);
+        ISpecification<TEntity> Orderby(Expression<Func<TEntity, object>> orderExpression, bool desc = false);
         /// <summary>
         /// 降序排序
         /// </summary>
         /// <param name="orderExpression">排序规格表达式</param>
-        ISpecification<T> OrderbyAsc(Expression<Func<T, object>> orderExpression);
+        ISpecification<TEntity> OrderbyAsc(Expression<Func<TEntity, object>> orderExpression);
         /// <summary>
         /// 降序排序
         /// </summary>
         /// <param name="orderExpression">排序规格表达式</param>
-        ISpecification<T> OrderbyDesc(Expression<Func<T, object>> orderExpression);
+        ISpecification<TEntity> OrderbyDesc(Expression<Func<TEntity, object>> orderExpression);
         /// <summary>
         /// 构建逻辑与规格
         /// </summary>
         /// <param name="specification">规格操作数</param>
         /// <returns></returns>
-        ISpecification<T> And(ISpecification<T> specification);
+        ISpecification<TEntity> And(ISpecification<TEntity> specification);
         /// <summary>
         /// 构建逻辑非规格
         /// </summary>
         /// <param name="specification">规格操作数</param>
         /// <returns></returns>
-        ISpecification<T> Not(ISpecification<T> specification);
+        ISpecification<TEntity> Not(ISpecification<TEntity> specification);
         /// <summary>
         /// 构建逻辑或规格
         /// </summary>
         /// <param name="specification">规格操作数</param>
         /// <returns></returns>
-        ISpecification<T> Or(ISpecification<T> specification);
+        ISpecification<TEntity> Or(ISpecification<TEntity> specification);
         /// <summary>
         /// 构建逻辑与规格
         /// </summary>
         /// <param name="expression">表达式操作数</param>
         /// <returns></returns>
-        ISpecification<T> And(Expression<Func<T, bool>> expression);
+        ISpecification<TEntity> And(Expression<Func<TEntity, bool>> expression);
         /// <summary>
         /// 构建逻辑或规格
         /// </summary>
         /// <param name="expression">表达式操作数</param>
         /// <returns></returns>
-        ISpecification<T> Or(Expression<Func<T, bool>> expression);
+        ISpecification<TEntity> Or(Expression<Func<TEntity, bool>> expression);
         /// <summary>
         /// 构建逻辑非规格
         /// </summary>
         /// <param name="expression">表达式操作数</param>
         /// <returns></returns>
-        ISpecification<T> Not(Expression<Func<T, bool>> expression);
+        ISpecification<TEntity> Not(Expression<Func<TEntity, bool>> expression);
     }
 
     /// <summary>
     /// 动态数据查询操作
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IDynamicSpecification<T> : ISpecification<T> where T : class
+    public interface IDynamicSpecification<TEntity> : ISpecification<TEntity> where TEntity : class 
     {
-        ISpecification<T> And(string propertyName, object value);
+        ISpecification<TEntity> And(string propertyName, object value);
 
-        ISpecification<T> And(IDictionary<string, object> dictionary);
+        ISpecification<TEntity> And(IDictionary<string, object> dictionary);
         /// <summary>
         /// 排序
         /// </summary>
         /// <param name="desc"></param>
         /// <param name="orderExpression">属性名称</param>
-        ISpecification<T> Orderby(string propertyName, bool desc = false);
+        ISpecification<TEntity> Orderby(string propertyName, bool desc = false);
         /// <summary>
         /// 升序排序
         /// </summary>
         /// <param name="propertyName">属性名称</param>
-        ISpecification<T> OrderbyAsc(string propertyName);
+        ISpecification<TEntity> OrderbyAsc(string propertyName);
         /// <summary>
         /// 升序排序
         /// </summary>
         /// <param name="propertyName">属性名称</param>
-        ISpecification<T> OrderbyDesc(string propertyName);
+        ISpecification<TEntity> OrderbyDesc(string propertyName);
     }
     public struct OrderModelField<T>
     {

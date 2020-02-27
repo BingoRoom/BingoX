@@ -2,15 +2,21 @@
 
 namespace BingoX.Domain
 {
+    public interface IEntity<T> where T : class
+    {
+
+    }
     /// <summary>
     /// 数据库实体接口
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TId"></typeparam>
-    public interface IEntity<T, TId> where T : class
+    public interface IEntity<T, TId> : IEntity<T> where T : class
     {
         TId ID { get; set; }
     }
+
+
 
     /// <summary>
     /// 支持自增主键的数据库实体接口

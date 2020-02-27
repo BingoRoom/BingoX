@@ -34,12 +34,12 @@ namespace BingoX.Helper
         /// <param name="query"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static TValue GetFilterValue<TValue>(this QueryDescriptor query, string name)
-        {
-            if (query.Filters == null) return default(TValue);
-            var filter = query.Filters.FirstOrDefault(m => String.Equals(m.Key, name, StringComparison.InvariantCultureIgnoreCase));
-            return GetValue<TValue>(filter);
-        }
+        //public static TValue GetFilterValue<TValue>(this QueryDescriptor query, string name)
+        //{
+        //    if (query.Filters == null) return default(TValue);
+        //    var filter = query.Filters.FirstOrDefault(m => String.Equals(m.Key, name, StringComparison.InvariantCultureIgnoreCase));
+        //    return GetValue<TValue>(filter);
+        //}
         /// <summary>
         /// 从FilterDescriptor获取值
         /// </summary>

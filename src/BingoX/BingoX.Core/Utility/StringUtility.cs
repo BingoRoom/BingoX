@@ -451,7 +451,7 @@ namespace BingoX.Utility
                 {
                     return Enum.Parse(castType, str, true);
                 }
-                if (StringValidator.IsNumeric(str))
+                if (StringValidation.IsNumeric(str))
                 {
                     var valueobj = Convert.ChangeType(str, Enum.GetUnderlyingType(castType), null);
                     if (Enum.IsDefined(castType, valueobj)) return Enum.ToObject(castType, valueobj);
@@ -460,7 +460,7 @@ namespace BingoX.Utility
                 var neme = names.FirstOrDefault(n => string.Equals(n, str, StringComparison.OrdinalIgnoreCase));
                 return Enum.Parse(castType, neme ?? str, true);
             }
-            if (StringValidator.IsNumeric(str) && castType.IsNumberType()) return Convert.ChangeType(str, castType, null);
+            if (StringValidation.IsNumeric(str) && castType.IsNumberType()) return Convert.ChangeType(str, castType, null);
             try
             {
                 switch (castType.FullName)

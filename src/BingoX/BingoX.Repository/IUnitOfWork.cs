@@ -15,11 +15,6 @@ namespace BingoX.Repository
         /// 回滚事务
         /// </summary>
         void Rollback();
-        /// <summary>
-        /// 初始化事务
-        /// </summary>
-        /// <param name="level"></param>
-        void BeginTran(IsolationLevel level = IsolationLevel.ReadCommitted);
     }
 
 }
