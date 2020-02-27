@@ -758,7 +758,7 @@ namespace BingoX.Converter
         /// <returns></returns>
         public static string NumberToCn(string numstr)
         {
-            if (!StringValidator.IsNumeric(numstr)) throw new Exception("不为数字");
+            if (!StringValidation.IsNumeric(numstr)) throw new Exception("不为数字");
             return NumberToCn(StringUtility.Cast<double>(numstr));
         }
 

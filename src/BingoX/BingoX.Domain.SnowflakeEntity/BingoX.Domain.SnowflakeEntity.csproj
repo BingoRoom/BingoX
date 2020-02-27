@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
     <SignAssembly>true</SignAssembly>
@@ -6,11 +7,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
-    <Description>数据库仓储定义 Standard2 移除 .net core mvc2</Description>
-    <Version>1.0.6</Version>
-    <AssemblyVersion>2.0.6.6</AssemblyVersion>
-    <AssemblyOriginatorKeyFile>BingoX.Repository.snk</AssemblyOriginatorKeyFile>
-    <FileVersion>2.0.6.6</FileVersion>
+    <Description></Description>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <RootNamespace>BingoX.Domain.SnowflakeEntity</RootNamespace>
+    <AssemblyName>BingoX.Domain.SnowflakeEntity</AssemblyName> 
+    <FileVersion>1.0.3.0</FileVersion> 
+    <AssemblyOriginatorKeyFile>BingoX.Domain.SnowflakeEntity.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
@@ -22,8 +25,10 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BingoX.Core\BingoX.Core.csproj" />
     <ProjectReference Include="..\BingoX.Domain\BingoX.Domain.csproj" />
-  </ItemGroup> 
+  </ItemGroup>
 </Project>

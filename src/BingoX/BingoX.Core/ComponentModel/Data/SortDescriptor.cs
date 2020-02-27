@@ -1,6 +1,6 @@
 ﻿namespace BingoX.ComponentModel.Data
 {
-    public struct SortDescriptor
+    public class SortDescriptor
     {
         public SortingDirection Direction { get; set; }
         public string Field { get; set; }

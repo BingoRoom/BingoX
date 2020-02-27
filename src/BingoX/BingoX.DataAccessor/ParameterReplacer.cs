@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace BingoX.Repository
+namespace BingoX.DataAccessor
 {
     public class ParameterReplacer : ExpressionVisitor
     {

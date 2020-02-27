@@ -6,13 +6,13 @@ using System.Text;
 
 namespace BingoX.Domain
 {
-    public interface IAggregateRoot<T, TId> : IEntity<T, TId> where T : class
+    public interface IAggregateRoot : IAggregate
     {
-        IGenerator<TId> Generator { get; }
+
         void Raise<TDomainEvent>(TDomainEvent domainEvent) where TDomainEvent : IDomainEvent;
     }
 
-    public interface IAggregate<T, TId> : IEntity<T, TId> where T : class
+    public interface IAggregate
     {
 
     }

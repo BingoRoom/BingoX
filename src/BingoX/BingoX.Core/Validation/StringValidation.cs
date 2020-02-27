@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace BingoX.Validation
 {
-    public class StringValidator
+    public class StringValidation
     {
         /// <summary>    
         /// 验证输入字符串是否与模式字符串匹配，匹配返回true    

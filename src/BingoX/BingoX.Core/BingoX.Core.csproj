@@ -31,6 +31,7 @@
 
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="ComponentModel\Data\PageSizeDescriptor.cs" />
     <Compile Remove="Generator\DisposableAction.cs" />
     <Compile Remove="Services\IUtilityServiceProvider.cs" />
   </ItemGroup>

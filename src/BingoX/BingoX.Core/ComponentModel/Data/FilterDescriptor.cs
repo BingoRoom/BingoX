@@ -1,4 +1,6 @@
-﻿namespace BingoX.ComponentModel.Data
+﻿using System.Collections.ObjectModel;
+
+namespace BingoX.ComponentModel.Data
 {
     /*
         public struct PagingInfo
@@ -13,22 +15,22 @@
             public int Index { get; private set; }
             //   public SortFieldCollection Sort { get; private set; }
         }
-        public class SortFieldCollection : Collection<SortField>
+      */
+    public class SortFieldCollection : Collection<SortDescriptor>
+    {
+        public void AddAsc(string name)
         {
-            public void AddAsc(string name)
-            {
-                this.Add(new SortField() { FieldName = name, Sort = Sort.Asc });
-            }
-            public void AddDesc(string name)
-            {
-                this.Add(new SortField() { FieldName = name, Sort = Sort.Desc });
-            }
-        }*/
-
+            this.Add(new SortDescriptor() { Field  = name, Direction =  SortDescriptor.SortingDirection.Ascending });
+        }
+        public void AddDesc(string name)
+        {
+            this.Add(new SortDescriptor() { Field  = name, Direction =  SortDescriptor.SortingDirection.Descending });
+        }
+    }
     public struct FilterDescriptor
     {
         public string Key { get; set; }
         public string Value { get; set; }
     }
- 
+
 }

@@ -1,6 +1,7 @@
 ﻿#if Standard
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Data.SqlClient;
 #else
 
 using System.Data.Entity;
@@ -126,6 +127,7 @@ namespace BingoX.EF
             return Wrapper.DbSet.Any(n => n.ID == id);
         }
     }
+
     public class EfRepository<T, pkType> : IRepository<T, pkType>, IRepositoryExpression<T> where T : class, IEntity<T, pkType>, new()
     {
         public EfRepository(EfDbContext context)
@@ -150,10 +152,19 @@ namespace BingoX.EF
 
             return list;
         }
+#if Standard
+        public IList<T> Where(string sql)
+        {
 
+            return Wrapper.DbSet.FromSqlRaw(sql).AsNoTracking().ToList();
+        }
+#else
+        public IList<T> Where(string sql)
+        {
+            return Wrapper.DbSet.SqlQuery(sql).AsNoTracking().ToList();
+        }
 
-
-
+#endif
         #region 新增 
         /// <summary>
         /// 新增
@@ -418,6 +429,7 @@ namespace BingoX.EF
 
         public virtual int Delete(Expression<Func<T, bool>> where)
         {
+
             var objects = Wrapper.DbSet.Where(where);
             int count = objects.Count();
             foreach (var obj in objects)

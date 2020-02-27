@@ -2,7 +2,7 @@
 
 namespace BingoX.ComponentModel.Data
 {
-    public struct QueryDescriptor
+    public class QueryDescriptor
     {
         private int pageIndex;
         private int pageSize;
@@ -32,8 +32,8 @@ namespace BingoX.ComponentModel.Data
 
             }
         }
-        public FilterDescriptor[] Filters { get; set; }
-        public SortDescriptor[] Sorting { get; set; }
+        public System.Collections.Generic.IDictionary<string, string> Filters { get; set; }
+        public SortFieldCollection Sorting { get; set; }
     }
  
 }
