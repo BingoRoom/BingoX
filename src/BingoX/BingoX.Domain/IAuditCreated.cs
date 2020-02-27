@@ -3,7 +3,7 @@
 namespace BingoX.Domain
 {
     /// <summary>
-    /// 表示可追溯实体创建信息
+    /// 表示一个可审计创建的实体
     /// </summary>
     public interface IAuditCreated
     {

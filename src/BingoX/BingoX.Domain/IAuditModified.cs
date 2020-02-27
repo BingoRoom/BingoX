@@ -3,7 +3,7 @@
 namespace BingoX.Domain
 {
     /// <summary>
-    /// 表示可追溯实体修改信息
+    /// 表示一个可审计修改的实体
     /// </summary>
     public interface IAuditModified
     {
