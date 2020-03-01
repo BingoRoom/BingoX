@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace BingoX.Repository
+namespace BingoX.DataAccessor
 {
     /// <summary>
     /// 事务管理器接口
@@ -16,5 +16,4 @@ namespace BingoX.Repository
         /// </summary>
         void Rollback();
     }
-
 }

@@ -24,6 +24,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BingoX.DataAccessor\BingoX.DataAccessor.csproj" />
     <ProjectReference Include="..\BingoX.Domain\BingoX.Domain.csproj" />
   </ItemGroup> 
 </Project>

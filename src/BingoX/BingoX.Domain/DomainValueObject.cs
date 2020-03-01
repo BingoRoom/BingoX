@@ -152,8 +152,5 @@ namespace BingoX.Domain
 
             return fields;
         }
-
     }
-
-  
 }

@@ -38,8 +38,6 @@ namespace BingoX.DataAccessor
         /// <param name="entity">数据库实体</param>
         /// <returns>是否有效</returns>
         bool IsSatisfiedBy(TEntity entity);
-
-
         /// <summary>
         /// 升序排序
         /// </summary>
@@ -92,7 +90,6 @@ namespace BingoX.DataAccessor
         /// <returns></returns>
         ISpecification<TEntity> Not(Expression<Func<TEntity, bool>> expression);
     }
-
     /// <summary>
     /// 动态数据查询操作
     /// </summary>
@@ -124,7 +121,9 @@ namespace BingoX.DataAccessor
         public bool IsDesc { get; set; }
         public Expression<Func<T, object>> OrderPredicates { get; set; }
     }
-
+    /// <summary>
+    /// 表示一个关于数据库操作规格的异常
+    /// </summary>
     [Serializable]
     public class SpecificationException : Exception
     {
@@ -140,39 +139,38 @@ namespace BingoX.DataAccessor
         static BuildDynamicExpression()
         {
             equalsDic = new Dictionary<Type, MethodInfo>
-                        {
-                            {typeof(string) , typeof(string).GetMethods().LastOrDefault(n => n.Name =="Equals"&& n.GetParameters().Length==1) },
-                            {typeof(int) , typeof(int).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(long) , typeof(long).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(short) , typeof(short).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(uint) , typeof(uint).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(ulong) , typeof(ulong).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(ushort) , typeof(ushort).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(byte) , typeof(byte).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(char) , typeof(char).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(double) , typeof(double).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(decimal) , typeof(decimal).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                            {typeof(DateTime) , typeof(DateTime).GetMethods().LastOrDefault(n => n.Name =="Equals") },
-                       };
+            {
+                {typeof(string) , typeof(string).GetMethods().LastOrDefault(n => n.Name =="Equals"&& n.GetParameters().Length==1) },
+                {typeof(int) , typeof(int).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(long) , typeof(long).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(short) , typeof(short).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(uint) , typeof(uint).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(ulong) , typeof(ulong).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(ushort) , typeof(ushort).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(byte) , typeof(byte).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(char) , typeof(char).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(double) , typeof(double).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(decimal) , typeof(decimal).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+                {typeof(DateTime) , typeof(DateTime).GetMethods().LastOrDefault(n => n.Name =="Equals") },
+            };
             var method = typeof(Queryable).GetMethods().FirstOrDefault(n => n.Name == "Contains");
             containsDic = new Dictionary<Type, MethodInfo>
-                       {
-                             {typeof(string) ,typeof(string).GetMethods().FirstOrDefault(n => n.Name == "Contains") },
-                            {typeof(int) , method.MakeGenericMethod(typeof(int))  },
-                            {typeof(long) , method.MakeGenericMethod(typeof(long))  },
-                            {typeof(short) , method.MakeGenericMethod(typeof(short))  },
-                            {typeof(uint) , method.MakeGenericMethod(typeof(uint))  },
-                            {typeof(ulong) , method.MakeGenericMethod(typeof(ulong))  },
-                            {typeof(ushort) , method.MakeGenericMethod(typeof(ushort))  },
-                            {typeof(byte) , method.MakeGenericMethod(typeof(byte))  },
-                            {typeof(char) , method.MakeGenericMethod(typeof(char))  },
-                            {typeof(double) , method.MakeGenericMethod(typeof(double))  },
-                            {typeof(decimal) , method.MakeGenericMethod(typeof(decimal))  },
-                            {typeof(DateTime) , method.MakeGenericMethod(typeof(DateTime))  },
+            {
+                {typeof(string) ,typeof(string).GetMethods().FirstOrDefault(n => n.Name == "Contains") },
+                {typeof(int) , method.MakeGenericMethod(typeof(int))  },
+                {typeof(long) , method.MakeGenericMethod(typeof(long))  },
+                {typeof(short) , method.MakeGenericMethod(typeof(short))  },
+                {typeof(uint) , method.MakeGenericMethod(typeof(uint))  },
+                {typeof(ulong) , method.MakeGenericMethod(typeof(ulong))  },
+                {typeof(ushort) , method.MakeGenericMethod(typeof(ushort))  },
+                {typeof(byte) , method.MakeGenericMethod(typeof(byte))  },
+                {typeof(char) , method.MakeGenericMethod(typeof(char))  },
+                {typeof(double) , method.MakeGenericMethod(typeof(double))  },
+                {typeof(decimal) , method.MakeGenericMethod(typeof(decimal))  },
+                {typeof(DateTime) , method.MakeGenericMethod(typeof(DateTime))  },
 
 
-                       };
-
+            };
         }
         static readonly IDictionary<Type, MethodInfo> equalsDic;
         static readonly IDictionary<Type, MethodInfo> containsDic;
@@ -202,13 +200,10 @@ namespace BingoX.DataAccessor
                         throw new SpecificationException("未支持类型");
                 }
             }
-
             return GetEquals(propertyType);
-
         }
         public static ParameterExpression CreateParameterExpression(Type studentType)
         {
-
             ParameterExpression param = Expression.Parameter(studentType, "x");
             return param;
         }
@@ -242,19 +237,14 @@ namespace BingoX.DataAccessor
                 }
                 if (propertyInfo != null) typePropertyDic.Add(propertyName, propertyInfo);
             }
-
-
             if (propertyInfo == null) throw new SpecificationException(propertyName + "字段不存在");
             MemberExpression memberPropExpr = Expression.Property(param, propertyInfo);
-
-
             return memberPropExpr;
         }
         public static PropertyInfo GetProperty(ParameterExpression param, string propertyName)
         {
             MemberExpression memberPropExpr = GetPropertyExpression(param, propertyName);
             PropertyInfo property = memberPropExpr.Member as PropertyInfo;
-
             return property;
         }
         //public enum Condition
@@ -265,14 +255,10 @@ namespace BingoX.DataAccessor
     }
     internal class BuildDynamicExpression<T> : BuildDynamicExpression
     {
-
-
         public static Expression<Func<T, object>> BuildOrderPredicate(string propertyName)
         {
-
             ParameterExpression param = CreateParameterExpression(typeof(T));
             var propertyExpression = GetPropertyExpression(param, propertyName);
-
             UnaryExpression expression = Expression.Convert(propertyExpression, typeof(object));
             Expression<Func<T, object>> orderByExpression = Expression.Lambda<Func<T, object>>(expression, param);
             return orderByExpression;
@@ -307,9 +293,7 @@ namespace BingoX.DataAccessor
             var predicate = Expression.Lambda<Func<T, bool>>(containsExpr, param);
             return predicate;
         }
-
     }
-
     public class DynamicSpecificationOption
     {
         static DynamicSpecificationOption()
@@ -416,7 +400,6 @@ namespace BingoX.DataAccessor
         public virtual bool IsSatisfiedBy(T entity)
         {
             return SearchPredicate.Compile().Invoke(entity);
-
         }
         public virtual OrderModelField<T>[] ToStorExpression()
         {
@@ -427,38 +410,31 @@ namespace BingoX.DataAccessor
             return SearchPredicate;
         }
 
+        #region condition
+
         public virtual Specification<T> And(Specification<T> rightExpression)
         {
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.AndAlso(SearchPredicate.Body, rightExpression.SearchPredicate.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             SearchPredicate = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
             return this;
         }
         public virtual Specification<T> Not(Specification<T> specification)
         {
-
-
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.NotEqual(SearchPredicate.Body, specification.SearchPredicate.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             SearchPredicate = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
             return this;
         }
 
         public virtual Specification<T> Or(Specification<T> specification)
         {
-
-
-
-
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.OrElse(SearchPredicate.Body, specification.SearchPredicate.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             SearchPredicate = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
             return this;
         }
 
@@ -468,7 +444,6 @@ namespace BingoX.DataAccessor
             var exprBody = Expression.AndAlso(SearchPredicate.Body, expression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
             SearchPredicate = Expression.Lambda<Func<T, bool>>(exprBody, paramExpr);
-
             return this;
         }
 
@@ -490,6 +465,7 @@ namespace BingoX.DataAccessor
             return this;
         }
 
+        #endregion
 
         #region Order
 

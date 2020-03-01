@@ -11,7 +11,9 @@ namespace BingoX.Domain
 
         void Raise<TDomainEvent>(TDomainEvent domainEvent) where TDomainEvent : IDomainEvent;
     }
-
+    /// <summary>
+    /// 表示一个领域聚合
+    /// </summary>
     public interface IAggregate
     {
 
@@ -19,5 +21,6 @@ namespace BingoX.Domain
 
     public class HandlesInlineAttribute : Attribute
     {
+
     }
 }
