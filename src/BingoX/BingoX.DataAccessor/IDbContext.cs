@@ -10,6 +10,6 @@ namespace BingoX.DataAccessor
     /// </summary>
     public interface IDbContext
     {
-        ISqlFacade SqlFacade { get; }
+       
     }
 }

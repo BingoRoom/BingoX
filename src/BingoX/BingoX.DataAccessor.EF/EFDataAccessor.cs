@@ -12,10 +12,11 @@ using System.Linq.Expressions;
 using System.Text;
 using BingoX.Helper;
 using System.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BingoX.DataAccessor.EF
 {
-    public abstract class EFDataAccessor<TEntity> : IDataAccessor<TEntity> where TEntity : class, IEntity<TEntity>
+    public abstract class EFDataAccessor<TEntity> : IDataAccessor<TEntity>, IDataAccessorInclude<TEntity> where TEntity : class, IEntity<TEntity>
     {
         protected readonly EfDbContext context;
 
@@ -29,8 +30,8 @@ namespace BingoX.DataAccessor.EF
         }
 
         protected internal DbSet<TEntity> DbSet { get; private set; }
-
-        IUnitOfWork IDataAccessor<TEntity>.UnitOfWork => unitOfWork;
+        public int Facade { get; set; }
+        public IUnitOfWork UnitOfWork => unitOfWork;
         /// <summary>
         /// 设置外键关联查询的委托
         /// </summary>
@@ -136,7 +137,7 @@ namespace BingoX.DataAccessor.EF
 
         public virtual int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
-            throw new NotImplementedException(); 
+            throw new NotImplementedException();
         }
 
         public virtual int Delete(Expression<Func<TEntity, bool>> whereLambda)
@@ -154,7 +155,43 @@ namespace BingoX.DataAccessor.EF
             return query.Take(num).ToList();
         }
 
-        private IQueryable<TEntity> OrderBy(IQueryable<TEntity> source, params OrderModelField<TEntity>[] orderByPropertyList)
+        public virtual IList<TEntity> QueryAll(Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            if (include == null) return QueryAll();
+            var query = include(DbSet.AsNoTracking<TEntity>());
+            return query.ToList<TEntity>();
+        }
+
+        public virtual IList<TEntity> PageList(ISpecification<TEntity> specification, ref int total, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            if (include == null) return PageList(specification, ref total);
+            var query = DbSet.AsNoTracking<TEntity>().Where(specification.ToExpression());
+            query = OrderBy(query, specification.ToStorExpression());
+            query = include(query);
+            total = query.Count();
+            if (specification.PageSize == 0) specification.PageSize = 20;
+            return query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize).ToList();
+        }
+
+        public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            if (include == null) return Where(whereLambda);
+            var query = include(DbSet.AsNoTracking<TEntity>().Where(whereLambda));
+            return query.ToList<TEntity>();
+        }
+
+        public virtual IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            if (include == null) return Take(whereLambda, num);
+            var query = DbSet.AsNoTracking<TEntity>();
+            if (whereLambda != null) query = query.Where(whereLambda);
+            query = include(query);
+            return query.Take(num).ToList();
+        }
+
+        public abstract TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include);
+
+        protected IQueryable<TEntity> OrderBy(IQueryable<TEntity> source, params OrderModelField<TEntity>[] orderByPropertyList)
         {
             if (orderByPropertyList.IsEmpty()) return source;
             IOrderedQueryable<TEntity> orderedQueryable;
@@ -166,6 +203,11 @@ namespace BingoX.DataAccessor.EF
                 orderedQueryable = item.IsDesc ? orderedQueryable.ThenBy(item.OrderPredicates) : orderedQueryable.ThenByDescending(item.OrderPredicates);
             }
             return orderedQueryable;
+        }
+
+        public ISqlFacade CreateSqlFacade()
+        {
+            return new EFSqlFacade(context);
         }
     }
 }

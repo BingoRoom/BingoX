@@ -9,7 +9,7 @@ namespace BingoX.DataAccessor
     /// <summary>
     /// 表示一个可通过SQL命令操作数据的接口
     /// </summary>
-    public interface ISqlFacade
+    public interface ISqlFacade: IUnitOfWork
     {
         /// <summary>
         /// 查询
@@ -30,7 +30,7 @@ namespace BingoX.DataAccessor
         /// </summary>
         /// <param name="sqlcommand">SQL命令</param>
         /// <returns></returns>
-        int ExecuteNonQuery(string sqlcommand);
+        void ExecuteNonQuery(string sqlcommand);
         /// <summary>
         /// 返回第一行第一列的指
         /// </summary>
@@ -38,9 +38,9 @@ namespace BingoX.DataAccessor
         /// <returns></returns>
         object ExecuteScalar(string sqlcommand);
         /// <summary>
-        /// 以事务批量执行SQL命令
+        /// 清除表数据
         /// </summary>
-        /// <param name="sqlcommands">SQL命令</param>
-        void TransactionExecute(IEnumerable<string> sqlcommands);
+        /// <typeparam name="TEntity"></typeparam>
+        void Truncate<TEntity>() where TEntity : class, IEntity<TEntity>;
     }
 }

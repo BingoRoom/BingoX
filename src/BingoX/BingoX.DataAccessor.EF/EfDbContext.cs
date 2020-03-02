@@ -7,65 +7,66 @@ using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 #endif
 using System.Collections.Generic;
+using System;
 
 namespace BingoX.DataAccessor.EF
 {
 #if Standard
     public abstract class EfDbContext : DbContext, IDbContext
     {
-        public EfDbContext(DbContextOptions options) :base(options)
+        public EfDbContext(DbContextOptions options) : base(options)
         {
-            RootContextData = new Dictionary<string, object>();
-            SqlFacade = new EFSqlFacade(this);
+           
         }
-        internal const string DIConst = "ServiceProvider";
-        public IDictionary<string, object> RootContextData { get; private set; }
-
-        public EFSqlFacade SqlFacade { get; private set; }
-
-        ISqlFacade IDbContext.SqlFacade { get { return SqlFacade; } }
-
-        public void SetServiceProvider(System.IServiceProvider serviceProvider)
-        {
-            if (RootContextData.ContainsKey(DIConst)) RootContextData[DIConst] = serviceProvider;
-            else RootContextData.Add(DIConst, serviceProvider);
-        }
-        public System.IServiceProvider GetServiceProvider()
-        {
-            return RootContextData.ContainsKey(DIConst) ? RootContextData[DIConst] as System.IServiceProvider : null;
-        }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
-    }
 #else
     public abstract class EfDbContext : System.Data.Entity.DbContext, IDbContext
     {
         public EfDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
         {
-            SqlFacade = new EFSqlFacade(this);
+         
         }
         public EfDbContext(string nameOrConnectionString, DbCompiledModel model) : base(nameOrConnectionString, model)
         {
-            SqlFacade = new EFSqlFacade(this);
+ 
         }
         public EfDbContext(DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection)
         {
-            SqlFacade = new EFSqlFacade(this);
+             
         }
         public EfDbContext(ObjectContext objectContext, bool dbContextOwnsObjectContext) : base(objectContext, dbContextOwnsObjectContext)
         {
-            SqlFacade = new EFSqlFacade(this);
+          
         }
         public EfDbContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection, model, contextOwnsConnection)
         {
-            SqlFacade = new EFSqlFacade(this);
+          
         }
-
-        public EFSqlFacade SqlFacade { get; private set; }
-
-        ISqlFacade IDbContext.SqlFacade { get { return SqlFacade; } }
-    }
 #endif
+   
+        /// <summary>
+        /// 服务提供其在辅助数据字典中的键名
+        /// </summary>
+        internal const string DIConst = "ServiceProvider";
+        /// <summary>
+        /// 数据库上下文辅助数据字典
+        /// </summary>
+        public IDictionary<string, object> RootContextData { get; private set; } = new Dictionary<string, object>();
+        /// <summary>
+        /// 设置服务提供器
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        public void SetServiceProvider(System.IServiceProvider serviceProvider)
+        {
+            if (RootContextData.ContainsKey(DIConst)) RootContextData[DIConst] = serviceProvider;
+            RootContextData.Add(DIConst, serviceProvider);
+        }
+        /// <summary>
+        /// 获取服务提供器
+        /// </summary>
+        /// <returns></returns>
+        public IServiceProvider GetServiceProvider()
+        {
+            return RootContextData.ContainsKey(DIConst) ? RootContextData[DIConst] as System.IServiceProvider : null;
+        }
+    }
 }

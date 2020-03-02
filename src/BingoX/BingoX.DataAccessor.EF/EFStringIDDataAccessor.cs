@@ -12,7 +12,7 @@ using System.Data;
 
 namespace BingoX.DataAccessor.EF
 {
-    public class EFStringIDDataAccessor<TEntity> : EFDataAccessor<TEntity> where TEntity : class, IStringEntity<TEntity>
+    public class EFStringIDDataAccessor<TEntity> : EFDataAccessor<TEntity>, IDataAccessorInclude<TEntity> where TEntity : class, IStringEntity<TEntity>
     {
         public EFStringIDDataAccessor(EfDbContext context) : base(context)
         {
@@ -53,6 +53,13 @@ namespace BingoX.DataAccessor.EF
                 count++;
             }
             return count;
+        }
+
+        public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            if (include == null) return GetId(id);
+            var query = include(DbSet.AsNoTracking<TEntity>());
+            return query.FirstOrDefault(n => n.ID == (string)id);
         }
     }
 }

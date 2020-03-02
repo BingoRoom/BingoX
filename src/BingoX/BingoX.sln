@@ -58,11 +58,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.EF.AspNetCore", "BingoX.EF.AspNetCore\BingoX.EF.AspNetCore.csproj", "{31F69133-1DE1-4F29-B18F-FD171C9B5C27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.DataAccessor", "BingoX.DataAccessor\BingoX.DataAccessor.csproj", "{05F3354E-1388-4432-ADFB-FB64CE60CEA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor", "BingoX.DataAccessor\BingoX.DataAccessor.csproj", "{05F3354E-1388-4432-ADFB-FB64CE60CEA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.DataAccessor.EF", "BingoX.DataAccessor.EF\BingoX.DataAccessor.EF.csproj", "{E354EC5B-E4C7-4570-A843-F917A17F39FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor.EF", "BingoX.DataAccessor.EF\BingoX.DataAccessor.EF.csproj", "{E354EC5B-E4C7-4570-A843-F917A17F39FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.DataAccessor.SqlSugar", "BingoX.DataAccessor.SqlSugar\BingoX.DataAccessor.SqlSugar.csproj", "{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor.SqlSugar", "BingoX.DataAccessor.SqlSugar\BingoX.DataAccessor.SqlSugar.csproj", "{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.Repository.AspNetCore", "BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj", "{AF1ADDF8-BC2E-4D1B-88AF-CB35D8A02887}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +152,10 @@ Global
 		{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF1ADDF8-BC2E-4D1B-88AF-CB35D8A02887}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF1ADDF8-BC2E-4D1B-88AF-CB35D8A02887}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF1ADDF8-BC2E-4D1B-88AF-CB35D8A02887}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF1ADDF8-BC2E-4D1B-88AF-CB35D8A02887}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,6 +187,7 @@ Global
 		{05F3354E-1388-4432-ADFB-FB64CE60CEA8} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{E354EC5B-E4C7-4570-A843-F917A17F39FC} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
+		{AF1ADDF8-BC2E-4D1B-88AF-CB35D8A02887} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AC5542E-6F29-4E50-8D92-569885541F99}

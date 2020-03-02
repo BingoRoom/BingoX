@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using BingoX.Helper;
 using System.Data;
+using System.Linq.Expressions;
 
 namespace BingoX.DataAccessor.EF
 {
-    public class EFGuidDataAccessor<TEntity> : EFDataAccessor<TEntity> where TEntity : class, IGuidEntity<TEntity>
+    public class EFGuidDataAccessor<TEntity> : EFDataAccessor<TEntity>, IDataAccessorInclude<TEntity> where TEntity : class, IGuidEntity<TEntity>
     {
         public EFGuidDataAccessor(EfDbContext context) : base(context)
         {
@@ -54,6 +55,13 @@ namespace BingoX.DataAccessor.EF
                 count++;
             }
             return count;
+        }
+
+        public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            if (include == null) return GetId(id);
+            var query = include(DbSet.AsNoTracking<TEntity>());
+            return query.FirstOrDefault(n => n.ID == (Guid)id);
         }
     }
 }
