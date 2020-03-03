@@ -19,7 +19,7 @@ namespace BingoX.DataAccessor
         /// </summary>
         /// <typeparam name="TDataAccessor">数据访问器类型</typeparam>
         /// <returns></returns>
-        IDataAccessor Create<TEntity, TDataAccessor>() where TDataAccessor : IDataAccessor where TEntity : class, IEntity<TEntity>;
+        TDataAccessor Create<TEntity, TDataAccessor>() where TDataAccessor : IDataAccessor<TEntity> where TEntity : class, IEntity<TEntity>;
         /// <summary>
         /// 创建一个指定DAO的数据访问器
         /// </summary>

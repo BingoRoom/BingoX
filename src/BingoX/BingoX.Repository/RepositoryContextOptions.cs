@@ -12,14 +12,19 @@ namespace BingoX.Repository
     /// </summary>
     public class RepositoryContextOptions
     {
+        public RepositoryContextOptions(IRepositoryMapper mapper)
+        {
+            DataAccessorFactories = new Dictionary<string, IDataAccessorFactory>();
+            Mapper = mapper;
+        }
         /// <summary>
         /// 数据操作器工厂集合
         /// </summary>
-        public Dictionary<string, IDataAccessorFactory> DataAccessorFactories { get; private set; }
+        public IDictionary<string, IDataAccessorFactory> DataAccessorFactories { get; private set; }
         /// <summary>
         /// 映射器。用于在仓储中领域实体与数据库实体间的相互映射
         /// </summary>
-        public IRepositoryMapper Mapper { get; set; }
+        public IRepositoryMapper Mapper { get; private set; }
         /// <summary>
         /// 添加关联查询委托
         /// </summary>

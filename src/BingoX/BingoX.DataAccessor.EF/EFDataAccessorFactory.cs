@@ -1,11 +1,6 @@
 ﻿using System;
 using BingoX.Helper;
 using BingoX.Domain;
-#if Standard
-using Microsoft.EntityFrameworkCore;
-#else
-using System.Data.Entity;
-#endif
 using System.Linq;
 
 namespace BingoX.DataAccessor.EF
@@ -13,20 +8,11 @@ namespace BingoX.DataAccessor.EF
     public class EFDataAccessorFactory<TContext> : IDataAccessorFactory where TContext : EfDbContext
     {
         private readonly IServiceProvider serviceProvider;
-#if Standard
-        private readonly DbContextOptions<TContext> dbContextOptions;
-
-        public EFDataAccessorFactory(IServiceProvider serviceProvider, DbContextOptions<TContext> dbContextOptions)
+        private readonly DataAccessorBuilderInfo dataAccessorBuilderInfo;
+        public EFDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo)
         {
-            this.dbContextOptions = dbContextOptions;
-#else
-        private readonly string connectionString;
-
-        public EFDataAccessorFactory(IServiceProvider serviceProvider, string connectionString)
-        {
-            this.connectionString = connectionString;
-#endif
             this.serviceProvider = serviceProvider;
+            this.dataAccessorBuilderInfo = dataAccessorBuilderInfo;
             dbcontext = CreateScopeDbContext();
             dbcontext.SetServiceProvider(serviceProvider);
         }
@@ -43,11 +29,7 @@ namespace BingoX.DataAccessor.EF
         {
             var constructor = typeof(TContext).GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
             if (constructor == null) throw new DataAccessorException("找不到符合条件的EfDbContext构造函数，创建数据库上下文失败");
-#if Standard
-            var context = FastReflectionExtensions.FastInvoke(constructor, dbContextOptions) as TContext;
-#else
-            var context = FastReflectionExtensions.FastInvoke(constructor, connectionString) as TContext;
-#endif
+            var context = FastReflectionExtensions.FastInvoke(constructor, dataAccessorBuilderInfo.DbContextOption) as TContext;
             return context;
         }
 
@@ -60,7 +42,9 @@ namespace BingoX.DataAccessor.EF
         {
             throw new NotImplementedException();
         }
-        public IDataAccessor Create<TEntity, TDataAccessor>() where TDataAccessor : IDataAccessor where TEntity : class, IEntity<TEntity>
+        public TDataAccessor Create<TEntity, TDataAccessor>()
+            where TEntity : class, IEntity<TEntity>
+            where TDataAccessor : IDataAccessor<TEntity>
         {
             throw new NotImplementedException();
         }

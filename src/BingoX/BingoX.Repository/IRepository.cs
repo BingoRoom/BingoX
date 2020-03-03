@@ -114,10 +114,17 @@ namespace BingoX.Repository
         /// 创建数据访问器
         /// </summary>
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
+        /// <typeparam name="TDataAccessor">数据访问器的派生接口类型</typeparam>
+        /// <param name="connName">连接字符串名称</param>
         /// <returns></returns>
-        public IDataAccessor<TEntity> CreateWrapper<TEntity>() where TEntity : class, IEntity<TEntity>
+        public TDataAccessor CreateWrapper<TEntity, TDataAccessor>(string connName = null) 
+            where TEntity : class, IEntity<TEntity>
+            where TDataAccessor : IDataAccessor<TEntity>
         {
-            return CreateWrapper<TEntity>(null);
+            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryOperationException("DataAccessorFactory集合为空");
+            var factory = string.IsNullOrEmpty(connName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[connName];
+            if (factory == null) throw new RepositoryOperationException("DataAccessorFactory集合为空");
+            return factory.Create<TEntity, TDataAccessor>();
         }
         /// <summary>
         /// 创建数据访问器
@@ -125,12 +132,12 @@ namespace BingoX.Repository
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
         /// <param name="connName">连接字符串名称</param>
         /// <returns></returns>
-        public IDataAccessor<TEntity> CreateWrapper<TEntity>(string connName) where TEntity : class, IEntity<TEntity>
+        public IDataAccessor<TEntity> CreateWrapper<TEntity>(string connName = null) where TEntity : class, IEntity<TEntity>
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryOperationException("DataAccessorFactory集合为空");
             var factory = string.IsNullOrEmpty(connName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[connName];
             if (factory == null) throw new RepositoryOperationException("DataAccessorFactory集合为空");
-            return factory.Create<TEntity>();
+            return factory.CreateByEntity<TEntity>();
         }
     }
 
