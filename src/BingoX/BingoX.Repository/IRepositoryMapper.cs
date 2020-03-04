@@ -11,8 +11,9 @@ namespace BingoX.Repository
     public interface IRepositoryMapper
     {
         TDestination ProjectTo<TSource, TDestination>(TSource obj);
+        TDestination ProjectTo<TDestination>(object obj);
 
-        IEnumerable<TDestination> ProjectToList<TSource, TDestination>(IEnumerable<TSource> list);
+        IList<TDestination> ProjectToList<TSource, TDestination>(IEnumerable<TSource> list);
 
         TDestination[] ProjectToArray<TSource, TDestination>(IEnumerable<TSource> list);
     }

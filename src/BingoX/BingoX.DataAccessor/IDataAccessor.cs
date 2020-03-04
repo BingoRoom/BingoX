@@ -6,23 +6,17 @@ using System.Linq.Expressions;
 
 namespace BingoX.DataAccessor
 {
+  
     /// <summary>
-    /// 表示一个数据访问器
+    /// 表示一个指定DAO的数据访问器
     /// </summary>
-    public interface IDataAccessor
+    /// <typeparam name="TEntity">DAO类型</typeparam>
+    public interface IDataAccessor<TEntity>  where TEntity :   IEntity<TEntity>
     {
         /// <summary>
         /// 事务单元
         /// </summary>
         IUnitOfWork UnitOfWork { get; }
-    }
-
-    /// <summary>
-    /// 表示一个指定DAO的数据访问器
-    /// </summary>
-    /// <typeparam name="TEntity">DAO类型</typeparam>
-    public interface IDataAccessor<TEntity> : IDataAccessor where TEntity : class, IEntity<TEntity>
-    {
         ISqlFacade CreateSqlFacade();
         /// <summary>
         /// 新增记录

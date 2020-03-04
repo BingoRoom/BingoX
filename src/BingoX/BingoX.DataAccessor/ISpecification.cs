@@ -11,7 +11,7 @@ namespace BingoX.DataAccessor
     /// 数据操作规格
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ISpecification<TEntity> where TEntity : class 
+    public interface ISpecification<TEntity> 
     {
 
         /// <summary>

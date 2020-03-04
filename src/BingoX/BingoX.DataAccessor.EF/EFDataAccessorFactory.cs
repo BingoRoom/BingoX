@@ -47,7 +47,7 @@ namespace BingoX.DataAccessor.EF
             throw new NotImplementedException();
         }
         public TDataAccessor Create<TEntity, TDataAccessor>()
-            where TEntity : class, IEntity<TEntity>
+            where TEntity :  IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
             var resultType = typeof(TDataAccessor);
@@ -62,7 +62,7 @@ namespace BingoX.DataAccessor.EF
             return FastReflectionExtensions.FastInvoke<TDataAccessor>(constructor, dbcontext);
         }
 
-        public IDataAccessor<TEntity> CreateByEntity<TEntity>() where TEntity : class, IEntity<TEntity>
+        public IDataAccessor<TEntity> CreateByEntity<TEntity>() where TEntity :  IEntity<TEntity>
         {
             var resultType = typeof(TEntity);
             if (cache.ContainsKey(resultType)) return FastReflectionExtensions.FastInvoke<IDataAccessor<TEntity>>(cache[resultType], dbcontext);

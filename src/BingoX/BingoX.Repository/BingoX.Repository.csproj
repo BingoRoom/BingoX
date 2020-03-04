@@ -24,6 +24,12 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="IRepositoryGuid.cs" />
+    <Compile Remove="IRepositoryIdentity.cs" />
+    <Compile Remove="IRepositorySnowflake.cs" />
+    <Compile Remove="IRepositoryStringID.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\BingoX.DataAccessor\BingoX.DataAccessor.csproj" />
     <ProjectReference Include="..\BingoX.Domain\BingoX.Domain.csproj" />
   </ItemGroup> 
