@@ -121,9 +121,9 @@ namespace BingoX.Repository
             where TEntity : class, IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
-            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryOperationException("DataAccessorFactory集合为空");
+            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
             var factory = string.IsNullOrEmpty(connName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[connName];
-            if (factory == null) throw new RepositoryOperationException("DataAccessorFactory集合为空");
+            if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
             return factory.Create<TEntity, TDataAccessor>();
         }
         /// <summary>
@@ -134,9 +134,9 @@ namespace BingoX.Repository
         /// <returns></returns>
         public IDataAccessor<TEntity> CreateWrapper<TEntity>(string connName = null) where TEntity : class, IEntity<TEntity>
         {
-            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryOperationException("DataAccessorFactory集合为空");
+            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
             var factory = string.IsNullOrEmpty(connName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[connName];
-            if (factory == null) throw new RepositoryOperationException("DataAccessorFactory集合为空");
+            if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
             return factory.CreateByEntity<TEntity>();
         }
     }
@@ -158,9 +158,9 @@ namespace BingoX.Repository
 
         private void Check()
         {
-            if (Wrapper == null) throw new RepositoryOperationException("数据访问器不存在");
+            if (Wrapper == null) throw new RepositoryException("数据访问器不存在");
             if (UnitOfWork == null) UnitOfWork = Wrapper.UnitOfWork;
-            if (!typeof(TEntity).IsAssignableFrom(typeof(TDomain)) && Mapper == null) throw new RepositoryOperationException("当TDomain与TEntity类型不同时Mapper不能为空");
+            if (!typeof(TEntity).IsAssignableFrom(typeof(TDomain)) && Mapper == null) throw new RepositoryException("当TDomain与TEntity类型不同时Mapper不能为空");
         }
 
         public virtual int Add(TDomain entity)

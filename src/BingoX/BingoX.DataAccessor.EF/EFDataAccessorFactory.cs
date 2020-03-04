@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using BingoX.Helper;
 using BingoX.Domain;
 using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace BingoX.DataAccessor.EF
 {
@@ -9,6 +12,7 @@ namespace BingoX.DataAccessor.EF
     {
         private readonly IServiceProvider serviceProvider;
         private readonly DataAccessorBuilderInfo dataAccessorBuilderInfo;
+        private static readonly IDictionary<Type, ConstructorInfo> cache = new Dictionary<Type, ConstructorInfo>();
         public EFDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo)
         {
             this.serviceProvider = serviceProvider;
@@ -46,11 +50,22 @@ namespace BingoX.DataAccessor.EF
             where TEntity : class, IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
-            throw new NotImplementedException();
+            var resultType = typeof(TDataAccessor);
+            if (cache.ContainsKey(resultType)) return FastReflectionExtensions.FastInvoke<TDataAccessor>(cache[resultType], dbcontext);
+            if (resultType.Equals(typeof(IDataAccessor<TEntity>)) || !resultType.IsInterface) throw new DataAccessorException($"{nameof(TDataAccessor)}必须为{nameof(IDataAccessor<TEntity>)}的派生接口");
+            var types = dataAccessorBuilderInfo.DataAccessorAssembly.GetImplementedClass<TDataAccessor>();
+            if (types.Length == 0) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类");
+            var implClass = types[0];
+            var constructor = implClass.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
+            if(constructor == null) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类适合的构造器");
+            cache.Add(resultType, constructor);
+            return FastReflectionExtensions.FastInvoke<TDataAccessor>(constructor, dbcontext);
         }
 
         public IDataAccessor<TEntity> CreateByEntity<TEntity>() where TEntity : class, IEntity<TEntity>
         {
+            var resultType = typeof(TEntity);
+            if (cache.ContainsKey(resultType)) return FastReflectionExtensions.FastInvoke<IDataAccessor<TEntity>>(cache[resultType], dbcontext);
             Type typeDataAccessor = null;
             if (typeof(TEntity).IsAssignableFrom(typeof(IGuidEntity<TEntity>)))
             {
@@ -71,6 +86,7 @@ namespace BingoX.DataAccessor.EF
             if (typeDataAccessor == null) throw new DataAccessorException("不支持的TEntity泛型类型，构建DataAccessor失败。TEntity的类型必须派生于IGuidEntity、IIdentityEntity、ISnowflakeEntity、IStringEntity。");
             var constructor = typeDataAccessor.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
             if (constructor == null) throw new DataAccessorException("找不到符合条件的DataAccessor构造函数，创建数据库上下文失败");
+            cache.Add(resultType, constructor);
             return FastReflectionExtensions.FastInvoke(constructor, dbcontext) as IDataAccessor<TEntity>;
         }
     }

@@ -17,7 +17,7 @@ namespace BingoX.DataAccessor
         /// <summary>
         /// 创建一个数据访问器
         /// </summary>
-        /// <typeparam name="TDataAccessor">数据访问器类型</typeparam>
+        /// <typeparam name="TDataAccessor">派生于IDataAccessor<TEntity>的接口</typeparam>
         /// <returns></returns>
         TDataAccessor Create<TEntity, TDataAccessor>() where TDataAccessor : IDataAccessor<TEntity> where TEntity : class, IEntity<TEntity>;
         /// <summary>

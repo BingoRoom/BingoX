@@ -7,7 +7,7 @@ namespace BingoX.DataAccessor
     /// 表示一个关于数据访问器的异常
     /// </summary>
     [Serializable]
-    public class DataAccessorException : System.Data.Common.DbException
+    public class DataAccessorException : LogicException
     {
         public DataAccessorException() { }
         public DataAccessorException(string message) : base(message) { }
