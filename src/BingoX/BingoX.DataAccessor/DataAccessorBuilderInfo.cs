@@ -29,9 +29,13 @@ namespace BingoX.DataAccessor
         /// </summary>
         public Assembly DataAccessorAssembly { get; set; }
         /// <summary>
-        /// 仓储程序集
+        /// 仓储接口程序集
         /// </summary>
         public Assembly RepositoryAssembly { get; set; }
+        /// <summary>
+        /// 是否为合并领域实体与数据库实体的模式
+        /// </summary>
+        public bool IsMergeDomianAndDao { get; set; } = true;
         /// <summary>
         /// 数据库拦截器集合
         /// </summary>
@@ -47,10 +51,10 @@ namespace BingoX.DataAccessor
         /// <summary>
         /// 自定义的数据库连接字符串名
         /// </summary>
-        public string CustomConnName { get; set; }
+        public string CustomConnectionName { get; set; }
         /// <summary>
         /// AppSetting.json定义的数据库连接字符串名
         /// </summary>
-        public string AppSettingConnName { get; set; }
+        public string AppSettingConnectionName { get; set; }
     }
 }

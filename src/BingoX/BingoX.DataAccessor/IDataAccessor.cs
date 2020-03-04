@@ -17,6 +17,10 @@ namespace BingoX.DataAccessor
         /// 事务单元
         /// </summary>
         IUnitOfWork UnitOfWork { get; }
+        /// <summary>
+        /// 创建SQL命令门面
+        /// </summary>
+        /// <returns></returns>
         ISqlFacade CreateSqlFacade();
         /// <summary>
         /// 新增记录

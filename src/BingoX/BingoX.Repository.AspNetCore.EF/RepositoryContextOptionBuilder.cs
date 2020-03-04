@@ -10,22 +10,21 @@ using BingoX.DataAccessor.EF;
 using BingoX.Helper;
 using BingoX.ComponentModel;
 using System;
+using BingoX.Domain;
 
-namespace BingoX.AspNetCoreInject.EF
+namespace BingoX.Repository.AspNetCore.EF
 {
     /// <summary>
     /// 仓储上下文选项构建器
     /// </summary>
     public class RepositoryContextOptionBuilder
     {
-        private readonly IServiceCollection services;
+         
 
-        private static readonly IDictionary<Type, Type> repositoryMappingCache = new Dictionary<Type, Type>();
-
-        public RepositoryContextOptionBuilder(IServiceCollection services)
+        public RepositoryContextOptionBuilder( )
         {
             dataAccessorBuilderInfos = new DataAccessorBuilderInfoColletion();
-            this.services = services;
+            
         }
         /// <summary>
         /// 数据访问器构建器信息集合
@@ -52,13 +51,17 @@ namespace BingoX.AspNetCoreInject.EF
                 var factoryType = typeof(EFDataAccessorFactory<>).MakeGenericType(item.DbContextType);
                 var constructor = factoryType.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 2);
                 if (constructor == null) throw new StartupSettingException("找不符合条件的DataAccessorFactory构造器");
-                IDataAccessorFactory factory = FastReflectionExtensions.FastInvoke(constructor, services, item) as IDataAccessorFactory;
+                IDataAccessorFactory factory = FastReflectionExtensions.FastInvoke(constructor, "", item) as IDataAccessorFactory;
                 if(factory == null) throw new StartupSettingException("IDataAccessorFactory失败");
-                dict.Add(item.CustomConnName, factory);
+                dict.Add(item.CustomConnectionName, factory);
             }
             return dict;
         }
-
+        /// <summary>
+        /// 构建仓储上下文选项
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public RepositoryContextOptions CreateRepositoryContextOptions(IDictionary<string, IDataAccessorFactory> dict)
         {
             if (Mapper == null) throw new RepositoryException("IRepositoryMapper为空，构建仓储失败");
@@ -69,34 +72,41 @@ namespace BingoX.AspNetCoreInject.EF
             }
             return rco;
         }
-
-        public IDictionary<Type, Type> CreateRepositoryMapping(IServiceCollection services)
+        /// <summary>
+        /// 构建自定义仓储的类型
+        /// </summary>
+        /// <returns></returns>
+        public IList<Type> CreateRepositoryType()
         {
-            IDictionary<Type, Type> dict = new Dictionary<Type, Type>();
+            List<Type> list = new List<Type>();
             foreach (var item in dataAccessorBuilderInfos)
             {
                 if (item.RepositoryAssembly == null) throw new StartupSettingException("未配置仓储程序集");
-                if (item.DomainEntityAssembly == null) throw new StartupSettingException("未配置领域实体、聚合程序集");
-                var assemblyScanInterface = new AssemblyScanInterface(item.RepositoryAssembly, typeof(IRepository));
-                var customRepositoryTypes = assemblyScanInterface.Find();
-                if (!customRepositoryTypes.Any()) continue;
-                foreach (var crt in customRepositoryTypes)
-                {
-                    if (repositoryMappingCache.ContainsKey(crt))
-                    {
-                        dict.Add(crt, repositoryMappingCache[crt]);
-                        continue;
-                    }
-                    var assemblyScanClass = new AssemblyScanClass(item.RepositoryAssembly, crt);
-                    var customRepositoryImpl = assemblyScanClass.Find();
-                    if (!customRepositoryImpl.Any()) continue;
-                    repositoryMappingCache.Add(crt, customRepositoryImpl[0]);
-                    dict.Add(crt, customRepositoryImpl[0]);
-                }
-                //todo 这里反射出所有领域实体、聚合、值对像的类型并为其指定使用公共仓储实现
-
+                var assemblyScanClass = new AssemblyScanClass(item.RepositoryAssembly, typeof(IRepository));
+                list.AddRange(assemblyScanClass.Find());
             }
-            return dict;
+            return list;
+        }
+        /// <summary>
+        /// 构建未实现仓储的领域实体的仓储类型
+        /// </summary>
+        /// <returns></returns>
+        public IList<Type> CreateBaseRepositoryType()
+        {
+            List<Type> list = new List<Type>();
+            foreach (var item in dataAccessorBuilderInfos)
+            {
+                if (!item.IsMergeDomianAndDao) continue;
+                if (item.DomainEntityAssembly == null) throw new StartupSettingException("未配置领域实体、聚合程序集");
+                var assemblyScanClass = new AssemblyScanClass(item.RepositoryAssembly, typeof(IDomainEntry));
+                var domainEntryTypes = assemblyScanClass.Find();
+                foreach (var domainEntryType in domainEntryTypes)
+                {
+                    var type = typeof(Repository<>).MakeGenericType(domainEntryType);
+                    list.Add(type);
+                }
+            }
+            return list;
         }
     }
 }
