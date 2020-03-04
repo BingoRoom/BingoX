@@ -121,6 +121,15 @@ namespace BingoX.ComponentModel
     }
     public class AssemblyScanResult
     {
+        public AssemblyScanResult()
+        {
+
+        }
+        public AssemblyScanResult(Type baseType, Type implementedType)
+        {
+            BaseType = baseType;
+            ImplementedType = implementedType;
+        }
         public Type BaseType { get; internal set; }
 
         public Type ImplementedType { get; internal set; }

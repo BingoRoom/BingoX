@@ -13,23 +13,24 @@ namespace BingoX.DataAccessor.EF
         private readonly IServiceProvider serviceProvider;
         private readonly DataAccessorBuilderInfo dataAccessorBuilderInfo;
         private static readonly IDictionary<Type, ConstructorInfo> cache = new Dictionary<Type, ConstructorInfo>();
-        public EFDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo)
+        public EFDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo, string connectionString)
         {
             this.serviceProvider = serviceProvider;
             this.dataAccessorBuilderInfo = dataAccessorBuilderInfo;
-            dbcontext = CreateScopeDbContext();
+            ConnectionString = connectionString;
+            dbcontext = CreateDbContext();
             dbcontext.SetServiceProvider(serviceProvider);
         }
         /// <summary>
         /// 数据库上下文
         /// </summary>
-        public TContext dbcontext { get; set; }
+        public TContext dbcontext { get;private set; }
         /// <summary>
         /// 连接字符串名称
         /// </summary>
-        public string ConnectionName { get; protected set; }
+        public string ConnectionString { get; protected set; }
 
-        private TContext CreateScopeDbContext()
+        private TContext CreateDbContext()
         {
             var constructor = typeof(TContext).GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
             if (constructor == null) throw new DataAccessorException("找不到符合条件的EfDbContext构造函数，创建数据库上下文失败");

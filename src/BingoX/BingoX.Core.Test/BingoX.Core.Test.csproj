@@ -13,6 +13,7 @@
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.1" />
     <PackageReference Include="nunit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
@@ -21,10 +22,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BingoX.Core.Extension\BingoX.Core.Extension.csproj" />
-    <ProjectReference Include="..\BingoX.Core\BingoX.Core.csproj" />
-    <ProjectReference Include="..\BingoX.EF.AspNetCore\BingoX.EF.AspNetCore.csproj" />
-    <ProjectReference Include="..\BingoX.EF\BingoX.EF.csproj" />
-    <ProjectReference Include="..\BingoX.Repository\BingoX.Repository.csproj" />
+    <ProjectReference Include="..\BingoX.Repository.AspNetCore.EF\BingoX.Repository.AspNetCore.EF.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="RepositoryTest\appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

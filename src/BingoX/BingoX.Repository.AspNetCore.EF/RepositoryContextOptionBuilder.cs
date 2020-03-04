@@ -19,9 +19,7 @@ namespace BingoX.Repository.AspNetCore.EF
     /// </summary>
     public class RepositoryContextOptionBuilder
     {
-         
-
-        public RepositoryContextOptionBuilder( )
+        public RepositoryContextOptionBuilder()
         {
             dataAccessorBuilderInfos = new DataAccessorBuilderInfoColletion();
             
@@ -43,15 +41,16 @@ namespace BingoX.Repository.AspNetCore.EF
         /// 创建数据访问器工厂
         /// </summary>
         /// <returns></returns>
-        public IDictionary<string, IDataAccessorFactory> CreateDataAccessorFactories()
+        public IDictionary<string, IDataAccessorFactory> CreateDataAccessorFactories(IServiceProvider serviceProvider, IConfiguration config)
         {
             IDictionary<string, IDataAccessorFactory> dict = new Dictionary<string, IDataAccessorFactory>();
             foreach (var item in dataAccessorBuilderInfos)
             {
+                var connectionString = config.GetConnectionString(item.AppSettingConnectionName);
                 var factoryType = typeof(EFDataAccessorFactory<>).MakeGenericType(item.DbContextType);
                 var constructor = factoryType.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 2);
                 if (constructor == null) throw new StartupSettingException("找不符合条件的DataAccessorFactory构造器");
-                IDataAccessorFactory factory = FastReflectionExtensions.FastInvoke(constructor, "", item) as IDataAccessorFactory;
+                IDataAccessorFactory factory = FastReflectionExtensions.FastInvoke(constructor, serviceProvider, item, connectionString) as IDataAccessorFactory;
                 if(factory == null) throw new StartupSettingException("IDataAccessorFactory失败");
                 dict.Add(item.CustomConnectionName, factory);
             }
@@ -91,22 +90,49 @@ namespace BingoX.Repository.AspNetCore.EF
         /// 构建未实现仓储的领域实体的仓储类型
         /// </summary>
         /// <returns></returns>
-        public IList<Type> CreateBaseRepositoryType()
+        public IList<AssemblyScanResult> CreateBaseRepositoryType()
         {
-            List<Type> list = new List<Type>();
+            List<AssemblyScanResult> list = new List<AssemblyScanResult>();
             foreach (var item in dataAccessorBuilderInfos)
             {
                 if (!item.IsMergeDomianAndDao) continue;
                 if (item.DomainEntityAssembly == null) throw new StartupSettingException("未配置领域实体、聚合程序集");
-                var assemblyScanClass = new AssemblyScanClass(item.RepositoryAssembly, typeof(IDomainEntry));
+                var assemblyScanClass = new AssemblyScanClass(item.DomainEntityAssembly, typeof(IDomainEntry));
                 var domainEntryTypes = assemblyScanClass.Find();
                 foreach (var domainEntryType in domainEntryTypes)
                 {
-                    var type = typeof(Repository<>).MakeGenericType(domainEntryType);
-                    list.Add(type);
+                    var type = typeof(IRepository<>).MakeGenericType(domainEntryType);
+                    var impltype = typeof(Repository<>).MakeGenericType(domainEntryType);
+                    list.Add(new AssemblyScanResult(type,  impltype));
                 }
             }
             return list;
+        }
+
+        /// <summary>
+        /// 注入数据库拦截器
+        /// </summary>
+        /// <param name="services"></param>
+        public void InjectDbIntercepts(IServiceCollection services)
+        {
+            foreach (var options in dataAccessorBuilderInfos)
+            {
+                foreach (var item in options.Intercepts.OfType<DbEntityInterceptAttribute>().Where(n => n.DI != InterceptDIEnum.None))
+                {
+                    switch (item.DI)
+                    {
+                        case InterceptDIEnum.Scoped:
+                            services.AddScoped(item.AopType);
+                            break;
+                        case InterceptDIEnum.Singleton:
+                            services.AddSingleton(item.AopType);
+                            break;
+                        case InterceptDIEnum.Transient:
+                            services.AddTransient(item.AopType);
+                            break;
+                    }
+                }
+            }
         }
     }
 }

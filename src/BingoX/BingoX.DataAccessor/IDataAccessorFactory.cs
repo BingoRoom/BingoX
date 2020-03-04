@@ -13,7 +13,7 @@ namespace BingoX.DataAccessor
         /// <summary>
         /// 连接字符串名称
         /// </summary>
-        string ConnectionName { get; }
+        string ConnectionString { get; }
         /// <summary>
         /// 创建一个数据访问器
         /// </summary>

@@ -64,7 +64,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor.EF", "B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor.SqlSugar", "BingoX.DataAccessor.SqlSugar\BingoX.DataAccessor.SqlSugar.csproj", "{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.Repository.AspNetCore.EF", "BingoX.Repository.AspNetCore.EF\BingoX.Repository.AspNetCore.EF.csproj", "{428607E3-7960-4936-8000-E369AA0324BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.Repository.AspNetCore.EF", "BingoX.Repository.AspNetCore.EF\BingoX.Repository.AspNetCore.EF.csproj", "{428607E3-7960-4936-8000-E369AA0324BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
