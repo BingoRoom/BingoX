@@ -1,12 +1,14 @@
 ﻿using BingoX.Domain;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace BingoX.DataAccessor
 {
-  
+
     /// <summary>
     /// 表示一个指定DAO的数据访问器
     /// </summary>
@@ -22,6 +24,10 @@ namespace BingoX.DataAccessor
         /// </summary>
         /// <returns></returns>
         ISqlFacade CreateSqlFacade();
+        /// <summary>
+        /// 设置局部表关联查询委托
+        /// </summary>
+        Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
         /// <summary>
         /// 新增记录
         /// </summary>

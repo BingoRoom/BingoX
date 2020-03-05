@@ -66,6 +66,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor.SqlSuga
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.Repository.AspNetCore.EF", "BingoX.Repository.AspNetCore.EF\BingoX.Repository.AspNetCore.EF.csproj", "{428607E3-7960-4936-8000-E369AA0324BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.Repository.AspNetCore", "BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj", "{38F33812-788D-434E-8590-F28049E8B44C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,10 @@ Global
 		{428607E3-7960-4936-8000-E369AA0324BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{428607E3-7960-4936-8000-E369AA0324BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{428607E3-7960-4936-8000-E369AA0324BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F33812-788D-434E-8590-F28049E8B44C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F33812-788D-434E-8590-F28049E8B44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F33812-788D-434E-8590-F28049E8B44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F33812-788D-434E-8590-F28049E8B44C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,6 +194,7 @@ Global
 		{E354EC5B-E4C7-4570-A843-F917A17F39FC} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{428607E3-7960-4936-8000-E369AA0324BF} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
+		{38F33812-788D-434E-8590-F28049E8B44C} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AC5542E-6F29-4E50-8D92-569885541F99}

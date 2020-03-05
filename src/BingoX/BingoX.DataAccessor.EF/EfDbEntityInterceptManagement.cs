@@ -16,97 +16,17 @@ using System.Collections.Generic;
 
 namespace BingoX.DataAccessor.EF
 {
-    public class EfDbEntityInterceptManagement
+    /// <summary>
+    /// 数据库拦截器管理器
+    /// </summary>
+    public class EfDbEntityInterceptManagement : DbEntityInterceptManagement
     {
-        private readonly IDictionary<Type, IEnumerable<DbEntityInterceptAttribute>> dictionary = new Dictionary<Type, IEnumerable<DbEntityInterceptAttribute>>();
-        private readonly List<DbEntityInterceptAttribute> global = new List<DbEntityInterceptAttribute>();
-        private readonly IServiceProvider serviceProvider;
-
-        public EfDbEntityInterceptManagement(IServiceProvider serviceProvider)
+        public EfDbEntityInterceptManagement(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            this.serviceProvider = serviceProvider;
-
+            
         }
-        T GetService<T>(Type type)
-        {
-            object obj = null;
-#if Standard
-            obj = serviceProvider.GetRequiredService(type);
-#else
-            obj = serviceProvider.GetService(type);
-#endif
-            if (obj is T) return (T)obj;
-            return default(T);
-        }
-        object GetService(Type type)
-        {
-            object obj = null;
-#if Standard
-            obj = serviceProvider.GetRequiredService(type);
-#else
-            obj = serviceProvider.GetService(type);
-#endif
-            return obj;
-        }
-
-        public IEnumerable<IDbEntityIntercept> GetAops(Type entityType)
-        {
-            var attributes = GetAttributes(entityType);
-            if (attributes.IsEmpty()) return null;
-            var aops = attributes.Select(n =>
-            {
-                var intercept = n.Intercept;
-                if (intercept == null) intercept = GetService<IDbEntityIntercept>(n.AopType);
-
-                if (intercept == null)
-                {
-                    var constructor = n.AopType.GetConstructors().FirstOrDefault();
-                    var par = constructor.GetParameters();
-                    if (par.Length == 0) intercept = constructor.Invoke(null) as IDbEntityIntercept;
-                    else
-                    {
-                        var parms = par.Select(x => GetService(x.ParameterType)).ToArray();
-                        intercept = constructor.Invoke(parms) as IDbEntityIntercept;
-                    }
-                }
-                return intercept;
-            }).Where(n => n != null);
-            return aops;
-        }
-
-        public IEnumerable<DbEntityInterceptAttribute> GetAttributes(Type entityType)
-        {
-            if (entityType == null)
-            {
-                throw new ArgumentNullException(nameof(entityType));
-            }
-
-            IEnumerable<DbEntityInterceptAttribute> intercepts;
-            if (dictionary.ContainsKey(entityType))
-            {
-                intercepts = dictionary[entityType];
-            }
-            else
-            {
-                intercepts = entityType.GetCustomAttributesIncludeBaseType<DbEntityInterceptAttribute>().ToArray();
-                dictionary.Add(entityType, intercepts);
-            }
-            return global.Union(intercepts).ToArray();
-        }
-
-        public void AddGlobalIntercept(Type dbEntityIntercept)
-        {
-            if (!typeof(IDbEntityIntercept).IsAssignableFrom(dbEntityIntercept)) throw new LogicException("类型不为IDbEntityIntercept");
-            global.Add(new DbEntityInterceptAttribute(dbEntityIntercept));
-        }
-        public void AddGlobalIntercept(DbEntityInterceptAttribute dbEntityIntercept)
-        {
-            global.Add(dbEntityIntercept);
-        }
-        public void AddRangeGlobalIntercepts(IEnumerable<DbEntityInterceptAttribute> dbEntityIntercepts)
-        {
-            global.AddRange(dbEntityIntercepts);
-        }
+        
+       
 #if Standard
         private static IDictionary<string, object> ToDic(PropertyValues dbPropertyValues)
         {

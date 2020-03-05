@@ -1,8 +1,10 @@
 ﻿using BingoX.DataAccessor;
 using BingoX.DataAccessor.EF;
 using BingoX.Domain;
+using BingoX.Generator;
 using BingoX.Helper;
 using BingoX.Repository;
+using BingoX.Repository.AspNetCore;
 using BingoX.Repository.AspNetCore.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,8 +24,11 @@ namespace BingoX.Core.Test.RepositoryTest
     [TestFixture]
     public class EfTest
     {
-        [Test]
+        IServiceProvider serviceProvider;  
+        RepositoryContextOptionBuilderInfo options;
 
+
+        [Test]
         public void TestAopAtt()
         {
             ServiceCollection services = new ServiceCollection();
@@ -31,12 +36,13 @@ namespace BingoX.Core.Test.RepositoryTest
                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var Configuration = builder.Build();
-            RepositoryContextOptionBuilder options = null;
-            const string conn = "";
+
+            const string conn = "Data Source =localhost;Initial Catalog = BingoTest_DB;persist security info=True;;user id = sa;password = sasa;";
             services.AddRepository(Configuration, n =>
             {
-                n.dataAccessorBuilderInfos.Add(
-                    dbi => {
+                n.AddEF(
+                    dbi =>
+                    {
                         dbi.CustomConnectionName = "test";
                         dbi.AppSettingConnectionName = "DefaultConnection";
                         dbi.DataAccessorAssembly = GetType().Assembly;
@@ -46,17 +52,16 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.RepositoryAssembly = GetType().Assembly;
                         dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
                         dbi.Intercepts.Add(new AopUser());
-                        dbi.DbContextOption = new DbContextOptionsBuilder<DbBoundedContext>().UseSqlServer(conn);
+                        dbi.DbContextOption = new DbContextOptionsBuilder<DbBoundedContext>().UseSqlServer(conn).Options;
                     }
                 );
                 options = n;
             });
 
-            var factory = new Microsoft.Extensions.DependencyInjection.DefaultServiceProviderFactory();
-            var serviceProvider = factory.CreateServiceProvider(services);
+            serviceProvider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
 
             var manage = serviceProvider.GetService<EfDbEntityInterceptManagement>();
-
+            Assert.IsNotNull(manage);
             var global = options.dataAccessorBuilderInfos[0].Intercepts.OfType<DbEntityInterceptAttribute>();
             manage.AddRangeGlobalIntercepts(global);
             var attributes = manage.GetAttributes(typeof(Account)).ToArray();
@@ -68,23 +73,83 @@ namespace BingoX.Core.Test.RepositoryTest
 
             var dbBoundedContext = serviceProvider.GetService<DbBoundedContext>();
             Assert.IsNotNull(dbBoundedContext);
+
+            var accountRepository = serviceProvider.GetService<AccountRepository>();
+            Assert.IsNotNull(accountRepository);
+
+            var roleRepository = serviceProvider.GetService<IRepository<Role>>();
+            Assert.IsNotNull(roleRepository);
+
+            roleRepository.Add(new Role()
+            {
+                RoleCode = "admin",
+                RoleName = "管理员"
+            });
+            roleRepository.UnitOfWork.Commit();
+
+            var roles = roleRepository.Where(n => n.RoleCode == "admin");
+            Assert.AreEqual(roles.Count(), 1);
+            Assert.IsNotNull(roles[0]);
+            Assert.AreEqual(roles[0].RoleCode, "admin");
+            Assert.AreEqual(roles[0].RoleName, "管理员");
+
+            DateTime dateTimeInit = DateTime.Now;
+
+            accountRepository.Add(new Account() 
+            { 
+                Name = "黄彬",
+                Age = 35,
+                RoleId = roles[0].ID,
+                Role = roles[0]
+            });
+            accountRepository.UnitOfWork.Commit();
+
+            var accounts = accountRepository.Where(n => n.Name == "黄彬" && n.CreatedDate > dateTimeInit);
+            Assert.AreEqual(accounts.Count(), 1);
+            Assert.IsNotNull(accounts[0]);
+            Assert.IsNotNull(accounts[0].Role);
+            Assert.AreEqual(accounts[0].Name, "黄彬");
+            Assert.AreEqual(accounts[0].Age, "35");
+            Assert.AreEqual(accounts[0].Role.RoleCode, "admin");
+            Assert.AreEqual(accounts[0].Role.RoleName, "管理员");
+
+            DateTime dateTimeAdded = accounts[0].ModifyDate;
+
+            accounts[0].Name = "张三";
+            accounts[0].Age = 22;
+            accountRepository.UpdateRange(accounts);
+            accountRepository.UnitOfWork.Commit();
+
+            accounts = accountRepository.Where(n => n.Name == "张三");
+            Assert.AreEqual(accounts.Count(), 1);
+            Assert.IsNotNull(accounts[0]);
+            Assert.IsNotNull(accounts[0].Role);
+            Assert.AreEqual(accounts[0].Name, "张三");
+            Assert.AreEqual(accounts[0].Age, "22");
+
+            DateTime dateTimeModified = accounts[0].ModifyDate;
+
+            Assert.GreaterOrEqual(dateTimeModified, dateTimeAdded);
         }
     }
-
 
     public class BaseEntityTest
     {
         public long ID { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Created { get; set; }
+        public DateTime ModifyDate { get; set; }
+        public string Modify { get; set; }
     }
 
     public class AccountRepository : Repository<Account>
     {
         public AccountRepository(RepositoryContextOptions context) : base(context)
         {
+            Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
     }
+
     public class Role : BaseEntityTest, ISnowflakeEntity<Role>, IDomainEntry
     {
         public string RoleCode { get; set; }
@@ -146,6 +211,8 @@ namespace BingoX.Core.Test.RepositoryTest
             builder.HasKey("ID");
             builder.Property("CreatedDate").IsRequired();
             builder.Property("Created").IsRequired();
+            builder.Property("ModifyDate").IsRequired();
+            builder.Property("Modify").IsRequired();
             OnConfigure(builder);
         }
 
@@ -162,7 +229,12 @@ namespace BingoX.Core.Test.RepositoryTest
 
         public void OnAdd(DbEntityCreateInfo info)
         {
-            throw new NotImplementedException();
+            SnowflakeGenerator snowflake = new SnowflakeGenerator(1, 1, 1);
+            info.SetValue("ID", snowflake.New());
+            info.SetValue("CreatedDate", DateTime.Now);
+            info.SetValue("Created", "创建者");
+            info.SetValue("ModifyDate", DateTime.Now);
+            info.SetValue("Modify", "修改者");
         }
 
         public void OnDelete(DbEntityDeleteInfo info)
@@ -172,7 +244,8 @@ namespace BingoX.Core.Test.RepositoryTest
 
         public void OnModifiy(DbEntityChangeInfo info)
         {
-            throw new NotImplementedException();
+            info.SetValue("ModifyDate", DateTime.Now);
+            info.SetValue("Modify", "修改者");
         }
     }
     class AopCreatedInfo : IDbEntityIntercept

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BingoX.Repository.AspNetCore.EF
+namespace BingoX.Repository.AspNetCore
 {
     [Serializable]
     public class StartupSettingException : LogicException

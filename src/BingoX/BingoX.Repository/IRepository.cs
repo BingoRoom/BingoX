@@ -100,6 +100,42 @@ namespace BingoX.Repository
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
         int Delete(TDomain entity);
+        /// <summary>
+        /// 根据条件查询记录
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        IList<TDomain> Where(Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 根据条件判断记录是否存在
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        bool Exist(Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 根据条件更新记录
+        /// </summary>
+        /// <param name="update">如何更新实体的委托</param>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 根据条件删除记录
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        int Delete(Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 返回查询结果的前N条
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <param name="num">返回记录条数</param>
+        /// <returns></returns>
+        IList<TDomain> Take(Expression<Func<TEntity, bool>> whereLambda, int num);
     }
     public sealed class UnitOfWork : IUnitOfWork
     {
@@ -170,14 +206,14 @@ namespace BingoX.Repository
         /// </summary>
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
         /// <typeparam name="TDataAccessor">数据访问器的派生接口类型</typeparam>
-        /// <param name="connName">连接字符串名称</param>
+        /// <param name="dbName">连接字符串名称</param>
         /// <returns></returns>
-        public TDataAccessor CreateWrapper<TEntity, TDataAccessor>(string connName = null)
+        public TDataAccessor CreateWrapper<TEntity, TDataAccessor>(string dbName = null)
             where TEntity : class, IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
-            var factory = string.IsNullOrEmpty(connName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[connName];
+            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
             if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
             var dataAccessor = factory.Create<TEntity, TDataAccessor>();
             UnitOfWork.Add(dataAccessor.UnitOfWork);
@@ -187,12 +223,12 @@ namespace BingoX.Repository
         /// 创建数据访问器
         /// </summary>
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
-        /// <param name="connName">连接字符串名称</param>
+        /// <param name="dbName">连接字符串名称</param>
         /// <returns></returns>
-        public IDataAccessor<TEntity> CreateWrapper<TEntity>(string connName = null) where TEntity : IEntity<TEntity>
+        public IDataAccessor<TEntity> CreateWrapper<TEntity>(string dbName = null) where TEntity : IEntity<TEntity>
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
-            var factory = string.IsNullOrEmpty(connName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[connName];
+            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
             if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
             var dataAccessor = factory.CreateByEntity<TEntity>();
             UnitOfWork.Add(dataAccessor.UnitOfWork);
@@ -294,6 +330,37 @@ namespace BingoX.Repository
             var entities = this.ProjectToList<TDomain, TEntity>(domains);
             return Wrapper.UpdateRange(entities);
 
+        }
+
+        public virtual IList<TDomain> Where(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            Check();
+            var domainEntities = Wrapper.Where(whereLambda);
+            return this.ProjectToList<TEntity,TDomain>(domainEntities);
+        }
+
+        public virtual bool Exist(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            Check();
+            return Wrapper.Exist(whereLambda);
+        }
+
+        public virtual int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual int Delete(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            Check();
+            return Wrapper.Delete(whereLambda);
+        }
+
+        public virtual IList<TDomain> Take(Expression<Func<TEntity, bool>> whereLambda, int num)
+        {
+            Check();
+            var domainEntities = Wrapper.Take(whereLambda, num);
+            return this.ProjectToList<TEntity, TDomain>(domainEntities);
         }
     }
     public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain> where TDomain : class, IEntity<TDomain>

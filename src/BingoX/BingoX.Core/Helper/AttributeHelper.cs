@@ -69,8 +69,9 @@ namespace BingoX.Helper
         /// <summary>
         /// 返回应用于此类型的指定自定义特性的集合,包含基类
         /// </summary>
-        /// <param name="type"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="type">被检查的类型的实例</param>
+        /// <param name="inherit">是否递归检查type的所有派生类</param>
+        /// <typeparam name="T">指定自定义特性的类型</typeparam>
         /// <returns></returns>
         public static IEnumerable<T> GetCustomAttributesIncludeBaseType<T>(this Type type, bool inherit = true) where T : Attribute
         {

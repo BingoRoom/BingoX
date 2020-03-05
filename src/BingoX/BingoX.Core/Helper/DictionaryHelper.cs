@@ -9,7 +9,12 @@ namespace BingoX.Helper
 {
     public static class DictionaryHelper
     {
-
+        /// <summary>
+        /// 从两个字典中找出相同的键，值却不同的项
+        /// </summary>
+        /// <param name="currentValues">当前字典</param>
+        /// <param name="originalValues">历史字典</param>
+        /// <returns></returns>
         public static IDictionary<string, object> GetChanges(this IDictionary<string, object> currentValues, IDictionary<string, object> originalValues)
         {
             var changeValues = new Dictionary<string, object>();

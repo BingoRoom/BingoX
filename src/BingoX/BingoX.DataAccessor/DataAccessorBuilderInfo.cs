@@ -12,6 +12,8 @@ namespace BingoX.DataAccessor
     /// </summary>
     public class DataAccessorBuilderInfo
     {
+        private Type dbContextType;
+
         public DataAccessorBuilderInfo()
         {
             Intercepts = new InterceptCollection();
@@ -43,7 +45,13 @@ namespace BingoX.DataAccessor
         /// <summary>
         /// 数据库上下文类型
         /// </summary>
-        public Type DbContextType { get; set; }
+        public Type DbContextType { 
+            get => dbContextType; 
+            set { 
+                dbContextType = value; 
+                if (value != null && DataAccessorAssembly == null) DataAccessorAssembly = value.Assembly; 
+            } 
+        }
         /// <summary>
         /// 数据库上下文选项
         /// </summary>
@@ -56,5 +64,9 @@ namespace BingoX.DataAccessor
         /// AppSetting.json定义的数据库连接字符串名
         /// </summary>
         public string AppSettingConnectionName { get; set; }
+        /// <summary>
+        /// 数据访问器构建器提供程序
+        /// </summary>
+        public Assembly DataAccessorProviderAssembly { get; set; }
     }
 }

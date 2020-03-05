@@ -19,7 +19,7 @@ namespace BingoX.DataAccessor.EF
             this.dataAccessorBuilderInfo = dataAccessorBuilderInfo;
             ConnectionString = connectionString;
             dbcontext = CreateDbContext();
-            dbcontext.SetServiceProvider(serviceProvider);
+           
         }
         /// <summary>
         /// 数据库上下文
@@ -35,6 +35,7 @@ namespace BingoX.DataAccessor.EF
             var constructor = typeof(TContext).GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
             if (constructor == null) throw new DataAccessorException("找不到符合条件的EfDbContext构造函数，创建数据库上下文失败");
             var context = FastReflectionExtensions.FastInvoke(constructor, dataAccessorBuilderInfo.DbContextOption) as TContext;
+            context.SetServiceProvider(serviceProvider);
             return context;
         }
 

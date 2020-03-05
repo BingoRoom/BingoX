@@ -5,8 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BingoX.DataAccessor.EF\BingoX.DataAccessor.EF.csproj" />
-    <ProjectReference Include="..\BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BingoX.Repository\BingoX.Repository.csproj" />
   </ItemGroup>
 

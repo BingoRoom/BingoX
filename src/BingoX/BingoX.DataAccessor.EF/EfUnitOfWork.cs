@@ -72,12 +72,15 @@ namespace BingoX.DataAccessor.EF
         }
         private void DoTracker()
         {
-#if Standard
             var entries = context.ChangeTracker.Entries();
             if (!context.RootContextData.ContainsKey(EfDbContext.DIConst)) return;
             var serviceProvider = context.RootContextData[EfDbContext.DIConst] as System.IServiceProvider;
             if (serviceProvider == null) return;
+#if Standard
             var interceptManagement = serviceProvider.GetService<EfDbEntityInterceptManagement>();
+#else
+            var interceptManagement = serviceProvider.GetService(typeof(EfDbEntityInterceptManagement)) as EfDbEntityInterceptManagement;
+#endif
             if (interceptManagement != null)
             {
                 foreach (var entityEntry in entries)
@@ -85,7 +88,6 @@ namespace BingoX.DataAccessor.EF
                     interceptManagement.Interceptor(entityEntry);
                 }
             }
-#endif
         }
     }
 }
