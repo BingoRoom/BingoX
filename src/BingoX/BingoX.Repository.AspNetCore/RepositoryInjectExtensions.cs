@@ -24,10 +24,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 foreach (var item in rcobService.RepositoryContextOptionBuilders)
                 {
                     item.ReplenishDataAccessorFactories(serviceProvider, config, rco);
-                    item.InjectDbIntercepts(services);
                 }
                 return rco;
             });
+            foreach (var item in rcobItme.RepositoryContextOptionBuilders)
+            {
+                item.InjectDbIntercepts(services);
+            }
             foreach (var item in rcob.CreateBaseRepositoryType())
             {
                 services.AddScoped(item.BaseType, item.ImplementedType);

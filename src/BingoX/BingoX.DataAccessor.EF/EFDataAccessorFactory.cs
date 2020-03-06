@@ -69,19 +69,19 @@ namespace BingoX.DataAccessor.EF
             var resultType = typeof(TEntity);
             if (cache.ContainsKey(resultType)) return FastReflectionExtensions.FastInvoke<IDataAccessor<TEntity>>(cache[resultType], dbcontext);
             Type typeDataAccessor = null;
-            if (typeof(TEntity).IsAssignableFrom(typeof(IGuidEntity<TEntity>)))
+            if (typeof(IGuidEntity<TEntity>).IsAssignableFrom(typeof(TEntity)))
             {
                 typeDataAccessor = typeof(EFGuidDataAccessor<>).MakeGenericType(new Type[] { typeof(TEntity) });
             }
-            else if (typeof(TEntity).IsAssignableFrom(typeof(IIdentityEntity<TEntity>)))
+            else if (typeof(IIdentityEntity<TEntity>).IsAssignableFrom(typeof(TEntity)))
             {
                 typeDataAccessor = typeof(EFIdentityDataAccessor<>).MakeGenericType(new Type[] { typeof(TEntity) });
             }
-            else if (typeof(TEntity).IsAssignableFrom(typeof(ISnowflakeEntity<TEntity>)))
+            else if (typeof(ISnowflakeEntity<TEntity>).IsAssignableFrom(typeof(TEntity)))
             {
                 typeDataAccessor = typeof(EFSnowflakeDataAccessor<>).MakeGenericType(new Type[] { typeof(TEntity) });
             }
-            else if (typeof(TEntity).IsAssignableFrom(typeof(IStringEntity<TEntity>)))
+            else if (typeof(IStringEntity<TEntity>).IsAssignableFrom(typeof(TEntity)))
             {
                 typeDataAccessor = typeof(EFStringIDDataAccessor<>).MakeGenericType(new Type[] { typeof(TEntity) });
             }

@@ -29,7 +29,7 @@ namespace BingoX.Repository.AspNetCore.EF
             {
                 var connectionString = config.GetConnectionString(item.AppSettingConnectionName);
                 var factoryType = typeof(EFDataAccessorFactory<>).MakeGenericType(item.DbContextType);
-                var constructor = factoryType.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 2);
+                var constructor = factoryType.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 3);
                 if (constructor == null) throw new StartupSettingException("找不符合条件的DataAccessorFactory构造器");
                 IDataAccessorFactory factory = FastReflectionExtensions.FastInvoke(constructor, serviceProvider, item, connectionString) as IDataAccessorFactory;
                 if (factory == null) throw new StartupSettingException("IDataAccessorFactory失败");
@@ -39,7 +39,7 @@ namespace BingoX.Repository.AspNetCore.EF
 
         protected override IEnumerable<DataAccessorBuilderInfo> FilterDataAccessorBuilderInfo(DataAccessorBuilderInfoColletion dataAccessorBuilderInfos)
         {
-            return dataAccessorBuilderInfos.Where(n => n.DataAccessorProviderAssembly.FullName.Equals("BingoX.Repository.AspNetCore.EF"));
+            return dataAccessorBuilderInfos.Where(n => n.DataAccessorProviderAssembly.Equals(Assembly.Load(new AssemblyName("BingoX.Repository.AspNetCore.EF"))));
         }
 
 
@@ -49,27 +49,29 @@ namespace BingoX.Repository.AspNetCore.EF
         /// <param name="services"></param>
         public override void InjectDbIntercepts(IServiceCollection services)
         {
+            foreach (var item in dataAccessorBuilderInfos.SelectMany(n=>n. Intercepts.OfType<DbEntityInterceptAttribute>()).Where(n => n.DI != InterceptDIEnum.None))
+            {
+                if (item.Intercept != null) continue;
+                switch (item.DI)
+                {
+                    case InterceptDIEnum.Scoped:
+                        services.AddScoped(item.AopType);
+                        break;
+                    case InterceptDIEnum.Singleton:
+                        services.AddSingleton(item.AopType);
+                        break;
+                    case InterceptDIEnum.Transient:
+                        services.AddTransient(item.AopType);
+                        break;
+                }
+            }
             services.AddScoped<EfDbEntityInterceptManagement>(serviceProvider =>
             {
                 var interceptManagement = new EfDbEntityInterceptManagement(serviceProvider);
                 foreach (var options in dataAccessorBuilderInfos)
                 {
                     interceptManagement.AddRangeGlobalIntercepts(options.Intercepts.OfType<DbEntityInterceptAttribute>());
-                    foreach (var item in options.Intercepts.OfType<DbEntityInterceptAttribute>().Where(n => n.DI != InterceptDIEnum.None))
-                    {
-                        switch (item.DI)
-                        {
-                            case InterceptDIEnum.Scoped:
-                                services.AddScoped(item.AopType);
-                                break;
-                            case InterceptDIEnum.Singleton:
-                                services.AddSingleton(item.AopType);
-                                break;
-                            case InterceptDIEnum.Transient:
-                                services.AddTransient(item.AopType);
-                                break;
-                        }
-                    }
+                
                 }
                 return interceptManagement;
             });

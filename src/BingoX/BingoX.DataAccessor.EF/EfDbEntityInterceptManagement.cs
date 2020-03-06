@@ -59,9 +59,10 @@ namespace BingoX.DataAccessor.EF
             if (attributes.IsEmpty()) return;
             var aops = attributes.Select(n =>
             {
+                if (n.Intercept != null) return n.Intercept;
                 var intercept = serviceProvider.GetService(n.AopType) as IDbEntityIntercept;
                 return intercept;
-            });
+            }).ToArray();
             switch (entityEntry.State)
             {
                 case EntityState.Detached:

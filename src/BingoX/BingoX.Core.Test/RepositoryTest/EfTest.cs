@@ -51,7 +51,7 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.DbContextType = typeof(DbBoundedContext);
                         dbi.RepositoryAssembly = GetType().Assembly;
                         dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
-                        dbi.Intercepts.Add(new AopUser());
+                        //dbi.Intercepts.Add(new AopUser());
                         dbi.DbContextOption = new DbContextOptionsBuilder<DbBoundedContext>().UseSqlServer(conn).Options;
                     }
                 );
@@ -70,9 +70,6 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.IsNotNull(aops);
             Assert.IsNotEmpty(aops);
             Assert.AreEqual(aops.Length, attributes.Length);
-
-            var dbBoundedContext = serviceProvider.GetService<DbBoundedContext>();
-            Assert.IsNotNull(dbBoundedContext);
 
             var accountRepository = serviceProvider.GetService<AccountRepository>();
             Assert.IsNotNull(accountRepository);
@@ -99,8 +96,7 @@ namespace BingoX.Core.Test.RepositoryTest
             { 
                 Name = "黄彬",
                 Age = 35,
-                RoleId = roles[0].ID,
-                Role = roles[0]
+                RoleId = roles[0].ID
             });
             accountRepository.UnitOfWork.Commit();
 
@@ -133,13 +129,13 @@ namespace BingoX.Core.Test.RepositoryTest
         }
     }
 
-    public class BaseEntityTest
+    public class BaseEntityTest: ISnowflakeEntity<Role>
     {
-        public long ID { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Created { get; set; }
         public DateTime ModifyDate { get; set; }
         public string Modify { get; set; }
+        public long ID { get; set; }
     }
 
     public class AccountRepository : Repository<Account>
@@ -149,7 +145,7 @@ namespace BingoX.Core.Test.RepositoryTest
             Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
     }
-
+  //  [DbEntityInterceptAttribute(typeof(AopUser))]
     public class Role : BaseEntityTest, ISnowflakeEntity<Role>, IDomainEntry
     {
         public string RoleCode { get; set; }
@@ -159,7 +155,7 @@ namespace BingoX.Core.Test.RepositoryTest
         public virtual List<Account> Accounts { get; set; }
 
     }
-    [DbEntityInterceptAttribute(typeof(AopUser))]
+ //   [DbEntityInterceptAttribute(typeof(AopUser))]
     public class Account : BaseEntityTest, ISnowflakeEntity<Account>, IDomainEntry
     {
         public string Name { get; set; }
@@ -172,7 +168,7 @@ namespace BingoX.Core.Test.RepositoryTest
     {
         public DbBoundedContext(DbContextOptions options) : base(options)
         {
-
+          
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -190,7 +186,7 @@ namespace BingoX.Core.Test.RepositoryTest
             builder.ToTable("Role");
             builder.Property("RoleCode").IsRequired();
             builder.Property("RoleName").IsRequired();
-            builder.HasMany(n => n.Accounts).WithOne(n => n.Role);
+           // builder.HasMany(n => n.Accounts).WithOne(n => n.Role);
         }
     }
 
@@ -229,12 +225,7 @@ namespace BingoX.Core.Test.RepositoryTest
 
         public void OnAdd(DbEntityCreateInfo info)
         {
-            SnowflakeGenerator snowflake = new SnowflakeGenerator(1, 1, 1);
-            info.SetValue("ID", snowflake.New());
-            info.SetValue("CreatedDate", DateTime.Now);
-            info.SetValue("Created", "创建者");
-            info.SetValue("ModifyDate", DateTime.Now);
-            info.SetValue("Modify", "修改者");
+            throw new NotImplementedException();
         }
 
         public void OnDelete(DbEntityDeleteInfo info)
@@ -244,11 +235,10 @@ namespace BingoX.Core.Test.RepositoryTest
 
         public void OnModifiy(DbEntityChangeInfo info)
         {
-            info.SetValue("ModifyDate", DateTime.Now);
-            info.SetValue("Modify", "修改者");
+            throw new NotImplementedException();
         }
     }
-    class AopCreatedInfo : IDbEntityIntercept
+    class AopCreatedInfo : IDbEntityIntercept,IDbEntityAddIntercept,IDbEntityModifiyIntercept, IDbEntityDeleteIntercept
     {
         public bool AllowDelete { get { return true; } }
 
@@ -258,17 +248,25 @@ namespace BingoX.Core.Test.RepositoryTest
 
         public void OnAdd(DbEntityCreateInfo info)
         {
-            throw new NotImplementedException();
+            SnowflakeGenerator snowflake = new SnowflakeGenerator(1, 1, 1);
+            info.SetValue("ID", snowflake.New());
+            info.SetValue("CreatedDate", DateTime.Now);
+            info.SetValue("Created", "创建者");
+            info.SetValue("ModifyDate", DateTime.Now);
+            info.SetValue("Modify", "修改者");
+            info.Accept = true;
         }
 
         public void OnDelete(DbEntityDeleteInfo info)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnModifiy(DbEntityChangeInfo info)
         {
-            throw new NotImplementedException();
+            info.SetValue("ModifyDate", DateTime.Now);
+            info.SetValue("Modify", "修改者");
+            info.Accept = true;
         }
     }
 }

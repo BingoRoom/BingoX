@@ -68,7 +68,6 @@ namespace BingoX.DataAccessor.EF
                 DoTracker();
                 context.SaveChanges();
             }
-
         }
         private void DoTracker()
         {
