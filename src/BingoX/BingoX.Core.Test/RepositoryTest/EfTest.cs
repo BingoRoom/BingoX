@@ -105,7 +105,7 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.IsNotNull(accounts[0]);
             Assert.IsNotNull(accounts[0].Role);
             Assert.AreEqual(accounts[0].Name, "黄彬");
-            Assert.AreEqual(accounts[0].Age, "35");
+            Assert.AreEqual(accounts[0].Age, 35);
             Assert.AreEqual(accounts[0].Role.RoleCode, "admin");
             Assert.AreEqual(accounts[0].Role.RoleName, "管理员");
 
@@ -186,7 +186,7 @@ namespace BingoX.Core.Test.RepositoryTest
             builder.ToTable("Role");
             builder.Property("RoleCode").IsRequired();
             builder.Property("RoleName").IsRequired();
-           // builder.HasMany(n => n.Accounts).WithOne(n => n.Role);
+            builder.HasMany(n => n.Accounts).WithOne(n => n.Role);
         }
     }
 

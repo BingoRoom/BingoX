@@ -27,7 +27,7 @@ namespace BingoX.DataAccessor.EF
 
         public override TEntity GetId(object id)
         {
-            var query = DbSet.AsNoTracking<TEntity>();
+            var query = DbSet.AsQueryable();
             if (SetInclude != null) query = SetInclude(query);
             return query.FirstOrDefault(n => n.ID == (int)id);
         }

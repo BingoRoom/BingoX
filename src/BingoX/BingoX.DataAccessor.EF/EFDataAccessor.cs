@@ -206,17 +206,25 @@ namespace BingoX.DataAccessor.EF
 
         public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda)
         {
-            throw new NotImplementedException();
+            var query = DbSet.Where(whereLambda);
+            if (SetInclude != null) query = SetInclude(query);
+            return query.ToList();
         }
 
         public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num)
         {
-            throw new NotImplementedException();
+            IQueryable<TEntity> query = DbSet;
+            if (whereLambda != null) query = query.Where(whereLambda);
+            if (SetInclude != null) query = SetInclude(query);
+            return query.Take(num).ToList();
         }
 
         public TEntity Get(Expression<Func<TEntity, bool>> whereLambda)
         {
-            throw new NotImplementedException();
+            IQueryable<TEntity> query = DbSet;
+            if (whereLambda != null) query = query.Where(whereLambda);
+            if (SetInclude != null) query = SetInclude(query);
+            return query.FirstOrDefault();
         }
     }
 }
