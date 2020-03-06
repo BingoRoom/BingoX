@@ -10,6 +10,10 @@ namespace BingoX.DataAccessor.EF
     public interface IDataAccessorInclude<TEntity> where TEntity : class, IEntity<TEntity>
     {
         /// <summary>
+        /// 设置局部表关联查询委托
+        /// </summary>
+        Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
+        /// <summary>
         /// 根据主键查询记录
         /// </summary>
         /// <param name="id">主键</param>

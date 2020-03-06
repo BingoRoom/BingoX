@@ -20,21 +20,17 @@ namespace BingoX.DataAccessor
         /// </summary>
         IUnitOfWork UnitOfWork { get; }
         /// <summary>
-        /// 设置局部表关联查询委托
-        /// </summary>
-        Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
-        /// <summary>
         /// 新增记录
         /// </summary>
         /// <param name="entity">待新增记录实体</param>
         /// <returns>受影响记录数</returns>
-        int Add(TEntity entity);
+        void Add(TEntity entity);
         /// <summary>
         /// 批量新增记录
         /// </summary>
         /// <param name="entites"待新增记录集合</param>
         /// <returns>受影响记录数</returns>
-        int AddRange(IEnumerable<TEntity> entites);
+        void AddRange(IEnumerable<TEntity> entites);
         /// <summary>
         /// 根据主键查询记录
         /// </summary>
@@ -71,29 +67,25 @@ namespace BingoX.DataAccessor
         /// </summary>
         /// <param name="entity">待更新记录实体</param>
         /// <returns>受影响记录数</returns>
-        int Update(TEntity entity);
+        void Update(TEntity entity);
         /// <summary>
         /// 批量更新记录
         /// </summary>
         /// <param name="entitys">待更新记录集合</param>
         /// <returns>受影响记录数</returns>
-        int UpdateRange(IEnumerable<TEntity> entities);
+        void UpdateRange(IEnumerable<TEntity> entities);
         /// <summary>
         /// 批量删除记录
         /// </summary>
         /// <param name="pkArray">待删除记录主键集合</param>
         /// <returns>受影响记录数</returns>
-        int Delete(object[] pkArray);
+        void Delete(object[] pkArray);
         /// <summary>
         /// 删除记录
         /// </summary>
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
-        int Delete(TEntity entity);
-        /// <summary>
-        /// 开启事务
-        /// </summary>
-        void BeginTran(IsolationLevel level = IsolationLevel.ReadCommitted);
+        void Delete(TEntity entity);
         /// <summary>
         /// 提交事务
         /// </summary>
@@ -123,14 +115,14 @@ namespace BingoX.DataAccessor
         /// <param name="whereLambda">查询条件表达式</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
-        int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
+        void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
         /// 根据条件删除记录
         /// </summary>
         /// <param name="whereLambda">查询条件表达式</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
-        int Delete(Expression<Func<TEntity, bool>> whereLambda);
+        void Delete(Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
         /// 返回查询结果的前N条
         /// </summary>

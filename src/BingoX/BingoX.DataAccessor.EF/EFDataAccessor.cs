@@ -36,40 +36,37 @@ namespace BingoX.DataAccessor.EF
         /// </summary>
         public Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
 
-        public virtual int Add(TEntity entity)
+        public virtual void Add(TEntity entity)
         {
             DbSet.Add(entity);
-            return 1;
+
         }
 
-        public virtual int AddRange(IEnumerable<TEntity> entites)
+        public virtual void AddRange(IEnumerable<TEntity> entites)
         {
             DbSet.AddRange(entites);
-            return entites.Count();
+
         }
 
-        public abstract TEntity GetId(object id);
+        public virtual TEntity GetId(object id)
+        {
+            return this.GetId(id, SetInclude);
+        }
 
         public abstract bool Exist(object id);
 
         public virtual IList<TEntity> QueryAll()
         {
-            var query = DbSet.AsNoTracking<TEntity>();
-            if (SetInclude != null) query = SetInclude(query);
-            return query.ToList<TEntity>();
+
+            return QueryAll(SetInclude);
         }
 
         public virtual IList<TEntity> PageList(ISpecification<TEntity> specification, ref int total)
         {
-            var query = DbSet.AsNoTracking<TEntity>().Where(specification.ToExpression());
-            query = OrderBy(query, specification.ToStorExpression());
-            if (SetInclude != null) query = SetInclude(query);
-            total = query.Count();
-            if (specification.PageSize == 0) specification.PageSize = 20;
-            return query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize).ToList();
+            return PageList(specification, ref total, SetInclude);
         }
 
-        public virtual int Update(TEntity entity)
+        public virtual void Update(TEntity entity)
         {
 #if Standard
             var entityEntry = context.Update(entity);
@@ -77,12 +74,12 @@ namespace BingoX.DataAccessor.EF
             var entityEntry = context.Entry(entity);
 #endif
             entityEntry.State = EntityState.Modified;
-            return 1;
+
         }
 
-        public virtual int UpdateRange(IEnumerable<TEntity> entities)
+        public virtual void UpdateRange(IEnumerable<TEntity> entities)
         {
-            var count = entities.Count();
+
 #if Standard
             context.UpdateRange(entities);
 #else
@@ -91,12 +88,12 @@ namespace BingoX.DataAccessor.EF
                 Update(entity);
             }
 #endif
-            return count;
+
         }
 
-        public abstract int Delete(object[] pkArray);
+        public abstract void Delete(object[] pkArray);
 
-        public virtual int Delete(TEntity entity)
+        public virtual void Delete(TEntity entity)
         {
 #if Standard
             var entityEntry = context.Remove(entity);
@@ -104,13 +101,9 @@ namespace BingoX.DataAccessor.EF
             var entityEntry = context.Entry(entity);
 #endif
             entityEntry.State = EntityState.Deleted;
-            return 1;
+
         }
 
-        public void BeginTran(IsolationLevel level = IsolationLevel.ReadCommitted)
-        {
-            unitOfWork.BeginTran(level);
-        }
 
         public void Commit()
         {
@@ -124,9 +117,7 @@ namespace BingoX.DataAccessor.EF
 
         public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda)
         {
-            var query = DbSet.AsNoTracking<TEntity>().Where(whereLambda);
-            if (SetInclude != null) query = SetInclude(query);
-            return query.ToList();
+            return Where(whereLambda, SetInclude);
         }
 
         public virtual bool Exist(Expression<Func<TEntity, bool>> whereLambda)
@@ -134,42 +125,59 @@ namespace BingoX.DataAccessor.EF
             return DbSet.AsNoTracking<TEntity>().Where(whereLambda).Any();
         }
 
-        public virtual int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
+        public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
             throw new NotImplementedException();
         }
 
-        public virtual int Delete(Expression<Func<TEntity, bool>> whereLambda)
+        public virtual void Delete(Expression<Func<TEntity, bool>> whereLambda)
         {
             var list = DbSet.AsNoTracking<TEntity>().Where(whereLambda).ToList<TEntity>();
-            list.Select(n => Delete(n));
-            return list.Count();
+            foreach (var item in list)
+            {
+                Delete(item);
+            }
         }
 
         public virtual IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num)
         {
-            var query = DbSet.AsNoTracking<TEntity>();
-            if (whereLambda != null) query = query.Where(whereLambda);
-            if (SetInclude != null) query = SetInclude(query);
-            return query.Take(num).ToList();
+
+            return Take(whereLambda, num, SetInclude);
         }
+        public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            return WhereTracking(whereLambda, SetInclude);
+        }
+
+        public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num)
+        {
+            return TakeTracking(whereLambda, num, SetInclude);
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> whereLambda)
+        {
+
+            return Get(whereLambda, SetInclude);
+        }
+        #region SetInclude
 
         public virtual IList<TEntity> QueryAll(Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            if (include == null) return QueryAll();
-            var query = include(DbSet.AsNoTracking<TEntity>());
+            var query = DbSet.AsNoTracking<TEntity>();
+            if (include == null) query = include(query);
             return query.ToList<TEntity>();
         }
 
         public virtual IList<TEntity> PageList(ISpecification<TEntity> specification, ref int total, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            if (include == null) return PageList(specification, ref total);
+
             var query = DbSet.AsNoTracking<TEntity>().Where(specification.ToExpression());
             query = OrderBy(query, specification.ToStorExpression());
-            query = include(query);
             total = query.Count();
             if (specification.PageSize == 0) specification.PageSize = 20;
-            return query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize).ToList();
+            query = query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize);
+            if (include == null) query = include(query);
+            return query.ToList();
         }
 
         public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
@@ -181,14 +189,43 @@ namespace BingoX.DataAccessor.EF
 
         public virtual IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            if (include == null) return Take(whereLambda, num);
+
             var query = DbSet.AsNoTracking<TEntity>();
             if (whereLambda != null) query = query.Where(whereLambda);
-            query = include(query);
-            return query.Take(num).ToList();
+            query = query.Take(num);
+            if (include == null) query = include(query);
+            return query.ToList();
         }
 
         public abstract TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include);
+
+
+
+
+        public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            var query = DbSet.Where(whereLambda);
+            if (include != null) query = include(query);
+            return query.ToList();
+        }
+
+        public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            IQueryable<TEntity> query = DbSet;
+            if (whereLambda != null) query = query.Where(whereLambda);
+            if (include != null) query = include(query);
+            return query.Take(num).ToList();
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            IQueryable<TEntity> query = DbSet;
+            if (whereLambda != null) query = query.Where(whereLambda);
+            if (include != null) query = include(query);
+            return query.FirstOrDefault();
+        }
+
+        #endregion
 
         protected IQueryable<TEntity> OrderBy(IQueryable<TEntity> source, params OrderModelField<TEntity>[] orderByPropertyList)
         {
@@ -202,29 +239,6 @@ namespace BingoX.DataAccessor.EF
                 orderedQueryable = item.IsDesc ? orderedQueryable.ThenBy(item.OrderPredicates) : orderedQueryable.ThenByDescending(item.OrderPredicates);
             }
             return orderedQueryable;
-        }
-
-        public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda)
-        {
-            var query = DbSet.Where(whereLambda);
-            if (SetInclude != null) query = SetInclude(query);
-            return query.ToList();
-        }
-
-        public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num)
-        {
-            IQueryable<TEntity> query = DbSet;
-            if (whereLambda != null) query = query.Where(whereLambda);
-            if (SetInclude != null) query = SetInclude(query);
-            return query.Take(num).ToList();
-        }
-
-        public TEntity Get(Expression<Func<TEntity, bool>> whereLambda)
-        {
-            IQueryable<TEntity> query = DbSet;
-            if (whereLambda != null) query = query.Where(whereLambda);
-            if (SetInclude != null) query = SetInclude(query);
-            return query.FirstOrDefault();
         }
     }
 }

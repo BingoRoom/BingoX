@@ -1,32 +1,38 @@
-﻿using BingoX.DataAccessor;
-using BingoX.Repository;
-using SqlSugar;
-using System;
+﻿
 using System.Collections.Generic;
-using System.Data;
+using System;
+using SqlSugar;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections;
 
-namespace BingoX.SqlSugar
+namespace BingoX.DataAccessor.SqlSugar
 {
-    /// <summary>
-    /// SqlSugar数据库上下文
-    /// </summary>
-    public class SqlSugarDbContext : IDbContext
+    public abstract class SqlSugarDbContext : IDbContext
     {
+        
         /// <summary>
         /// 
         /// </summary>
         /// <param name="config"></param>
         public SqlSugarDbContext(ConnectionConfig config)
         {
-            Client = new SqlSugarClient(config);
-            SqlFacade = new SqlSugarSqlFacade(this);
+            Database = new SqlSugarClient(config);
+            ChangeTracker = new SqlSugarChangeTracker(Database);
         }
         /// <summary>
         /// SqlSugar客户端
         /// </summary>
-        public SqlSugarClient Client { get; private set; }
+        public SqlSugarClient Database { get; private set; }
 
-        public SqlSugarSqlFacade SqlFacade { get; private set; }
+        public SqlSugarChangeTracker ChangeTracker { get; private set; }
+
+
+        public SqlSugarDbSet<TEntity> Set<TEntity>() where TEntity : class, new()
+        {
+            return new SqlSugarDbSet<TEntity>(Database, ChangeTracker);
+        }
+
         /// <summary>
         /// 服务提供其在辅助数据字典中的键名
         /// </summary>
@@ -51,19 +57,6 @@ namespace BingoX.SqlSugar
         public IServiceProvider GetServiceProvider()
         {
             return RootContextData.ContainsKey(DIConst) ? RootContextData[DIConst] as System.IServiceProvider : null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Close()
-        {
-            if (Client != null)
-            {
-                Client.Close();
-                Client.Dispose();
-                Client = null;
-            }
         }
     }
 }

@@ -17,20 +17,9 @@ namespace BingoX.DataAccessor.EF
         public EFIdentityDataAccessor(EfDbContext context) : base(context)
         {
         }
+         
 
-        List<TEntity> GetId(int[] id)
-        {
-            var query = DbSet.AsNoTracking<TEntity>();
-            if (SetInclude != null) query = SetInclude(query);
-            return query.Where(n => id.Contains(n.ID)).ToList();
-        }
-
-        public override TEntity GetId(object id)
-        {
-            var query = DbSet.AsQueryable();
-            if (SetInclude != null) query = SetInclude(query);
-            return query.FirstOrDefault(n => n.ID == (int)id);
-        }
+       
 
         public override bool Exist(object id)
         {
@@ -38,10 +27,10 @@ namespace BingoX.DataAccessor.EF
             return list.Any(n => n.ID == (int)id);
         }
 
-        public override int Delete(object[] pkArray)
+        public override void Delete(object[] pkArray)
         {
             int count = 0;
-            var list = GetId(pkArray.Select(n => (int)n).ToArray());
+            var list = Where(n => pkArray.Contains(n.ID)).ToArray();
             foreach (var obj in list)
             {
 #if Standard
@@ -52,7 +41,7 @@ namespace BingoX.DataAccessor.EF
                 entityEntry.State = EntityState.Deleted;
                 count++;
             }
-            return count;
+
         }
 
         public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)

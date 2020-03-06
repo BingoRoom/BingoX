@@ -20,19 +20,9 @@ namespace BingoX.DataAccessor.EF
 
         }
 
-        List<TEntity> GetId(Guid[] id)
-        {
-            var query = DbSet.AsNoTracking<TEntity>();
-            if (SetInclude != null) query = SetInclude(query);
-            return query.Where(n => id.Contains(n.ID)).ToList();
-        }
 
-        public override TEntity GetId(object id)
-        {
-            var query = DbSet.AsQueryable();
-            if (SetInclude != null) query = SetInclude(query);
-            return query.FirstOrDefault(n => n.ID == (Guid)id);
-        }
+
+
 
         public override bool Exist(object id)
         {
@@ -40,10 +30,11 @@ namespace BingoX.DataAccessor.EF
             return list.Any(n => n.ID == (Guid)id);
         }
 
-        public override int Delete(object[] pkArray)
+        public override void Delete(object[] pkArray)
         {
-            int count = 0;
-            var list = GetId(pkArray.Select(n => (Guid)n).ToArray());
+            
+            var pks = pkArray.OfType<Guid>().ToArray();
+            var list = Where(n => pks.Contains(n.ID)).ToArray();
             foreach (var obj in list)
             {
 #if Standard
@@ -52,16 +43,17 @@ namespace BingoX.DataAccessor.EF
                 var entityEntry = context.Entry(obj);
 #endif
                 entityEntry.State = EntityState.Deleted;
-                count++;
+               
             }
-            return count;
+
         }
 
         public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            if (include == null) return GetId(id);
-            var query = include(DbSet.AsNoTracking<TEntity>());
-            return query.FirstOrDefault(n => n.ID == (Guid)id);
+            IQueryable<TEntity> query = DbSet;
+            if (include == null) query = include(query);
+            Guid guid = (Guid)id;
+            return query.FirstOrDefault(n => n.ID == guid);
         }
     }
 }

@@ -71,10 +71,10 @@ namespace BingoX.DataAccessor.EF
         }
         private void DoTracker()
         {
-            var entries = context.ChangeTracker.Entries();
-            if (!context.RootContextData.ContainsKey(EfDbContext.DIConst)) return;
-            var serviceProvider = context.RootContextData[EfDbContext.DIConst] as System.IServiceProvider;
+           
+            var serviceProvider = context.GetServiceProvider();
             if (serviceProvider == null) return;
+            var entries = context.ChangeTracker.Entries();
 #if Standard
             var interceptManagement = serviceProvider.GetService<EfDbEntityInterceptManagement>();
 #else
