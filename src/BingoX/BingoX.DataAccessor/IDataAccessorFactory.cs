@@ -32,6 +32,12 @@ namespace BingoX.DataAccessor
         /// <typeparam name="TEntity">数据库实体</typeparam>
         /// <param name="include"></param>
         void AddIndluce<TEntity>(Func<TEntity, IQueryable<TEntity>> include) where TEntity :  IEntity<TEntity>;
+
+        /// <summary>
+        /// 创建SQL命令门面
+        /// </summary>
+        /// <returns></returns>
+        ISqlFacade CreateSqlFacade();
         /// <summary>
         /// 获取DI集合
         /// </summary>

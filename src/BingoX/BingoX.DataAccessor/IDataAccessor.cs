@@ -20,11 +20,6 @@ namespace BingoX.DataAccessor
         /// </summary>
         IUnitOfWork UnitOfWork { get; }
         /// <summary>
-        /// 创建SQL命令门面
-        /// </summary>
-        /// <returns></returns>
-        ISqlFacade CreateSqlFacade();
-        /// <summary>
         /// 设置局部表关联查询委托
         /// </summary>
         Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
@@ -46,6 +41,12 @@ namespace BingoX.DataAccessor
         /// <param name="id">主键</param>
         /// <returns>查询结果</returns>
         TEntity GetId(object id);
+        /// <summary>
+        /// 根据主键查询记录
+        /// </summary>
+        /// <param name="whereLambda">主键</param>
+        /// <returns>查询结果</returns>
+        TEntity Get(Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
         /// 根据主键判断记录是否存在
         /// </summary>

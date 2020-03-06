@@ -54,6 +54,22 @@ namespace BingoX.Repository
             UnitOfWork.Add(dataAccessor.UnitOfWork);
             return dataAccessor;
         }
+
+        /// <summary>
+        /// 创建数据访问器
+        /// </summary>
+        /// <typeparam name="TEntity">数据库实体类型</typeparam>
+        /// <param name="dbName">连接字符串名称</param>
+        /// <returns></returns>
+        public ISqlFacade CreateSqlFacade(string dbName = null) 
+        {
+            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
+            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
+            if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
+            var sqlFacade = factory.CreateSqlFacade();
+           
+            return sqlFacade;
+        }
     }
 
     public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity> where TEntity : IEntity<TEntity>

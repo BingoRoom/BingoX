@@ -27,9 +27,9 @@ namespace BingoX.DataAccessor.EF
         {
             Context = context;
 #if Standard
-            var connection = Context.Database.GetDbConnection();
+            connection = Context.Database.GetDbConnection();
 #else
-            var connection = Context.Database.Connection;
+            connection = Context.Database.Connection;
 #endif
         }
 
@@ -56,7 +56,7 @@ namespace BingoX.DataAccessor.EF
                 tran.Rollback();
                 throw new DataAccessorException($"{sql} 执行失败", ex);
             }
-            
+
         }
 
         public void ExecuteNonQuery(string sqlcommand)
@@ -69,7 +69,7 @@ namespace BingoX.DataAccessor.EF
 
         public object ExecuteScalar(string sqlcommand)
         {
- 
+
             var cmd = connection.CreateCommand();
             cmd.CommandText = sqlcommand;
             return cmd.ExecuteScalar();
@@ -79,11 +79,11 @@ namespace BingoX.DataAccessor.EF
             var attr = typeof(TEntity).GetCustomAttribute<CanTruncateAttribute>(true);
             if (attr == null) throw new DataAccessorException($"{nameof(TEntity)}没打CanTruncateAttribute标签，不能执行数据清除操作");
             if (string.IsNullOrEmpty(attr.Tablename)) throw new DataAccessorException($"{nameof(TEntity)}实体的CanTruncateAttribute标签没设置表名，无法执行数据清除操作");
-            ExecuteNonQuery($"Truncate table {attr.Tablename}");
+            ExecuteNonQuery($"Truncate table [{attr.Tablename}]");
         }
         public void Rollback()
         {
-            if(tran != null) tran.Rollback();
+            if (tran != null) tran.Rollback();
             cmds.Clear();
         }
 

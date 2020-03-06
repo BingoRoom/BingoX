@@ -19,12 +19,12 @@ namespace BingoX.DataAccessor.EF
             this.dataAccessorBuilderInfo = dataAccessorBuilderInfo;
             ConnectionString = connectionString;
             dbcontext = CreateDbContext();
-           
+
         }
         /// <summary>
         /// 数据库上下文
         /// </summary>
-        public TContext dbcontext { get;private set; }
+        public TContext dbcontext { get; private set; }
         /// <summary>
         /// 连接字符串名称
         /// </summary>
@@ -48,8 +48,17 @@ namespace BingoX.DataAccessor.EF
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// 创建SQL命令门面
+        /// </summary>
+        /// <returns></returns>
+        public EFSqlFacade CreateSqlFacade()
+        {
+            return new  EFSqlFacade(dbcontext);
+        }
         public TDataAccessor Create<TEntity, TDataAccessor>()
-            where TEntity :  IEntity<TEntity>
+            where TEntity : IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
             var resultType = typeof(TDataAccessor);
@@ -59,12 +68,12 @@ namespace BingoX.DataAccessor.EF
             if (types.Length == 0) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类");
             var implClass = types[0];
             var constructor = implClass.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
-            if(constructor == null) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类适合的构造器");
+            if (constructor == null) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类适合的构造器");
             cache.Add(resultType, constructor);
             return FastReflectionExtensions.FastInvoke<TDataAccessor>(constructor, dbcontext);
         }
 
-        public IDataAccessor<TEntity> CreateByEntity<TEntity>() where TEntity :  IEntity<TEntity>
+        public IDataAccessor<TEntity> CreateByEntity<TEntity>() where TEntity : IEntity<TEntity>
         {
             var resultType = typeof(TEntity);
             if (cache.ContainsKey(resultType)) return FastReflectionExtensions.FastInvoke<IDataAccessor<TEntity>>(cache[resultType], dbcontext);
@@ -90,6 +99,11 @@ namespace BingoX.DataAccessor.EF
             if (constructor == null) throw new DataAccessorException("找不到符合条件的DataAccessor构造函数，创建数据库上下文失败");
             cache.Add(resultType, constructor);
             return FastReflectionExtensions.FastInvoke(constructor, dbcontext) as IDataAccessor<TEntity>;
+        }
+
+        ISqlFacade IDataAccessorFactory.CreateSqlFacade()
+        {
+            return CreateSqlFacade();
         }
     }
 }

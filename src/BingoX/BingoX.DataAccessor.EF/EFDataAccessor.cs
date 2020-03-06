@@ -16,7 +16,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BingoX.DataAccessor.EF
 {
-    public abstract class EFDataAccessor<TEntity> : IDataAccessor<TEntity>, IDataAccessorInclude<TEntity> where TEntity : class, IEntity<TEntity>
+    public abstract class EFDataAccessor<TEntity> : IEFDataAccessor<TEntity>, IDataAccessor<TEntity>, IDataAccessorInclude<TEntity> where TEntity : class, IEntity<TEntity>
     {
         protected readonly EfDbContext context;
 
@@ -30,7 +30,6 @@ namespace BingoX.DataAccessor.EF
         }
 
         protected internal DbSet<TEntity> DbSet { get; private set; }
-        public int Facade { get; set; }
         public IUnitOfWork UnitOfWork => unitOfWork;
         /// <summary>
         /// 设置外键关联查询的委托
@@ -205,9 +204,19 @@ namespace BingoX.DataAccessor.EF
             return orderedQueryable;
         }
 
-        public ISqlFacade CreateSqlFacade()
+        public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda)
         {
-            return new EFSqlFacade(context);
+            throw new NotImplementedException();
+        }
+
+        public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            throw new NotImplementedException();
         }
     }
 }
