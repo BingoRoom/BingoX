@@ -222,6 +222,12 @@ namespace BingoX.Repository
             var domainEntities = Wrapper.Take(whereLambda, num);
             return this.ProjectToList<TEntity, TDomain>(domainEntities);
         }
+
+        public TDomain Get(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            Check();
+            return Where(whereLambda).FirstOrDefault();
+        }
     }
 
     public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain> 

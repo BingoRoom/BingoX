@@ -107,6 +107,12 @@ namespace BingoX.Repository
         /// 根据条件查询记录
         /// </summary>
         /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns>查询结果</returns>
+        TDomain Get(Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 根据条件查询记录
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
         IList<TDomain> Where(Expression<Func<TEntity, bool>> whereLambda);
