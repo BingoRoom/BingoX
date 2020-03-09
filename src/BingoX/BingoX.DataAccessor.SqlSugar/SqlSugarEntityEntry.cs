@@ -30,17 +30,17 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public SqlSugarEntityState State { get; set; }
 
-        public object Entity { get; private set; }
+        public virtual object Entity { get; private set; }
         public SqlSugarPropertyValues CurrentValues { get; private set; }
 
         internal abstract int ExecuteCommand();
     }
-    sealed class SqlSugarEntityEntry<T> : SqlSugarEntityEntry where T : class, new()
+    sealed class SqlSugarEntityEntry<TEntity> : SqlSugarEntityEntry where TEntity : class, new()
     {
         private readonly SqlSugarClient database;
-        private readonly T entity;
+        private readonly TEntity entity;
 
-        public SqlSugarEntityEntry(SqlSugarClient database, T entity, SqlSugarPropertyValues currentValues) : base(entity, currentValues)
+        public SqlSugarEntityEntry(SqlSugarClient database, TEntity entity, SqlSugarPropertyValues currentValues) : base(entity, currentValues)
         {
             this.database = database;
             this.entity = entity;
@@ -52,18 +52,18 @@ namespace BingoX.DataAccessor.SqlSugar
             {
                 case SqlSugarEntityState.Added:
                     {
-                        var insertable = database.Insertable<T>(entity);
+                        var insertable = database.Insertable<TEntity>(entity);
                         return insertable.ExecuteCommand();
                     }
                 case SqlSugarEntityState.Modified:
                     {
-                        var updateable = database.Updateable<T>(entity);
+                        var updateable = database.Updateable<TEntity>(entity);
                         return updateable.ExecuteCommand();
                     }
 
                 case SqlSugarEntityState.Deleted:
                     {
-                        var deleteable = database.Deleteable<T>(entity);
+                        var deleteable = database.Deleteable<TEntity>(entity);
                         return deleteable.ExecuteCommand();
                     }
 

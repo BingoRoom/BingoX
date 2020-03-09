@@ -104,20 +104,30 @@ namespace BingoX.DataAccessor
         {
             var resultType = typeof(TDataAccessor);
             if (cache.ContainsKey(resultType)) return FastReflectionExtensions.FastInvoke<TDataAccessor>(cache[resultType], DbContext);
-            var typeDataAccessor = GetDataAccessorType<TEntity>();
-
-            if (resultType.Equals(typeof(IDataAccessor<TEntity>))) throw new DataAccessorException($"{nameof(TDataAccessor)}必须为{nameof(IDataAccessor<TEntity>)}的派生接口");
-            var types = dataAccessorBuilderInfo.DataAccessorAssembly.GetImplementedClass<TDataAccessor>();
 
             Type implClass = null;
-            if (types.Length == 0)
+            if (resultType.IsClass && !resultType.IsAbstract)
             {
-                implClass = GetDataAccessorType<TEntity>();
+                implClass = resultType;
             }
-            else
+            else if (resultType.IsInterface)
             {
-                implClass = types[0];
+                if (resultType == typeof(IDataAccessor<TEntity>)) { implClass = GetDataAccessorType<TEntity>(); }
+                else
+                {
+                    var types = dataAccessorBuilderInfo.DataAccessorAssembly.GetImplementedClass<TDataAccessor>();
+                    if (types.Length == 0)
+                    {
+                        throw new DataAccessorException($"未找到实现类{resultType.FullName}");
+                    }
+                    else
+                    {
+                        implClass = types[0];
+                    }
+                }
             }
+
+
             if (implClass == null) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类");
             var constructor = implClass.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
             if (constructor == null) throw new DataAccessorException($"找不到接口{nameof(TDataAccessor)}的实现类适合的构造器");

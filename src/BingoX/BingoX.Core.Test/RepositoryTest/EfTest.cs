@@ -16,6 +16,7 @@ using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -141,7 +142,7 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.IsNotNull(accounts[0]);
             Assert.IsNotNull(accounts[0].Role);
             Assert.AreEqual(accounts[0].Name, "张三");
-            Assert.AreEqual(accounts[0].Age, "22");
+            Assert.AreEqual(accounts[0].Age, 22);
 
             DateTime dateTimeModified = accounts[0].ModifyDate;
 
@@ -162,11 +163,17 @@ namespace BingoX.Core.Test.RepositoryTest
     {
         public AccountRepository(RepositoryContextOptions context) : base(context)
         {
-            _wrapper = CreateWrapper<Account>("db1");
+            _wrapper = CreateWrapper<Account,EFSnowflakeDataAccessor<Account>>("db1");
             Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
-        readonly IDataAccessor<Account> _wrapper;
+        readonly IEFDataAccessor<Account> _wrapper;
         protected override IDataAccessor<Account> Wrapper { get { return _wrapper; } }
+
+        public override IList<Account> Where(Expression<Func<Account, bool>> whereLambda)
+        {
+           
+            return _wrapper.WhereTracking(whereLambda);
+        }
         public IList<AccountRole> GetAccounts()
         {
             var join = CreateJoinFacade().Query<Account, Role, long, AccountRole>(

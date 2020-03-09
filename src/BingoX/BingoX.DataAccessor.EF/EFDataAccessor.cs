@@ -39,7 +39,7 @@ namespace BingoX.DataAccessor.EF
         public virtual void Add(TEntity entity)
         {
             DbSet.Add(entity);
-           
+
         }
 
         public virtual void AddRange(IEnumerable<TEntity> entites)
@@ -68,8 +68,9 @@ namespace BingoX.DataAccessor.EF
 
         public virtual void Update(TEntity entity)
         {
+         
 #if Standard
-            var entityEntry = context.Update(entity);
+            var entityEntry = DbSet.Update(entity); 
 #else
             var entityEntry = context.Entry(entity);
 #endif
@@ -80,14 +81,12 @@ namespace BingoX.DataAccessor.EF
         public virtual void UpdateRange(IEnumerable<TEntity> entities)
         {
 
-#if Standard
-            context.UpdateRange(entities);
-#else
+
             foreach (var entity in entities)
             {
                 Update(entity);
             }
-#endif
+
 
         }
 

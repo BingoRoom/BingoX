@@ -15,7 +15,7 @@ namespace BingoX.Helper
     {
         public readonly static Func<Type, bool> IsClassPredicate = (source) => source.IsClass && !source.IsAbstract;
         public readonly static Func<Type, bool> IsInterfacePredicate = (source) => source.IsInterface;
-        public readonly static Func<Type, Type, bool> IsFromPredicate = (source, compare) => compare.IsAssignableFrom(source) ;
+        public readonly static Func<Type, Type, bool> IsFromPredicate = (source, compare) => compare.IsAssignableFrom(source);
         public readonly static Func<Type, Type, bool> IsFromAndNotSelfPredicate = (source, compare) => compare.IsAssignableFrom(source) && source != compare;
         /// <summary>
         /// 
@@ -56,7 +56,7 @@ namespace BingoX.Helper
         public static Type[] GetImplementedClass(this Assembly assembly, Type interfaceType, params Type[] typeArguments)
         {
             var types = assembly.GetTypes().Where(o => o.IsClass && !o.IsAbstract);
-            if (interfaceType.IsGenericType)
+            if (interfaceType.IsGenericType && interfaceType.IsGenericTypeDefinition)
             {
                 var maketype = interfaceType.MakeGenericType(typeArguments);
                 return types.Where(o => maketype.IsAssignableFrom(o)).ToArray();
@@ -101,7 +101,7 @@ namespace BingoX.Helper
             Interface,
             Class
         }
-  
+
         /// <summary>
         /// 从当前程序集反射指定类型的所有派生类型
         /// </summary>
@@ -121,7 +121,7 @@ namespace BingoX.Helper
         /// <returns></returns>
         public static Type[] GetImplementedClass(this Assembly assembly, Type[] types)
         {
-            var implementedClass = assembly.GetTypes().Where(o => IsClassPredicate(o) && types.Any(x => IsFromPredicate(o,x))).ToArray();
+            var implementedClass = assembly.GetTypes().Where(o => IsClassPredicate(o) && types.Any(x => IsFromPredicate(o, x))).ToArray();
             return implementedClass;
         }
     }
