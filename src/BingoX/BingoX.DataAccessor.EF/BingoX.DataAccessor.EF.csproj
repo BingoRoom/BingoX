@@ -6,6 +6,7 @@
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
     <Description>针对EF实现的数据访问器</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.1|AnyCPU'">
     <DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
