@@ -1,6 +1,7 @@
 ﻿using BingoX.DataAccessor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BingoX.Repository
 {
@@ -48,7 +49,7 @@ namespace BingoX.Repository
 
         internal void Add(IUnitOfWork unitOfWork)
         {
-            if (units.Contains(unitOfWork)) return;
+            if (units.Contains(unitOfWork) ||units.Any(n=>n.GetHashCode() == units.GetHashCode()) ) return;
             units.Add(unitOfWork);
         }
 

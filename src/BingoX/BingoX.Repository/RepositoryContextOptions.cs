@@ -25,7 +25,8 @@ namespace BingoX.Repository
         /// 映射器。用于在仓储中领域实体与数据库实体间的相互映射
         /// </summary>
         public IRepositoryMapper Mapper { get; private set; }
-        
+        public string DefaultConnectionName { get; set; }
+
 
         /// <summary>
         /// 添加关联查询委托

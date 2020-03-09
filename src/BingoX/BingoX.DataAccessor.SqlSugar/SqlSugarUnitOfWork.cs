@@ -14,8 +14,20 @@ namespace BingoX.DataAccessor.SqlSugar
             this.context = context;
         }
 
+        public override int GetHashCode()
+        {
+            return context.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is SqlSugarUnitOfWork)
+            {
+                var efun = obj as SqlSugarUnitOfWork;
+                return object.Equals(efun.context, context);
+            }
+            return false;
 
-
+        }
         /// <summary>
         /// 回滚事务
         /// </summary>
@@ -39,25 +51,25 @@ namespace BingoX.DataAccessor.SqlSugar
             }
             else
             {
-                DoTracker();
                 SaveChanges();
             }
 
         }
         public void SaveChanges()
         {
+            DoTracker();
             object entity = null;
             SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
             try
             {
-                this.context.Database.Ado.BeginTran();
-                foreach (var item in this.context.ChangeTracker.Entries())
+
+                foreach (var item in this.context.ChangeTracker.Entries().Where(n => n.State != SqlSugarEntityState.Unchanged))
                 {
                     entity = item.Entity;
                     state = item.State;
                     item.ExecuteCommand();
                 }
-                this.context.Database.Ado.CommitTran();
+
             }
             catch (Exception ex)
             {

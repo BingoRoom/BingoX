@@ -39,7 +39,7 @@ namespace BingoX.Repository.AspNetCore.SqlSugar
 
         protected override IEnumerable<DataAccessorBuilderInfo> FilterDataAccessorBuilderInfo(DataAccessorBuilderInfoColletion dataAccessorBuilderInfos)
         {
-            return dataAccessorBuilderInfos.Where(n => n.DataAccessorProviderAssembly.Equals(Assembly.Load(new AssemblyName("BingoX.Repository.AspNetCore.EF"))));
+            return dataAccessorBuilderInfos.Where(n => n.DataAccessorProviderAssembly.Equals(Assembly.Load(new AssemblyName("BingoX.Repository.AspNetCore.SqlSugar"))));
         }
 
 

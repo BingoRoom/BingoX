@@ -110,6 +110,7 @@ namespace BingoX.Repository
         public Repository(RepositoryContextOptions options) : base(options)
         {
             if (options.DataAccessorFactories.Count == 1) Wrapper = CreateWrapper<TEntity>();
+            else if (!string.IsNullOrEmpty(options.DefaultConnectionName)) Wrapper = CreateWrapper<TEntity>(options.DefaultConnectionName);
         }
         public Repository(RepositoryContextOptions options, string dbname) : base(options)
         {

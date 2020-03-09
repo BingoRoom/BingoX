@@ -44,7 +44,7 @@ namespace BingoX.Core.Test.RepositoryTest
             services.AddRepository(Configuration, n =>
             {
 
-                n.DefaultConnectionName = "db2";
+                n.DefaultConnectionName = "db1";
                 n.AddEF(
                     dbi =>
                     {
@@ -72,7 +72,7 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.RepositoryAssembly = GetType().Assembly;
                         dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
                         //dbi.Intercepts.Add(new AopUser());
-                        dbi.DbContextOption = new ConnectionConfig() { ConnectionString = conn, DbType = DbType.SqlServer };
+                        dbi.DbContextOption = new ConnectionConfig() { ConnectionString = conn, DbType = DbType.SqlServer, InitKeyType = InitKeyType.SystemTable };
                     }
                 );
                 options = n;
@@ -93,8 +93,8 @@ namespace BingoX.Core.Test.RepositoryTest
 
             var accountRepository = serviceProvider.GetService<AccountRepository>();
             Assert.IsNotNull(accountRepository);
-
-            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
+            var roleRepository = serviceProvider.GetService<IRepository<Role>>();
+            // var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
             Assert.IsNotNull(roleRepository);
 
             roleRepository.Add(new Role()
@@ -199,7 +199,7 @@ namespace BingoX.Core.Test.RepositoryTest
         public string RoleCode { get; set; }
 
         public string RoleName { get; set; }
-
+        [SugarColumn(IsIgnore = true)]
         public virtual List<Account> Accounts { get; set; }
 
     }
@@ -209,6 +209,7 @@ namespace BingoX.Core.Test.RepositoryTest
         public string Name { get; set; }
         public int Age { get; set; }
         public long RoleId { get; set; }
+        [SugarColumn(IsIgnore = true)]
         public virtual Role Role { get; set; }
     }
     public class SqlSugarDbBoundedContext : SqlSugarDbContext

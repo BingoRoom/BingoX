@@ -21,6 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<RepositoryContextOptions>(serviceProvider =>
             {
                 var rco = new RepositoryContextOptions(rcobItme.Mapper);
+                rco.DefaultConnectionName = rcobItme.DefaultConnectionName;
                 var rcobService = serviceProvider.GetService<RepositoryContextOptionBuilderInfo>();
                 foreach (var item in rcobService.RepositoryContextOptionBuilders)
                 {

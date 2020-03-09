@@ -51,11 +51,22 @@ namespace BingoX.DataAccessor.SqlSugar
             switch (State)
             {
                 case SqlSugarEntityState.Added:
-                    return database.Insertable<T>(entity).ExecuteCommand();
+                    {
+                        var insertable = database.Insertable<T>(entity);
+                        return insertable.ExecuteCommand();
+                    }
                 case SqlSugarEntityState.Modified:
-                    return database.Updateable<T>(entity).ExecuteCommand();
+                    {
+                        var updateable = database.Updateable<T>(entity);
+                        return updateable.ExecuteCommand();
+                    }
+
                 case SqlSugarEntityState.Deleted:
-                    return database.Deleteable<T>(entity).ExecuteCommand();
+                    {
+                        var deleteable = database.Deleteable<T>(entity);
+                        return deleteable.ExecuteCommand();
+                    }
+
                 case SqlSugarEntityState.Unchanged:
                     break;
                 default:

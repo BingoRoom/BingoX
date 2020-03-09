@@ -164,7 +164,7 @@ namespace BingoX.DataAccessor.EF
         public virtual IList<TEntity> QueryAll(Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
             var query = DbSet.AsNoTracking<TEntity>();
-            if (include == null) query = include(query);
+            if (include != null) query = include(query);
             return query.ToList<TEntity>();
         }
 
@@ -176,14 +176,15 @@ namespace BingoX.DataAccessor.EF
             total = query.Count();
             if (specification.PageSize == 0) specification.PageSize = 20;
             query = query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize);
-            if (include == null) query = include(query);
+            if (include != null) query = include(query);
             return query.ToList();
         }
 
         public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            if (include == null) return Where(whereLambda);
-            var query = include(DbSet.AsNoTracking<TEntity>().Where(whereLambda));
+            var query = DbSet.AsNoTracking<TEntity>().Where(whereLambda);
+
+            if (include != null) query = include(query);
             return query.ToList<TEntity>();
         }
 
@@ -193,7 +194,7 @@ namespace BingoX.DataAccessor.EF
             var query = DbSet.AsNoTracking<TEntity>();
             if (whereLambda != null) query = query.Where(whereLambda);
             query = query.Take(num);
-            if (include == null) query = include(query);
+            if (include != null) query = include(query);
             return query.ToList();
         }
 

@@ -53,6 +53,21 @@ namespace BingoX.DataAccessor.EF
 
             }
         }
+
+        public override int GetHashCode()
+        {
+            return context.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if(obj is EfUnitOfWork)
+            {
+                var efun = obj as EfUnitOfWork;
+                return object.Equals(efun.context,context);
+            }
+            return false;
+         
+        }
         /// <summary>
         /// 完成事务
         /// </summary>
@@ -60,18 +75,18 @@ namespace BingoX.DataAccessor.EF
         {
             if (ContextTransaction != null)
             {
+                context.SaveChanges();
                 ContextTransaction.Commit();
                 ContextTransaction = null;
             }
             else
             {
-                SaveChanges();
                 context.SaveChanges();
             }
         }
         public void SaveChanges()
         {
-           
+
             var serviceProvider = context.GetServiceProvider();
             if (serviceProvider == null) return;
             var entries = context.ChangeTracker.Entries();
