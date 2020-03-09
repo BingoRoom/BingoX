@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BingoX.Core.Extension\BingoX.Core.Extension.csproj" />
     <ProjectReference Include="..\BingoX.Repository.AspNetCore.EF\BingoX.Repository.AspNetCore.EF.csproj" />
+    <ProjectReference Include="..\BingoX.Repository.AspNetCore.SqlSugar\BingoX.Repository.AspNetCore.SqlSugar.csproj" />
     <ProjectReference Include="..\BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj" />
   </ItemGroup>
 

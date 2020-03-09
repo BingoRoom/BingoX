@@ -39,7 +39,7 @@ namespace BingoX.DataAccessor.EF
         public virtual void Add(TEntity entity)
         {
             DbSet.Add(entity);
-
+           
         }
 
         public virtual void AddRange(IEnumerable<TEntity> entites)

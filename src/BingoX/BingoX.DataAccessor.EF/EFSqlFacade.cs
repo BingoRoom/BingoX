@@ -12,6 +12,7 @@ using System.Text;
 using System.Data.Common;
 using BingoX.Domain;
 using BingoX.Helper;
+using System.Linq.Expressions;
 
 namespace BingoX.DataAccessor.EF
 {

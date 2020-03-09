@@ -10,18 +10,18 @@ namespace BingoX.DataAccessor.SqlSugar
 {
     public class SqlSugarDataAccessorFactory<TContext> : DataAccessorFactory<TContext>, IDataAccessorFactory where TContext : SqlSugarDbContext
     {
-        
-      
-        public SqlSugarDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo, string connectionString):base(  serviceProvider,   dataAccessorBuilderInfo,   connectionString)
+
+
+        public SqlSugarDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo, string connectionString) : base(serviceProvider, dataAccessorBuilderInfo, connectionString)
         {
-          
+
 
         }
-      
 
-     
 
-   
+
+
+
 
         /// <summary>
         /// 创建SQL命令门面
@@ -31,11 +31,15 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             return new SqlSugarSqlFacade(DbContext);
         }
-  
 
-  
+        public SqlSugarJoinFacade CreateJoinFacade()
+        {
+            return new SqlSugarJoinFacade(DbContext);
+        }
 
-        protected override Type GetDataAccessorType<TEntity>()  
+
+
+        protected override Type GetDataAccessorType<TEntity>()
         {
             Type typeDataAccessor = null;
             if (typeof(IGuidEntity<TEntity>).IsAssignableFrom(typeof(TEntity)))
@@ -58,6 +62,10 @@ namespace BingoX.DataAccessor.SqlSugar
             return typeDataAccessor;
         }
 
+        IJoinFacade IDataAccessorFactory.CreateJoinFacade()
+        {
+            return CreateJoinFacade();
+        }
         ISqlFacade IDataAccessorFactory.CreateSqlFacade()
         {
             return CreateSqlFacade();

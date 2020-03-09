@@ -58,17 +58,17 @@ namespace BingoX.DataAccessor.SqlSugar
                 case SqlSugarEntityState.Modified:
                     {
                         var currentValues = ToDic(entityEntry.CurrentValues);
-                        var originalValues = ToDic(entityEntry.OriginalValues);
-                        var changeValues = currentValues.GetChanges(originalValues);
+                      
+                     
                         var flagAccept = aops.OfType<IDbEntityModifiyIntercept>().All(n =>
                         {
-                            var info = new SqlSugarDbEntityChangeInfo(entityEntry, currentValues, originalValues, changeValues);
+                            var info = new SqlSugarDbEntityChangeInfo(entityEntry, currentValues, currentValues, currentValues);
                             n.OnModifiy(info);
                             return info.Accept;
                         });
                         if (flagAccept)
                         {
-                            entityEntry.CurrentValues.SetValues(changeValues);
+                            entityEntry.CurrentValues.SetValues(currentValues);
                         }
                         else
                         {

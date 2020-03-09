@@ -4,12 +4,13 @@
 #endif
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Data.Common;
 using BingoX.Domain;
 using BingoX.Helper;
 using System.Data;
+using System.Linq.Expressions;
+using SqlSugar;
 
 namespace BingoX.DataAccessor.SqlSugar
 {
@@ -24,9 +25,9 @@ namespace BingoX.DataAccessor.SqlSugar
         public SqlSugarSqlFacade(SqlSugarDbContext context)
         {
             Context = context;
- 
+
             connection = Context.Database.Ado.Connection;
- 
+
         }
 
         public SqlSugarDbContext Context { get; }
@@ -83,42 +84,16 @@ namespace BingoX.DataAccessor.SqlSugar
             cmds.Clear();
         }
 
-        //        public void TransactionExecute(IEnumerable<string> sqlcommands)
-        //        {
-        //#if Standard
-        //            var connection = Context.Database.GetDbConnection();
-        //#else
-        //            var connection = Context.Database.Connection;
-        //#endif
-        //            var transaction = connection.BeginTransaction();
-        //            string sqlcommand = string.Empty;
-        //            try
-        //            {
-        //                var cmd = connection.CreateCommand();
-        //                cmd.Transaction = transaction;
-        //                foreach (var item in sqlcommands)
-        //                {
-        //                    sqlcommand = item;
-        //                    cmd.CommandText = sqlcommand;
-        //                    cmd.ExecuteNonQuery();
-        //                }
-        //                transaction.Commit();
-        //            }
-        //            catch (System.Exception ex)
-        //            {
-        //                transaction.Rollback();
-        //                throw new DataAccessorException("执行语句出错：" + sqlcommand, ex);
-        //            }
-        //        }
-
         T ISqlFacade.Query<T>(string sqlcommand)
         {
-            throw new NotImplementedException();
+            return Context.Database.SqlQueryable<T>(sqlcommand).First();
         }
 
-        IList<T> ISqlFacade.QueryList<T>(string sqlcommand)
+        public IList<T> QueryList<T>(string sqlcommand) where T : class, new()
         {
-            throw new NotImplementedException();
+            return Context.Database.SqlQueryable<T>(sqlcommand).ToList();
         }
+
+
     }
 }

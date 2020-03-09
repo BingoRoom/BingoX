@@ -66,7 +66,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.DataAccessor.SqlSuga
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.Repository.AspNetCore.EF", "BingoX.Repository.AspNetCore.EF\BingoX.Repository.AspNetCore.EF.csproj", "{428607E3-7960-4936-8000-E369AA0324BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.Repository.AspNetCore", "BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj", "{38F33812-788D-434E-8590-F28049E8B44C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.Repository.AspNetCore", "BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj", "{38F33812-788D-434E-8590-F28049E8B44C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.Repository.AspNetCore.SqlSugar", "BingoX.Repository.AspNetCore.SqlSugar\BingoX.Repository.AspNetCore.SqlSugar.csproj", "{E7F0B2DD-2829-40AC-B0F4-6194614568A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,6 +164,10 @@ Global
 		{38F33812-788D-434E-8590-F28049E8B44C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38F33812-788D-434E-8590-F28049E8B44C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38F33812-788D-434E-8590-F28049E8B44C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7F0B2DD-2829-40AC-B0F4-6194614568A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7F0B2DD-2829-40AC-B0F4-6194614568A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7F0B2DD-2829-40AC-B0F4-6194614568A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7F0B2DD-2829-40AC-B0F4-6194614568A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +201,7 @@ Global
 		{63C9D1A8-56A1-4F91-A669-E46E6BB5A9E2} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{428607E3-7960-4936-8000-E369AA0324BF} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{38F33812-788D-434E-8590-F28049E8B44C} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
+		{E7F0B2DD-2829-40AC-B0F4-6194614568A3} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AC5542E-6F29-4E50-8D92-569885541F99}

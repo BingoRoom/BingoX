@@ -27,6 +27,7 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public IUnitOfWork UnitOfWork => unitOfWork;
 
+        Func<IQueryable<TEntity>, IQueryable<TEntity>> IDataAccessor<TEntity>.SetInclude { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public virtual void Add(TEntity entity)
         {
@@ -60,9 +61,8 @@ namespace BingoX.DataAccessor.SqlSugar
             var query = DbSet.AsQueryable().Where(specification.ToExpression());
             query = OrderBy(query, specification.ToStorExpression());
 
-            total = query.Count();
-            if (specification.PageSize == 0) specification.PageSize = 20;
-            return query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize).ToList();
+
+            return query.ToPageList(specification.PageIndex, specification.PageSize, ref total);
         }
 
         public virtual void Update(TEntity entity)
@@ -115,14 +115,20 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
-            throw new NotImplementedException();
+            var updetefunc = update.Compile();
+            var list = DbSet.AsQueryable().Where(whereLambda).ToList();
+            foreach (var item in list)
+            {
+                Update(updetefunc(item));
+            }
+
         }
 
         public virtual void Delete(Expression<Func<TEntity, bool>> whereLambda)
         {
             var list = DbSet.AsQueryable().Where(whereLambda).ToList();
             DbSet.RemoveRange(list);
-         
+
         }
 
         public virtual IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num)
@@ -150,11 +156,11 @@ namespace BingoX.DataAccessor.SqlSugar
             return orderedQueryable;
         }
 
-      
+
 
         public TEntity Get(Expression<Func<TEntity, bool>> whereLambda)
         {
-            throw new NotImplementedException();
+            return DbSet.AsQueryable().First(whereLambda);
         }
     }
 }

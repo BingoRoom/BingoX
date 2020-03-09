@@ -23,7 +23,6 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public virtual void Add(TEntity entity)
         {
-            var insertable= sqlSugar.Insertable(entity);
             changeTracker.AddInsertable(entity);
         }
 
@@ -35,57 +34,41 @@ namespace BingoX.DataAccessor.SqlSugar
             }
         }
 
-        public virtual void AddRange(params TEntity[] entities)
+        public virtual  void RemoveRangePrimaryKeys(dynamic[] primaryKeyValue)
         {
-        
-            foreach (var item in entities)
-            {
-                Add(item);
-            }
-        }
-        public virtual  void RemoveRangePrimaryKeys(object[] primaryKeyValue)
-        {
-            var deleteable = sqlSugar.Deleteable<TEntity>().In(primaryKeyValue);
-            changeTracker.Add(deleteable);
+          
+            changeTracker.AddDeleteablePrimaryKeyValue<TEntity>(primaryKeyValue);
         }
         public virtual void Remove(TEntity entity)
         {
-            var deleteable = sqlSugar.Deleteable(entity);
-            changeTracker.Add(deleteable);
+            changeTracker.AddDeleteable<TEntity>(entity);
         }
 
         public virtual void RemoveRange(IEnumerable<TEntity> entities)
         {
-            var deleteable = sqlSugar.Deleteable(entities.ToList());
-            changeTracker.Add(deleteable);
+            foreach (var item in entities)
+            {
+                Remove(item);
+            }
         }
 
-        public virtual void RemoveRange(params TEntity[] entities)
-        {
-            var deleteable = sqlSugar.Deleteable(entities.ToList());
-            changeTracker.Add(deleteable);
-        }
+       
      
 
 
         public virtual  void Update(TEntity entity)
         {
-            var updateable = sqlSugar.Updateable(entity);
-            changeTracker.Add(updateable);
+            changeTracker.AddUpdateable(entity);
         }
 
         public virtual void UpdateRange(IEnumerable<TEntity> entities)
         {
-            var updateable = sqlSugar.Updateable(entities.ToList());
-            changeTracker.Add(updateable);
+            foreach (var item in entities)
+            {
+                Update(item);
+            }
         }
-
-        public virtual void UpdateRange(params TEntity[] entities)
-        {
-            var updateable = sqlSugar.Updateable(entities.ToList());
-            changeTracker.Add(updateable);
-        }
-
+         
 
     }
 }

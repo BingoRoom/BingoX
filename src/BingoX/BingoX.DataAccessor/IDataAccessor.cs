@@ -19,6 +19,8 @@ namespace BingoX.DataAccessor
         /// 事务单元
         /// </summary>
         IUnitOfWork UnitOfWork { get; }
+
+        Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
         /// <summary>
         /// 新增记录
         /// </summary>

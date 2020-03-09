@@ -45,13 +45,13 @@ namespace BingoX.Repository
         /// </summary>
         /// <param name="entites"待新增记录集合</param>
         /// <returns>受影响记录数</returns>
-        int AddRange(IEnumerable<TDomain> entites);
+        void AddRange(IEnumerable<TDomain> entites);
         /// <summary>
         /// 新增记录
         /// </summary>
         /// <param name="entity">待新增记录实体</param>
         /// <returns>受影响记录数</returns>
-        int Add(TDomain entity);
+        void Add(TDomain entity);
         /// <summary>
         /// 根据主键查询记录
         /// </summary>
@@ -81,25 +81,25 @@ namespace BingoX.Repository
         /// </summary>
         /// <param name="entity">待更新记录实体</param>
         /// <returns>受影响记录数</returns>
-        int Update(TDomain entity);
+        void Update(TDomain entity);
         /// <summary>
         /// 批量更新记录
         /// </summary>
         /// <param name="entitys">待更新记录集合</param>
         /// <returns>受影响记录数</returns>
-        int UpdateRange(IEnumerable<TDomain> entitys);
+        void UpdateRange(IEnumerable<TDomain> entitys);
         /// <summary>
         /// 批量删除记录
         /// </summary>
         /// <param name="pkArray">待删除记录主键集合</param>
         /// <returns>受影响记录数</returns>
-        int Delete(object[] pkArray);
+        void Delete(object[] pkArray);
         /// <summary>
         /// 删除记录
         /// </summary>
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
-        int Delete(TDomain entity);
+        void Delete(TDomain entity);
         /// <summary>
         /// 根据条件查询记录
         /// </summary>
@@ -121,14 +121,14 @@ namespace BingoX.Repository
         /// <param name="whereLambda">查询条件表达式</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
-        int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
+        void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
         /// 根据条件删除记录
         /// </summary>
         /// <param name="whereLambda">查询条件表达式</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
-        int Delete(Expression<Func<TEntity, bool>> whereLambda);
+        void Delete(Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
         /// 返回查询结果的前N条
         /// </summary>

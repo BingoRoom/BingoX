@@ -1,74 +1,95 @@
 ﻿using SqlSugar;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace BingoX.DataAccessor.SqlSugar
 {
+
     public class SqlSugarChangeTracker
     {
-        private SqlSugarClient database;
+
+
 
         public SqlSugarChangeTracker(SqlSugarClient database)
         {
             this.database = database;
         }
+        private readonly SqlSugarClient database;
+        private readonly IList<SqlSugarEntityEntry> entityEntries = new List<SqlSugarEntityEntry>();
+
+        internal void Clear()
+        {
+            entityEntries.Clear();
+        }
 
         public SqlSugarEntityEntry[] Entries()
         {
-            throw new NotImplementedException();
+            return entityEntries.ToArray();
+        }
+
+        public void RollbackTran()
+        {
+            database.Ado.RollbackTran();
         }
 
         public void SaveChanges()
         {
-            throw new NotImplementedException();
-        }
-
-     
-        internal void AddDeleteable<TEntity>(object entity) where TEntity : class, new()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void AddInsertable (object entity)  
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void AddUpdateable(object entity)  
-        {
-            throw new NotImplementedException();
-        }
-    }
-    public class SqlSugarEntityEntry
-    {
-        public SqlSugarEntityState State { get; set; }
-
-        public object Entity { get; private set; }
-        public SqlSugarPropertyValues CurrentValues { get; private set; }
-        public SqlSugarPropertyValues OriginalValues { get; private set; }
-    }
-    public class SqlSugarPropertyValues
-    {
-        public object this[string key]
-        {
-            get { throw new NotImplementedException(); }
-            set
+            object entity = null;
+            SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
+            try
             {
+                database.Ado.BeginTran();
+                foreach (var item in entityEntries)
+                {
+                    entity = item.Entity;
+                    state = item.State;
+                    item.ExecuteCommand();
+                }
+                database.Ado.CommitTran();
             }
+            catch (Exception ex)
+            {
+                database.Ado.RollbackTran();
+                throw new DataAccessorException("执行出错" + state + entity, ex);
+            }
+
         }
 
-        public string[] Properties { get; internal set; }
 
-        public void SetValues(IDictionary<string, object> changeValues)
+        internal void AddDeleteable<T>(T entity) where T : class, new()
         {
-            throw new NotImplementedException();
+            SqlSugarPropertyValues propertyValues = GetPrproety(entity);
+            entityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Deleted });
         }
-    }
-    public enum SqlSugarEntityState
-    {
-        Added,
-        Modified,
-        Deleted,
-        Unchanged
+        internal void AddDeleteablePrimaryKeyValue<T>(dynamic[] primaryKeyValues) where T : class, new()
+        {
+
+            entityEntries.Add(new SqlSugarEntityEntryDeleteable<T>(database, primaryKeyValues));
+
+
+        }
+
+        internal void AddInsertable<T>(T entity) where T : class, new()
+        {
+            SqlSugarPropertyValues propertyValues = GetPrproety(entity);
+            entityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Added });
+
+        }
+
+        internal void AddUpdateable<T>(T entity) where T : class, new()
+        {
+            SqlSugarPropertyValues propertyValues = GetPrproety(entity);
+
+            entityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Modified });
+        }
+
+        private SqlSugarPropertyValues GetPrproety(object entity)
+        {
+            var entityInfo = database.EntityMaintenance.GetEntityInfo(entity.GetType());
+            SqlSugarPropertyValues propertyValues = new SqlSugarPropertyValues(entity) { Properties = entityInfo.Columns.Select(n => n.PropertyName).ToArray() };
+            return propertyValues;
+        }
     }
 }

@@ -42,6 +42,11 @@ namespace BingoX.DataAccessor
         /// <returns></returns>
         ISqlFacade CreateSqlFacade();
         /// <summary>
+        /// 创建 关联查询 门面
+        /// </summary>
+        /// <returns></returns>
+        IJoinFacade CreateJoinFacade();
+        /// <summary>
         /// 获取DI集合
         /// </summary>
         /// <returns></returns>
@@ -126,6 +131,10 @@ namespace BingoX.DataAccessor
         }
 
         ISqlFacade IDataAccessorFactory.CreateSqlFacade()
+        {
+            throw new NotImplementedException();
+        }
+        IJoinFacade IDataAccessorFactory.CreateJoinFacade()
         {
             throw new NotImplementedException();
         }

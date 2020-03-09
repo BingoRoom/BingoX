@@ -15,25 +15,20 @@ namespace BingoX.DataAccessor.SqlSugar
 
 
 
-
-
-
         /// <summary>
         /// 回滚事务
         /// </summary>
         public void Rollback()
         {
-
+            context.ChangeTracker.Clear();
         }
         /// <summary>
         /// 完成事务
         /// </summary>
         public void Commit()
         {
-
             DoTracker();
             context.ChangeTracker.SaveChanges();
-
         }
         private void DoTracker()
         {

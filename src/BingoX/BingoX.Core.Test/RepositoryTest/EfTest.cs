@@ -1,5 +1,6 @@
 ﻿using BingoX.DataAccessor;
 using BingoX.DataAccessor.EF;
+using BingoX.DataAccessor.SqlSugar;
 using BingoX.Domain;
 using BingoX.Generator;
 using BingoX.Helper;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +26,7 @@ namespace BingoX.Core.Test.RepositoryTest
     [TestFixture]
     public class EfTest
     {
-        IServiceProvider serviceProvider;  
+        IServiceProvider serviceProvider;
         RepositoryContextOptionBuilderInfo options;
 
 
@@ -43,7 +45,7 @@ namespace BingoX.Core.Test.RepositoryTest
                 n.AddEF(
                     dbi =>
                     {
-                        dbi.CustomConnectionName = "test";
+                        dbi.CustomConnectionName = "db1";
                         dbi.AppSettingConnectionName = "DefaultConnection";
                         dbi.DataAccessorAssembly = GetType().Assembly;
                         dbi.EntityAssembly = GetType().Assembly;
@@ -53,6 +55,21 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
                         //dbi.Intercepts.Add(new AopUser());
                         dbi.DbContextOption = new DbContextOptionsBuilder<DbBoundedContext>().UseSqlServer(conn).Options;
+                    }
+                );
+                n.AddSqlSugar(
+                    dbi =>
+                    {
+                        dbi.CustomConnectionName = "db2";
+                        dbi.AppSettingConnectionName = "DefaultConnection";
+                        dbi.DataAccessorAssembly = GetType().Assembly;
+                        dbi.EntityAssembly = GetType().Assembly;
+                        dbi.DomainEntityAssembly = GetType().Assembly;
+                        dbi.DbContextType = typeof(SqlSugarDbBoundedContext);
+                        dbi.RepositoryAssembly = GetType().Assembly;
+                        dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
+                        //dbi.Intercepts.Add(new AopUser());
+                        dbi.DbContextOption = new ConnectionConfig() { ConnectionString = conn, DbType = DbType.MySql };
                     }
                 );
                 options = n;
@@ -92,8 +109,8 @@ namespace BingoX.Core.Test.RepositoryTest
 
             DateTime dateTimeInit = DateTime.Now;
 
-            accountRepository.Add(new Account() 
-            { 
+            accountRepository.Add(new Account()
+            {
                 Name = "黄彬",
                 Age = 35,
                 RoleId = roles[0].ID
@@ -129,7 +146,7 @@ namespace BingoX.Core.Test.RepositoryTest
         }
     }
 
-    public class BaseEntityTest: ISnowflakeEntity<Role>
+    public class BaseEntityTest : ISnowflakeEntity<Role>
     {
         public DateTime CreatedDate { get; set; }
         public string Created { get; set; }
@@ -142,10 +159,38 @@ namespace BingoX.Core.Test.RepositoryTest
     {
         public AccountRepository(RepositoryContextOptions context) : base(context)
         {
+            _wrapper = CreateWrapper<Account>("db1");
             Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
+        readonly IDataAccessor<Account> _wrapper;
+        protected override IDataAccessor<Account> Wrapper { get { return _wrapper; } }
+        public IList<AccountRole> GetAccounts()
+        {
+            var join = CreateJoinFacade().Query<Account, Role, long, AccountRole>(
+                outer => outer.RoleId,
+                inner => inner.ID,
+                (outer, inner) => new AccountRole
+                {
+                    RoleCode = inner.RoleCode,
+                    RoleName = inner.RoleName,
+                    Name = outer.Name,
+                    Age = outer.Age
+                });
+            return join.ToList((outer, inner) => outer.Age > 10);
+        }
+        public class AccountRole
+        {
+            public string RoleCode { get; set; }
+
+            public string RoleName { get; set; }
+
+            public string Name { get; set; }
+            public int Age { get; set; }
+        }
     }
-  //  [DbEntityInterceptAttribute(typeof(AopUser))]
+
+
+    //  [DbEntityInterceptAttribute(typeof(AopUser))]
     public class Role : BaseEntityTest, ISnowflakeEntity<Role>, IDomainEntry
     {
         public string RoleCode { get; set; }
@@ -155,20 +200,25 @@ namespace BingoX.Core.Test.RepositoryTest
         public virtual List<Account> Accounts { get; set; }
 
     }
- //   [DbEntityInterceptAttribute(typeof(AopUser))]
+    //   [DbEntityInterceptAttribute(typeof(AopUser))]
     public class Account : BaseEntityTest, ISnowflakeEntity<Account>, IDomainEntry
     {
         public string Name { get; set; }
         public int Age { get; set; }
-        public long? RoleId { get; set; }
+        public long RoleId { get; set; }
         public virtual Role Role { get; set; }
     }
-
+    public class SqlSugarDbBoundedContext : SqlSugarDbContext
+    {
+        public SqlSugarDbBoundedContext(ConnectionConfig config) : base(config)
+        {
+        }
+    }
     public class DbBoundedContext : EfDbContext
     {
         public DbBoundedContext(DbContextOptions options) : base(options)
         {
-          
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -238,7 +288,7 @@ namespace BingoX.Core.Test.RepositoryTest
             throw new NotImplementedException();
         }
     }
-    class AopCreatedInfo : IDbEntityIntercept,IDbEntityAddIntercept,IDbEntityModifiyIntercept, IDbEntityDeleteIntercept
+    class AopCreatedInfo : IDbEntityIntercept, IDbEntityAddIntercept, IDbEntityModifiyIntercept, IDbEntityDeleteIntercept
     {
         public bool AllowDelete { get { return true; } }
 
@@ -259,7 +309,7 @@ namespace BingoX.Core.Test.RepositoryTest
 
         public void OnDelete(DbEntityDeleteInfo info)
         {
-            
+
         }
 
         public void OnModifiy(DbEntityChangeInfo info)

@@ -32,9 +32,7 @@ namespace BingoX.Repository
             where TEntity : class, IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
-            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
-            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
-            if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
+            IDataAccessorFactory factory = GetFactory(dbName);
             var dataAccessor = factory.Create<TEntity, TDataAccessor>();
             UnitOfWork.Add(dataAccessor.UnitOfWork);
             return dataAccessor;
@@ -47,29 +45,46 @@ namespace BingoX.Repository
         /// <returns></returns>
         public IDataAccessor<TEntity> CreateWrapper<TEntity>(string dbName = null) where TEntity : IEntity<TEntity>
         {
-            if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
-            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
-            if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
+            IDataAccessorFactory factory = GetFactory(dbName);
             var dataAccessor = factory.CreateByEntity<TEntity>();
             UnitOfWork.Add(dataAccessor.UnitOfWork);
             return dataAccessor;
         }
 
         /// <summary>
-        /// 创建数据访问器
+        /// 创建Sql访问器
         /// </summary>
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
         /// <param name="dbName">连接字符串名称</param>
         /// <returns></returns>
-        public ISqlFacade CreateSqlFacade(string dbName = null) 
+        public ISqlFacade CreateSqlFacade(string dbName = null)
+        {
+            IDataAccessorFactory factory = GetFactory(dbName);
+            var sqlFacade = factory.CreateSqlFacade();
+
+            return sqlFacade;
+        }
+
+        /// <summary>
+        /// 创建关联查询访问器
+        /// </summary>
+        /// <param name="dbName">连接字符串名称</param>
+        /// <returns></returns>
+        public IJoinFacade CreateJoinFacade(string dbName = null)
+        {
+            IDataAccessorFactory factory = GetFactory(dbName);
+            var joinFacade = factory.CreateJoinFacade();
+
+            return joinFacade;
+        }
+        private IDataAccessorFactory GetFactory(string dbName)
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
             var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
             if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
-            var sqlFacade = factory.CreateSqlFacade();
-           
-            return sqlFacade;
+            return factory;
         }
+
     }
 
     public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity> where TEntity : IEntity<TEntity>
@@ -88,31 +103,31 @@ namespace BingoX.Repository
             if (!typeof(TEntity).Equals(typeof(TDomain)) && Mapper == null) throw new RepositoryException("当TDomain与TEntity类型不同时Mapper不能为空");
         }
 
-        public virtual int Add(TDomain domain)
+        public virtual void Add(TDomain domain)
         {
             Check();
             var entity = this.ProjectTo<TEntity>(domain);
-            return Wrapper.Add(entity);
+            Wrapper.Add(entity);
         }
 
-        public virtual int AddRange(IEnumerable<TDomain> domains)
+        public virtual void AddRange(IEnumerable<TDomain> domains)
         {
             Check();
             var entities = this.ProjectToList<TDomain, TEntity>(domains);
-            return Wrapper.AddRange(entities);
+            Wrapper.AddRange(entities);
         }
 
-        public virtual int Delete(object[] pkArray)
+        public virtual void Delete(object[] pkArray)
         {
             Check();
-            return Wrapper.Delete(pkArray);
+            Wrapper.Delete(pkArray);
         }
 
-        public virtual int Delete(TDomain domain)
+        public virtual void Delete(TDomain domain)
         {
             Check();
             var entity = this.ProjectTo<TEntity>(domain);
-            return Wrapper.Delete(entity);
+            Wrapper.Delete(entity);
         }
 
         public virtual bool Exist(object id)
@@ -141,18 +156,18 @@ namespace BingoX.Repository
             return this.ProjectToList<TEntity, TDomain>(list);
         }
 
-        public virtual int Update(TDomain domain)
+        public virtual void Update(TDomain domain)
         {
             Check();
             var entity = this.ProjectTo<TEntity>(domain);
-            return Wrapper.Update(entity);
+            Wrapper.Update(entity);
         }
 
-        public virtual int UpdateRange(IEnumerable<TDomain> domains)
+        public virtual void UpdateRange(IEnumerable<TDomain> domains)
         {
             Check();
             var entities = this.ProjectToList<TDomain, TEntity>(domains);
-            return Wrapper.UpdateRange(entities);
+            Wrapper.UpdateRange(entities);
         }
 
         public virtual IList<TDomain> Where(Expression<Func<TEntity, bool>> whereLambda)
@@ -168,15 +183,15 @@ namespace BingoX.Repository
             return Wrapper.Exist(whereLambda);
         }
 
-        public virtual int Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
+        public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
             throw new NotImplementedException();
         }
 
-        public virtual int Delete(Expression<Func<TEntity, bool>> whereLambda)
+        public virtual void Delete(Expression<Func<TEntity, bool>> whereLambda)
         {
             Check();
-            return Wrapper.Delete(whereLambda);
+            Wrapper.Delete(whereLambda);
         }
 
         public virtual IList<TDomain> Take(Expression<Func<TEntity, bool>> whereLambda, int num)

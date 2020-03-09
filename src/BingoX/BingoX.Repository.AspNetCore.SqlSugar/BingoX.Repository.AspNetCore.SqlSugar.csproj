@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BingoX.DataAccessor.SqlSugar\BingoX.DataAccessor.SqlSugar.csproj" />
+    <ProjectReference Include="..\BingoX.Repository.AspNetCore\BingoX.Repository.AspNetCore.csproj" />
+    <ProjectReference Include="..\BingoX.Repository\BingoX.Repository.csproj" />
+  </ItemGroup>
+
+</Project>
