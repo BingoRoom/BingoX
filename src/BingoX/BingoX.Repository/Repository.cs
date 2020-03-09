@@ -102,7 +102,9 @@ namespace BingoX.Repository
         }
     }
 
-    public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity> where TEntity : IEntity<TEntity>
+    public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity>
+        where TDomain : IDomainEntry
+        where TEntity : IEntity<TEntity>
     {
 
         protected virtual IDataAccessor<TEntity> Wrapper { get; private set; }
@@ -222,7 +224,8 @@ namespace BingoX.Repository
         }
     }
 
-    public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain> where TDomain : class, IEntity<TDomain>
+    public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain> 
+        where TDomain : class, IEntity<TDomain>, IDomainEntry
     {
         public Repository(RepositoryContextOptions options) : base(options)
         {

@@ -28,7 +28,7 @@ namespace BingoX.Repository
     /// <typeparam name="TDomain">领域实体</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
     public interface IRepository<TDomain> : IRepository<TDomain, TDomain>
-        where TDomain : IEntity<TDomain>
+        where TDomain : IDomainEntry, IEntity<TDomain>
     {
         //   void SetDb(string dbName);
     }
@@ -39,6 +39,7 @@ namespace BingoX.Repository
     /// <typeparam name="Entity">数据库实体（DAO）</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
     public interface IRepository<TDomain, TEntity> : IRepository
+        where TDomain : IDomainEntry
         where TEntity : IEntity<TEntity>
 
     {
