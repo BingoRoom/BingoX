@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Data;
 using System.Linq;
 
@@ -20,6 +21,11 @@ namespace BingoX.DataAccessor.SqlSugar
         /// </summary>
         public void Rollback()
         {
+            if (this.context.Database.Ado.Transaction != null)
+            {
+                this.context.Database.Ado.Transaction.Rollback();
+                this.context.Database.Ado.Transaction = null;
+            }
             context.ChangeTracker.Clear();
         }
         /// <summary>
@@ -27,12 +33,42 @@ namespace BingoX.DataAccessor.SqlSugar
         /// </summary>
         public void Commit()
         {
-            DoTracker();
-            context.ChangeTracker.SaveChanges();
+            if (this.context.Database.Ado.Transaction != null)
+            {
+                this.context.Database.Ado.CommitTran();
+            }
+            else
+            {
+                DoTracker();
+                SaveChanges();
+            }
+
+        }
+        public void SaveChanges()
+        {
+            object entity = null;
+            SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
+            try
+            {
+                this.context.Database.Ado.BeginTran();
+                foreach (var item in this.context.ChangeTracker.Entries())
+                {
+                    entity = item.Entity;
+                    state = item.State;
+                    item.ExecuteCommand();
+                }
+                this.context.Database.Ado.CommitTran();
+            }
+            catch (Exception ex)
+            {
+
+                throw new DataAccessorException("执行出错" + state + entity, ex);
+            }
+
         }
         private void DoTracker()
         {
-          
+
             var serviceProvider = context.GetServiceProvider();
             if (serviceProvider == null) return;
             var entries = context.ChangeTracker.Entries();
@@ -46,6 +82,12 @@ namespace BingoX.DataAccessor.SqlSugar
                     interceptManagement.Interceptor(entityEntry);
                 }
             }
+        }
+
+        public void BeginTransaction()
+        {
+            this.context.Database.Ado.BeginTran();
+
         }
     }
 }

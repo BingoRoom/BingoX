@@ -1,4 +1,5 @@
-﻿using BingoX.DataAccessor;
+﻿using BingoX.ComponentModel;
+using BingoX.DataAccessor;
 using BingoX.Domain;
 using BingoX.Helper;
 using System;
@@ -10,6 +11,7 @@ using System.Linq.Expressions;
 
 namespace BingoX.Repository
 {
+
     /// <summary>
     /// 表示一个领域仓储
     /// </summary>
@@ -18,7 +20,7 @@ namespace BingoX.Repository
         /// <summary>
         /// 事务单元
         /// </summary>
-        IUnitOfWork UnitOfWork { get; }
+        IRepositoryUnitOfWork UnitOfWork { get; }
     }
     /// <summary>
     /// 表示一个领域实体与数据库实体为同一个实体类的领域仓储
@@ -28,7 +30,7 @@ namespace BingoX.Repository
     public interface IRepository<TDomain> : IRepository<TDomain, TDomain>
         where TDomain : IEntity<TDomain>
     {
-
+        //   void SetDb(string dbName);
     }
     /// <summary>
     /// 表示一个领域实体与数据库实体不为同一个实体类的领域仓储

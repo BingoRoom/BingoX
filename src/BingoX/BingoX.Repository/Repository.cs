@@ -17,10 +17,12 @@ namespace BingoX.Repository
             Mapper = options.Mapper;
             UnitOfWork = new RepositoryUnitOfWork();
         }
-        public virtual RepositoryUnitOfWork UnitOfWork { get; protected set; }
+        public virtual RepositoryUnitOfWork UnitOfWork { get; private set; }
         protected internal IRepositoryMapper Mapper { get; set; }
 
-        IUnitOfWork IRepository.UnitOfWork { get { return UnitOfWork; } }
+        IRepositoryUnitOfWork IRepository.UnitOfWork => UnitOfWork;
+
+
         /// <summary>
         /// 创建数据访问器
         /// </summary>
@@ -84,7 +86,20 @@ namespace BingoX.Repository
             if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
             return factory;
         }
-
+        /// <summary>
+        /// 提交事务
+        /// </summary>
+        public void Commit()
+        {
+            this.UnitOfWork.Commit();
+        }
+        /// <summary>
+        /// 回滚事务
+        /// </summary>
+        public void Rollback()
+        {
+            this.UnitOfWork.Rollback();
+        }
     }
 
     public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity> where TEntity : IEntity<TEntity>
@@ -96,7 +111,11 @@ namespace BingoX.Repository
         {
             if (options.DataAccessorFactories.Count == 1) Wrapper = CreateWrapper<TEntity>();
         }
+        public Repository(RepositoryContextOptions options, string dbname) : base(options)
+        {
+            Wrapper = CreateWrapper<TEntity>(dbname);
 
+        }
         private void Check()
         {
             if (Wrapper == null) throw new RepositoryException("数据访问器不存在");
@@ -208,5 +227,11 @@ namespace BingoX.Repository
         {
 
         }
+        public Repository(RepositoryContextOptions options, string dbname) : base(options)
+        {
+            wrapper = CreateWrapper<TDomain>(dbname);
+        }
+        IDataAccessor<TDomain> wrapper;
+        protected override IDataAccessor<TDomain> Wrapper { get { return wrapper ?? base.Wrapper; } }
     }
 }

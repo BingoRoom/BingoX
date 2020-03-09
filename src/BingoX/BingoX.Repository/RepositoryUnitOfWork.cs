@@ -4,13 +4,21 @@ using System.Collections.Generic;
 
 namespace BingoX.Repository
 {
-    public sealed class RepositoryUnitOfWork : IUnitOfWork
+    public sealed class RepositoryUnitOfWork : IRepositoryUnitOfWork
     {
         readonly IList<IUnitOfWork> units = new List<IUnitOfWork>();
         public void Commit()
         {
             try
             {
+                foreach (var item in units)
+                {
+                    item.BeginTransaction();
+                }
+                foreach (var item in units)
+                {
+                    item.SaveChanges();
+                }
                 foreach (var item in units)
                 {
                     item.Commit();
@@ -48,5 +56,7 @@ namespace BingoX.Repository
         {
             units.Remove(unitOfWork);
         }
+
+
     }
 }

@@ -80,7 +80,7 @@ namespace BingoX.DataAccessor.EF
             var attr = typeof(TEntity).GetCustomAttribute<CanTruncateAttribute>(true);
             if (attr == null) throw new DataAccessorException($"{nameof(TEntity)}没打CanTruncateAttribute标签，不能执行数据清除操作");
             if (string.IsNullOrEmpty(attr.Tablename)) throw new DataAccessorException($"{nameof(TEntity)}实体的CanTruncateAttribute标签没设置表名，无法执行数据清除操作");
-            ExecuteNonQuery($"Truncate table [{attr.Tablename}]");
+            ExecuteNonQuery($"Truncate table {attr.Tablename}");
         }
         public void Rollback()
         {
@@ -122,6 +122,16 @@ namespace BingoX.DataAccessor.EF
         }
 
         IList<T> ISqlFacade.QueryList<T>(string sqlcommand)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IUnitOfWork.BeginTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        void IUnitOfWork.SaveChanges()
         {
             throw new NotImplementedException();
         }

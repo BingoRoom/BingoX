@@ -33,7 +33,7 @@ namespace BingoX.Repository.AspNetCore
         /// 构建自定义仓储的类型
         /// </summary>
         /// <returns></returns>
-        public IList<Type> CreateRepositoryType()
+        public IList<Type> FindImplementedRepositoryType()
         {
             List<Type> list = new List<Type>();
             foreach (var item in dataAccessorBuilderInfos)
@@ -42,13 +42,14 @@ namespace BingoX.Repository.AspNetCore
                 var assemblyScanClass = new AssemblyScanClass(item.RepositoryAssembly, typeof(IRepository));
                 list.AddRange(assemblyScanClass.Find());
             }
+
             return list;
         }
         /// <summary>
         /// 构建未实现仓储的领域实体的仓储类型
         /// </summary>
         /// <returns></returns>
-        public IList<AssemblyScanResult> CreateBaseRepositoryType()
+        public IList<AssemblyScanResult> FindBaseRepositoryType()
         {
             List<AssemblyScanResult> list = new List<AssemblyScanResult>();
             foreach (var item in dataAccessorBuilderInfos)
@@ -60,8 +61,8 @@ namespace BingoX.Repository.AspNetCore
                 foreach (var domainEntryType in domainEntryTypes)
                 {
                     var type = typeof(IRepository<>).MakeGenericType(domainEntryType);
-                    var impltype = typeof(Repository<>).MakeGenericType(domainEntryType);
-                    list.Add(new AssemblyScanResult(type, impltype));
+                    var implementedType = typeof(Repository<>).MakeGenericType(domainEntryType);
+                    list.Add(new AssemblyScanResult(type, implementedType));
                 }
             }
             return list;

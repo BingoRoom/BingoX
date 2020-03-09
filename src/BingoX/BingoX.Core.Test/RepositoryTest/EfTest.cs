@@ -39,9 +39,12 @@ namespace BingoX.Core.Test.RepositoryTest
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             var Configuration = builder.Build();
 
-            const string conn = "Data Source =localhost;Initial Catalog = BingoTest_DB;persist security info=True;;user id = sa;password = sasa;";
+            const string conn = "Data Source =(localdb)\\MSSQLLocalDB;Initial Catalog = BingoTest_DB;persist security info=True;;user id = sa;password = sasa;";
+            //const string conn = "Data Source =localhost;Initial Catalog = BingoTest_DB;persist security info=True;;user id = sa;password = sasa;";
             services.AddRepository(Configuration, n =>
             {
+
+                n.DefaultConnectionName = "db2";
                 n.AddEF(
                     dbi =>
                     {
@@ -69,7 +72,7 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.RepositoryAssembly = GetType().Assembly;
                         dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
                         //dbi.Intercepts.Add(new AopUser());
-                        dbi.DbContextOption = new ConnectionConfig() { ConnectionString = conn, DbType = DbType.MySql };
+                        dbi.DbContextOption = new ConnectionConfig() { ConnectionString = conn, DbType = DbType.SqlServer };
                     }
                 );
                 options = n;
@@ -79,7 +82,7 @@ namespace BingoX.Core.Test.RepositoryTest
 
             var manage = serviceProvider.GetService<EfDbEntityInterceptManagement>();
             Assert.IsNotNull(manage);
-            var global = options.dataAccessorBuilderInfos[0].Intercepts.OfType<DbEntityInterceptAttribute>();
+            var global = options.DataAccessorBuilderInfos[0].Intercepts.OfType<DbEntityInterceptAttribute>();
             manage.AddRangeGlobalIntercepts(global);
             var attributes = manage.GetAttributes(typeof(Account)).ToArray();
 
@@ -91,7 +94,7 @@ namespace BingoX.Core.Test.RepositoryTest
             var accountRepository = serviceProvider.GetService<AccountRepository>();
             Assert.IsNotNull(accountRepository);
 
-            var roleRepository = serviceProvider.GetService<IRepository<Role>>();
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
             Assert.IsNotNull(roleRepository);
 
             roleRepository.Add(new Role()

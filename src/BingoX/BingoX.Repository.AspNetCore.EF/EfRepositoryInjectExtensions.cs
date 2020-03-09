@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
             DataAccessorBuilderInfo dataAccessorBuilderInfo = new DataAccessorBuilderInfo();
             dataAccessorBuilderInfo.DataAccessorProviderAssembly = typeof(EfRepositoryContextOptionBuilder).Assembly;
             action(dataAccessorBuilderInfo);
-            builderInfo.dataAccessorBuilderInfos.Add(dataAccessorBuilderInfo);
+            builderInfo.DataAccessorBuilderInfos.Add(dataAccessorBuilderInfo);
             if(!builderInfo.RepositoryContextOptionBuilders.Any(n => typeof(EfRepositoryContextOptionBuilder).Equals(n.GetType())))
                 builderInfo.RepositoryContextOptionBuilders.Add(new EfRepositoryContextOptionBuilder(builderInfo));
         }

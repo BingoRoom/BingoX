@@ -15,5 +15,15 @@ namespace BingoX.DataAccessor
         /// 回滚事务
         /// </summary>
         void Rollback();
+
+        /// <summary>
+        /// 初始化事务
+        /// </summary>
+        void BeginTransaction();
+
+        /// <summary>
+        /// 执行变化
+        /// </summary>
+        void SaveChanges();
     }
 }

@@ -18,7 +18,7 @@ namespace BingoX.Repository.AspNetCore
         public RepositoryContextOptionBuilder(RepositoryContextOptionBuilderInfo repositoryContextOptionBuilderInfo)
         {
             this.repositoryContextOptionBuilderInfo = repositoryContextOptionBuilderInfo;
-            dataAccessorBuilderInfos = FilterDataAccessorBuilderInfo(repositoryContextOptionBuilderInfo.dataAccessorBuilderInfos);
+            dataAccessorBuilderInfos = FilterDataAccessorBuilderInfo(repositoryContextOptionBuilderInfo.DataAccessorBuilderInfos);
         }
         /// <summary>
         /// 向数据访问器工厂集合补充工厂

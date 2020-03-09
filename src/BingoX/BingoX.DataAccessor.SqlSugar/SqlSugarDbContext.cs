@@ -58,5 +58,9 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             return RootContextData.ContainsKey(DIConst) ? RootContextData[DIConst] as System.IServiceProvider : null;
         }
+
+      
+
+   
     }
 }

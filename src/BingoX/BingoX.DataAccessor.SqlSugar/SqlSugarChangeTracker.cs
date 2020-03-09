@@ -29,33 +29,7 @@ namespace BingoX.DataAccessor.SqlSugar
             return entityEntries.ToArray();
         }
 
-        public void RollbackTran()
-        {
-            database.Ado.RollbackTran();
-        }
-
-        public void SaveChanges()
-        {
-            object entity = null;
-            SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
-            try
-            {
-                database.Ado.BeginTran();
-                foreach (var item in entityEntries)
-                {
-                    entity = item.Entity;
-                    state = item.State;
-                    item.ExecuteCommand();
-                }
-                database.Ado.CommitTran();
-            }
-            catch (Exception ex)
-            {
-                database.Ado.RollbackTran();
-                throw new DataAccessorException("执行出错" + state + entity, ex);
-            }
-
-        }
+     
 
 
         internal void AddDeleteable<T>(T entity) where T : class, new()

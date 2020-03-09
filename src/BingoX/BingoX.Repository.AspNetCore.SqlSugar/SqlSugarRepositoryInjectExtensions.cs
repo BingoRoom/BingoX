@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
             DataAccessorBuilderInfo dataAccessorBuilderInfo = new DataAccessorBuilderInfo();
             dataAccessorBuilderInfo.DataAccessorProviderAssembly = typeof(SqlSugarRepositoryContextOptionBuilder).Assembly;
             action(dataAccessorBuilderInfo);
-            builderInfo.dataAccessorBuilderInfos.Add(dataAccessorBuilderInfo);
+            builderInfo.DataAccessorBuilderInfos.Add(dataAccessorBuilderInfo);
             if(!builderInfo.RepositoryContextOptionBuilders.Any(n => typeof(SqlSugarRepositoryContextOptionBuilder).Equals(n.GetType())))
                 builderInfo.RepositoryContextOptionBuilders.Add(new SqlSugarRepositoryContextOptionBuilder(builderInfo));
         }

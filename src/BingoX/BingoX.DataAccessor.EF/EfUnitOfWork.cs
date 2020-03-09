@@ -32,7 +32,7 @@ namespace BingoX.DataAccessor.EF
         /// 初始化事务
         /// </summary>
         /// <param name="level"></param>
-        public void BeginTran(IsolationLevel level = IsolationLevel.ReadCommitted)
+        public void BeginTransaction()
         {
             ContextTransaction = context.Database.BeginTransaction();
         }
@@ -65,11 +65,11 @@ namespace BingoX.DataAccessor.EF
             }
             else
             {
-                DoTracker();
+                SaveChanges();
                 context.SaveChanges();
             }
         }
-        private void DoTracker()
+        public void SaveChanges()
         {
            
             var serviceProvider = context.GetServiceProvider();

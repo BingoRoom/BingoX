@@ -11,13 +11,13 @@ namespace BingoX.Repository.AspNetCore
     {
         public RepositoryContextOptionBuilderInfo()
         {
-            dataAccessorBuilderInfos = new DataAccessorBuilderInfoColletion();
+            DataAccessorBuilderInfos = new DataAccessorBuilderInfoColletion();
             RepositoryContextOptionBuilders = new List<RepositoryContextOptionBuilder>();
         }
         /// <summary>
         /// 数据访问器构建器信息集合
         /// </summary>
-        public DataAccessorBuilderInfoColletion dataAccessorBuilderInfos { get; protected set; }
+        public DataAccessorBuilderInfoColletion DataAccessorBuilderInfos { get; protected set; }
         /// <summary>
         /// 仓储程序集
         /// </summary>
@@ -30,5 +30,6 @@ namespace BingoX.Repository.AspNetCore
         /// 仓储上下文选项构建器集合
         /// </summary>
         public List<RepositoryContextOptionBuilder> RepositoryContextOptionBuilders { get; private set; }
+        public string DefaultConnectionName { get; set; }
     }
 }

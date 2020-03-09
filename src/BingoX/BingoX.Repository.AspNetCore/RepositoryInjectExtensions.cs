@@ -18,25 +18,28 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<RepositoryContextOptionBuilderInfo>(rcobItme);
 
             var rcob = new BaseRepositoryContextOptionBuilder(rcobItme);
-            services.AddScoped<RepositoryContextOptions>(serviceProvider => {
+            services.AddScoped<RepositoryContextOptions>(serviceProvider =>
+            {
                 var rco = new RepositoryContextOptions(rcobItme.Mapper);
                 var rcobService = serviceProvider.GetService<RepositoryContextOptionBuilderInfo>();
                 foreach (var item in rcobService.RepositoryContextOptionBuilders)
                 {
                     item.ReplenishDataAccessorFactories(serviceProvider, config, rco);
                 }
+
                 return rco;
             });
+            services.AddScoped<IRepositoryFactory, RepositoryFactory>();
             foreach (var item in rcobItme.RepositoryContextOptionBuilders)
             {
                 item.InjectDbIntercepts(services);
             }
-            foreach (var item in rcob.CreateBaseRepositoryType())
+            foreach (var item in rcob.FindBaseRepositoryType())
             {
                 services.AddScoped(item.BaseType, item.ImplementedType);
                 services.AddScoped(item.ImplementedType);
             }
-            foreach (var item in rcob.CreateRepositoryType())
+            foreach (var item in rcob.FindImplementedRepositoryType())
             {
                 services.AddScoped(item);
             }
