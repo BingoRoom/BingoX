@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
+    <Version>2.0.0</Version>
+    <Authors>Bingo</Authors>
+    <Product>Bingo</Product>
+    <Description>SqlSugar的数据访问器实现</Description>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="sqlSugar" Version="5.0.0.8" />
