@@ -68,13 +68,14 @@ namespace BingoX.DataAccessor.EF
 
         public virtual void Update(TEntity entity)
         {
-         
+
 #if Standard
             var entityEntry = DbSet.Update(entity); 
+            entityEntry.State = EntityState.Modified;
 #else
             var entityEntry = context.Entry(entity);
-#endif
             entityEntry.State = EntityState.Modified;
+#endif
 
         }
 

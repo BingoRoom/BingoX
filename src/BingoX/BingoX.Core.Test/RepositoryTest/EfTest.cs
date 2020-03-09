@@ -97,7 +97,7 @@ namespace BingoX.Core.Test.RepositoryTest
             var roleRepository = serviceProvider.GetService<IRepository<Role>>();
             // var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
             Assert.IsNotNull(roleRepository);
-
+            DateTime dateTimeInit = DateTime.Now;
             roleRepository.Add(new Role()
             {
                 RoleCode = "admin",
@@ -105,13 +105,13 @@ namespace BingoX.Core.Test.RepositoryTest
             });
             roleRepository.UnitOfWork.Commit();
 
-            var roles = roleRepository.Where(n => n.RoleCode == "admin");
+            var roles = roleRepository.Where(n => n.RoleCode == "admin" && n.CreatedDate > dateTimeInit);
             Assert.AreEqual(roles.Count(), 1);
             Assert.IsNotNull(roles[0]);
             Assert.AreEqual(roles[0].RoleCode, "admin");
             Assert.AreEqual(roles[0].RoleName, "管理员");
 
-            DateTime dateTimeInit = DateTime.Now;
+           
 
             accountRepository.Add(new Account()
             {
@@ -137,7 +137,7 @@ namespace BingoX.Core.Test.RepositoryTest
             accountRepository.UpdateRange(accounts);
             accountRepository.UnitOfWork.Commit();
 
-            accounts = accountRepository.Where(n => n.Name == "张三");
+            accounts = accountRepository.Where(n => n.Name == "张三" && n.CreatedDate > dateTimeInit);
             Assert.AreEqual(accounts.Count(), 1);
             Assert.IsNotNull(accounts[0]);
             Assert.IsNotNull(accounts[0].Role);
