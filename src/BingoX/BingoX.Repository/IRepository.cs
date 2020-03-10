@@ -28,7 +28,7 @@ namespace BingoX.Repository
     /// <typeparam name="TDomain">领域实体</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
     public interface IRepository<TDomain> : IRepository<TDomain, TDomain>
-        where TDomain : IEntity<TDomain>
+        where TDomain : IDomainEntry, IEntity<TDomain>
     {
         //   void SetDb(string dbName);
     }
@@ -39,6 +39,7 @@ namespace BingoX.Repository
     /// <typeparam name="Entity">数据库实体（DAO）</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
     public interface IRepository<TDomain, TEntity> : IRepository
+        where TDomain : IDomainEntry
         where TEntity : IEntity<TEntity>
 
     {
@@ -102,6 +103,12 @@ namespace BingoX.Repository
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
         void Delete(TDomain entity);
+        /// <summary>
+        /// 根据条件查询记录
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns>查询结果</returns>
+        TDomain Get(Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
         /// 根据条件查询记录
         /// </summary>
