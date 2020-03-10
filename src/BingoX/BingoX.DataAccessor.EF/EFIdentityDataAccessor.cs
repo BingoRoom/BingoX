@@ -46,7 +46,7 @@ namespace BingoX.DataAccessor.EF
 
         public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            if (include == null) return GetId(id);
+            if (include != null) return GetId(id);
             var query = include(DbSet.AsNoTracking<TEntity>());
             return query.FirstOrDefault(n => n.ID == (int)id);
         }
