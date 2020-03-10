@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace BingoX.DataAccessor
@@ -31,7 +33,7 @@ namespace BingoX.DataAccessor
         /// </summary>
         /// <param name="sqlcommand">SQL命令</param>
         /// <returns></returns>
-        void ExecuteNonQuery(string sqlcommand);
+        void AddCommand(string sqlcommand);
         /// <summary>
         /// 返回第一行第一列的指
         /// </summary>

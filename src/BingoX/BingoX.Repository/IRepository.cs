@@ -28,9 +28,9 @@ namespace BingoX.Repository
     /// <typeparam name="TDomain">领域实体</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
     public interface IRepository<TDomain> : IRepository<TDomain, TDomain>, IRepositoryExpression<TDomain>
-        where TDomain : IDomainEntry, IEntity<TDomain>
+        where TDomain : IEntity<TDomain>
     {
-    
+
     }
     /// <summary>
     /// 表示一个领域实体与数据库实体不为同一个实体类的领域仓储
@@ -39,7 +39,7 @@ namespace BingoX.Repository
     /// <typeparam name="Entity">数据库实体（DAO）</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
     public interface IRepository<TDomain, TEntity> : IRepository
-        where TDomain : IDomainEntry
+
         where TEntity : IEntity<TEntity>
     {
         /// <summary>
@@ -102,6 +102,6 @@ namespace BingoX.Repository
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
         void Delete(TDomain entity);
-        
+
     }
 }

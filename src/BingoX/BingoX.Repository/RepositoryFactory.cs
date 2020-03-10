@@ -14,7 +14,7 @@ namespace BingoX.Repository
         }
 
         static readonly Type[] ConstructorTypes = { typeof(RepositoryContextOptions), typeof(string) };
-        public IRepository<TDomain> Create<TDomain>(string name) where TDomain : IEntity<TDomain>, IDomainEntry
+        public IRepository<TDomain> Create<TDomain>(string name) where TDomain : IEntity<TDomain>
         {
             var repository = CreateRepository(typeof(Repository<>).MakeGenericType(typeof(TDomain)), name);
             return repository as IRepository<TDomain>;
@@ -22,15 +22,21 @@ namespace BingoX.Repository
 
         private object CreateRepository(Type repositoryType, string name)
         {
-
             var constructorinfo = repositoryType.GetConstructor(ConstructorTypes);
+            if (constructorinfo == null) throw new RepositoryException("没有对应的构造函数,不能指定db");
             return constructorinfo.FastInvoke(options, name);
         }
 
-        public IRepository<TDomain, TEntity> Create<TDomain, TEntity>(string name) where TEntity : IEntity<TEntity> where TDomain : IDomainEntry
+        public IRepository<TDomain, TEntity> Create<TDomain, TEntity>(string name) where TEntity : IEntity<TEntity>
         {
             var repository = CreateRepository(typeof(Repository<,>).MakeGenericType(typeof(TDomain), typeof(TEntity)), name);
             return repository as IRepository<TDomain, TEntity>;
+        }
+
+        public TRepository CreateRepository<TRepository>(string name) where TRepository : class, IRepository
+        {
+            var repository = CreateRepository(typeof(TRepository), name);
+            return (TRepository)repository;
         }
     }
 }

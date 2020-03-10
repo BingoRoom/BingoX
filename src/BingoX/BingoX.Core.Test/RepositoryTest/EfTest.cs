@@ -102,23 +102,31 @@ namespace BingoX.Core.Test.RepositoryTest
             var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
         }
+
         [Test]
-        public void TestAddUpdateSqlSugarRepository()
+        public void TestQuery_EfRepository()
         {
-            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db1");
             var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
-            DateTime dateTimeInit = DateTime.Now;
-            var item= list.First();
-            item.RoleName = "管理员_1";
-            item.RoleCode = "Admin_1";
-            roleRepository.Update(item);
-            roleRepository.UnitOfWork.Commit();
-            list = roleRepository.Where(n=>n.ModifyDate> dateTimeInit);
+        }
+
+        [Test]
+        public void TestQueryWithSql_EfRepository()
+        {
+            var accountRepository = serviceProvider.GetService<AccountRepository>();
+            var list = accountRepository.GetAccountOnSql();
+            Assert.GreaterOrEqual(list.Length, 1);
+        }
+        [Test]
+        public void TestQueryWithSql_SqlSuargRepository()
+        {
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>("db2");
+            var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
         }
         [Test]
-        public void TestAddUpdateEFRepository()
+        public void TestAddUpdate_EFRepository()
         {
             var accountRepository = serviceProvider.GetService<AccountRepository>();
             Assert.IsNotNull(accountRepository);
@@ -206,11 +214,15 @@ namespace BingoX.Core.Test.RepositoryTest
     }
     public class AccountRepository : Repository<Account>
     {
-        public AccountRepository(RepositoryContextOptions context) : base(context)
+        public AccountRepository(RepositoryContextOptions context) : this(context, "db1")
+        {
+
+        }
+        public AccountRepository(RepositoryContextOptions options, string dbname) : base(options, dbname)
         {
             _wrapper = CreateWrapper<Account, AccountDataAccessor>("db1");
 
-            _roleWrapper = CreateWrapper<Role>("db2");
+            _roleWrapper = CreateWrapper<Role>(dbname);
             Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
         readonly AccountDataAccessor _wrapper;
@@ -225,6 +237,11 @@ namespace BingoX.Core.Test.RepositoryTest
         public AccountRole[] GetAccounts()
         {
             return _wrapper.GetAccounts();
+        }
+        public AccountRole[] GetAccountOnSql()
+        {
+            var sqlFacad = CreateSqlFacade("db1");
+            return sqlFacad.QueryList<AccountRole>("select  outer1.Name,outer1.Age,inner1.RoleName,inner1.RoleName from [Account]  outer1  INNER  join  [Role]  inner1 on outer1.roleid=inner1.id ").ToArray();
         }
         public class AccountRole
         {

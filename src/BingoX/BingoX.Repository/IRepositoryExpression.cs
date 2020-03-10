@@ -42,12 +42,12 @@ namespace BingoX.Repository
         ///// <param name="where">更新条件表达式</param>
         ///// <returns>受影响记录数</returns>
         //int Update(Expression<Func<TDomain, TDomain>> update, Expression<Func<TDomain, bool>> where);
-        ///// <summary>
-        ///// 删除记录
-        ///// </summary>
-        ///// <param name="where">删除条件表达式</param>
-        ///// <returns>受影响记录数</returns>
-        //int Delete(Expression<Func<TDomain, bool>> where);
+        /// <summary>
+        /// 删除记录
+        /// </summary>
+        /// <param name="where">删除条件表达式</param>
+        /// <returns>受影响记录数</returns>
+        void Delete(Expression<Func<TDomain, bool>> where);
 
     }
 }

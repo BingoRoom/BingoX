@@ -13,6 +13,7 @@ using System.Data.Common;
 using BingoX.Domain;
 using BingoX.Helper;
 using System.Linq.Expressions;
+using System.Data;
 
 namespace BingoX.DataAccessor.EF
 {
@@ -41,6 +42,7 @@ namespace BingoX.DataAccessor.EF
             string sql = string.Empty;
             try
             {
+                Open();
                 tran = connection.BeginTransaction();
                 foreach (var item in cmds)
                 {
@@ -50,19 +52,27 @@ namespace BingoX.DataAccessor.EF
                     item.ExecuteNonQuery();
                 }
                 tran.Commit();
+                Close();
                 cmds.Clear();
             }
             catch (Exception ex)
             {
                 tran.Rollback();
+                Close();
                 throw new DataAccessorException($"{sql} 执行失败", ex);
             }
 
         }
-
-        public void ExecuteNonQuery(string sqlcommand)
+        private void Open()
         {
-
+            if (connection.State != ConnectionState.Open) connection.Open();
+        }
+        private void Close()
+        {
+            if (connection.State != ConnectionState.Closed) connection.Close();
+        }
+        public void AddCommand(string sqlcommand)
+        {
             var cmd = connection.CreateCommand();
             cmd.CommandText = sqlcommand;
             cmds.Add(cmd);
@@ -70,17 +80,19 @@ namespace BingoX.DataAccessor.EF
 
         public object ExecuteScalar(string sqlcommand)
         {
-
             var cmd = connection.CreateCommand();
             cmd.CommandText = sqlcommand;
-            return cmd.ExecuteScalar();
+            Open();
+            var scalar = cmd.ExecuteScalar();
+            Close();
+            return scalar;
         }
         public void Truncate<TEntity>() where TEntity : class, IEntity<TEntity>
         {
             var attr = typeof(TEntity).GetCustomAttribute<CanTruncateAttribute>(true);
             if (attr == null) throw new DataAccessorException($"{nameof(TEntity)}没打CanTruncateAttribute标签，不能执行数据清除操作");
             if (string.IsNullOrEmpty(attr.Tablename)) throw new DataAccessorException($"{nameof(TEntity)}实体的CanTruncateAttribute标签没设置表名，无法执行数据清除操作");
-            ExecuteNonQuery($"Truncate table {attr.Tablename}");
+            AddCommand($"Truncate table {attr.Tablename}");
         }
         public void Rollback()
         {
@@ -88,42 +100,29 @@ namespace BingoX.DataAccessor.EF
             cmds.Clear();
         }
 
-        //        public void TransactionExecute(IEnumerable<string> sqlcommands)
-        //        {
-        //#if Standard
-        //            var connection = Context.Database.GetDbConnection();
-        //#else
-        //            var connection = Context.Database.Connection;
-        //#endif
-        //            var transaction = connection.BeginTransaction();
-        //            string sqlcommand = string.Empty;
-        //            try
-        //            {
-        //                var cmd = connection.CreateCommand();
-        //                cmd.Transaction = transaction;
-        //                foreach (var item in sqlcommands)
-        //                {
-        //                    sqlcommand = item;
-        //                    cmd.CommandText = sqlcommand;
-        //                    cmd.ExecuteNonQuery();
-        //                }
-        //                transaction.Commit();
-        //            }
-        //            catch (System.Exception ex)
-        //            {
-        //                transaction.Rollback();
-        //                throw new DataAccessorException("执行语句出错：" + sqlcommand, ex);
-        //            }
-        //        }
 
-        T ISqlFacade.Query<T>(string sqlcommand)
+        public T Query<T>(string sqlcommand) where T : class, new()
         {
-            throw new NotImplementedException();
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = sqlcommand;
+            Open();
+            var reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            T entity = DataReaderHelper.Cast<T>(reader);
+            reader.Close();
+            Close();
+            return entity;
         }
 
-        IList<T> ISqlFacade.QueryList<T>(string sqlcommand)
+        public IList<T> QueryList<T>(string sqlcommand) where T : class, new()
         {
-            throw new NotImplementedException();
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = sqlcommand;
+            connection.Open();
+            var reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+            IList<T> entities = DataReaderHelper.GetList<T>(reader);
+            reader.Close();
+            Close();
+            return entities;
         }
 
         void IUnitOfWork.BeginTransaction()

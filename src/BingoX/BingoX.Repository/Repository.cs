@@ -30,7 +30,7 @@ namespace BingoX.Repository
         /// <typeparam name="TDataAccessor">数据访问器的派生接口类型</typeparam>
         /// <param name="dbName">连接字符串名称</param>
         /// <returns></returns>
-        public TDataAccessor CreateWrapper<TEntity, TDataAccessor>(string dbName = null)
+        protected TDataAccessor CreateWrapper<TEntity, TDataAccessor>(string dbName = null)
             where TEntity : class, IEntity<TEntity>
             where TDataAccessor : IDataAccessor<TEntity>
         {
@@ -45,7 +45,7 @@ namespace BingoX.Repository
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
         /// <param name="dbName">连接字符串名称</param>
         /// <returns></returns>
-        public IDataAccessor<TEntity> CreateWrapper<TEntity>(string dbName = null) where TEntity : IEntity<TEntity>
+        protected IDataAccessor<TEntity> CreateWrapper<TEntity>(string dbName = null) where TEntity : IEntity<TEntity>
         {
             IDataAccessorFactory factory = GetFactory(dbName);
             var dataAccessor = factory.CreateByEntity<TEntity>();
@@ -59,7 +59,7 @@ namespace BingoX.Repository
         /// <typeparam name="TEntity">数据库实体类型</typeparam>
         /// <param name="dbName">连接字符串名称</param>
         /// <returns></returns>
-        public ISqlFacade CreateSqlFacade(string dbName = null)
+        protected ISqlFacade CreateSqlFacade(string dbName = null)
         {
             IDataAccessorFactory factory = GetFactory(dbName);
             var sqlFacade = factory.CreateSqlFacade();
@@ -91,8 +91,7 @@ namespace BingoX.Repository
         }
     }
 
-    public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity>
-        where TDomain : IDomainEntry
+    public class Repository<TDomain, TEntity> : Repository, IRepository<TDomain, TEntity>   
         where TEntity : IEntity<TEntity>
     {
 
@@ -215,11 +214,11 @@ namespace BingoX.Repository
             return Where(whereLambda).FirstOrDefault();
         }
 
-
+       
     }
 
     public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain>
-        where TDomain : class, IEntity<TDomain>, IDomainEntry
+        where TDomain : class, IEntity<TDomain>
     {
         public Repository(RepositoryContextOptions options) : base(options)
         {
@@ -227,10 +226,11 @@ namespace BingoX.Repository
         }
         public Repository(RepositoryContextOptions options, string dbname) : base(options, dbname)
         {
-           // wrapper = CreateWrapper<TDomain>(dbname);
+           
         }
-        //IDataAccessor<TDomain> wrapper;
-        //protected override IDataAccessor<TDomain> Wrapper { get { return wrapper ?? base.Wrapper; } }
+
+      
+        
 
 
     }
