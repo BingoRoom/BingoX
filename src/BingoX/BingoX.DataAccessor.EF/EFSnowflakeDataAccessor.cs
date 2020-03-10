@@ -18,7 +18,7 @@ namespace BingoX.DataAccessor.EF
         {
         }
 
-
+       
 
         public override bool Exist(object id)
         {

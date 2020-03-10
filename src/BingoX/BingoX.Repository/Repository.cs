@@ -67,18 +67,7 @@ namespace BingoX.Repository
             return sqlFacade;
         }
 
-        /// <summary>
-        /// 创建关联查询访问器
-        /// </summary>
-        /// <param name="dbName">连接字符串名称</param>
-        /// <returns></returns>
-        public IJoinFacade CreateJoinFacade(string dbName = null)
-        {
-            IDataAccessorFactory factory = GetFactory(dbName);
-            var joinFacade = factory.CreateJoinFacade();
-
-            return joinFacade;
-        }
+  
         private IDataAccessorFactory GetFactory(string dbName)
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");

@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class RepositoryInjectExtensions
     {
+        static readonly Type[] ignoin = { typeof(IRepository) };
         public static IServiceCollection AddRepository(this IServiceCollection services, IConfiguration config, Action<RepositoryContextOptionBuilderInfo> action)
         {
             var rcobItme = new RepositoryContextOptionBuilderInfo();
@@ -37,7 +38,12 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             foreach (var item in rcob.FindBaseRepositoryType())
             {
-                services.AddScoped(item.BaseType, item.ImplementedType);
+                foreach (var itemInterfaces in item.ImplementedType.GetInterfaces())
+                {
+
+                    services.AddScoped(itemInterfaces, item.ImplementedType);
+                }
+                //    
                 services.AddScoped(item.ImplementedType);
             }
             foreach (var item in rcob.FindImplementedRepositoryType())

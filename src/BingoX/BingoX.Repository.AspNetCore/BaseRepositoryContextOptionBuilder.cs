@@ -33,7 +33,7 @@ namespace BingoX.Repository.AspNetCore
         /// 构建自定义仓储的类型
         /// </summary>
         /// <returns></returns>
-        public IList<Type> FindImplementedRepositoryType()
+        public virtual IList<Type> FindImplementedRepositoryType()
         {
             List<Type> list = new List<Type>();
             foreach (var item in dataAccessorBuilderInfos)
@@ -49,7 +49,7 @@ namespace BingoX.Repository.AspNetCore
         /// 构建未实现仓储的领域实体的仓储类型
         /// </summary>
         /// <returns></returns>
-        public IList<AssemblyScanResult> FindBaseRepositoryType()
+        public virtual IList<AssemblyScanResult> FindBaseRepositoryType()
         {
             List<AssemblyScanResult> list = new List<AssemblyScanResult>();
             foreach (var item in dataAccessorBuilderInfos)

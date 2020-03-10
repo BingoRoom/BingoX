@@ -21,21 +21,22 @@ namespace BingoX.DataAccessor.SqlSugar
 
 
 
-
+        public virtual SqlSugarSqlFacade CreateSqlFacade()
+        {
+            return new SqlSugarSqlFacade(DbContext);
+        }
+   
 
         /// <summary>
         /// 创建SQL命令门面
         /// </summary>
         /// <returns></returns>
-        public SqlSugarSqlFacade CreateSqlFacade()
+        protected override ISqlFacade AbstractSqlFacade()
         {
-            return new SqlSugarSqlFacade(DbContext);
+            return CreateSqlFacade();
         }
 
-        public SqlSugarJoinFacade CreateJoinFacade()
-        {
-            return new SqlSugarJoinFacade(DbContext);
-        }
+     
 
 
 

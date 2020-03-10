@@ -30,9 +30,8 @@ namespace BingoX.Core.Test.RepositoryTest
         IServiceProvider serviceProvider;
         RepositoryContextOptionBuilderInfo options;
 
-
-        [Test]
-        public void TestAopAtt()
+        [OneTimeSetUp()]
+        public void Setup()
         {
             ServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder()
@@ -80,6 +79,11 @@ namespace BingoX.Core.Test.RepositoryTest
             });
 
             serviceProvider = new DefaultServiceProviderFactory().CreateServiceProvider(services);
+        }
+        [Test]
+        public void TestAopAtt()
+        {
+
 
             var manage = serviceProvider.GetService<EfDbEntityInterceptManagement>();
             Assert.IsNotNull(manage);
@@ -91,12 +95,22 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.IsNotNull(aops);
             Assert.IsNotEmpty(aops);
             Assert.AreEqual(aops.Length, attributes.Length);
+        }
+        [Test]
+        public void TestQueryRepository()
+        {
 
+        }
+        [Test]
+        public void TestAddUpdateRepository()
+        {
             var accountRepository = serviceProvider.GetService<AccountRepository>();
             Assert.IsNotNull(accountRepository);
             var roleRepository = serviceProvider.GetService<IRepository<Role>>();
             // var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
             Assert.IsNotNull(roleRepository);
+            var accoutroles = accountRepository.GetAccounts();
+
             DateTime dateTimeInit = DateTime.Now;
             roleRepository.Add(new Role()
             {
@@ -111,7 +125,7 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.AreEqual(roles[0].RoleCode, "admin");
             Assert.AreEqual(roles[0].RoleName, "管理员");
 
-           
+
 
             accountRepository.Add(new Account()
             {
@@ -158,35 +172,40 @@ namespace BingoX.Core.Test.RepositoryTest
         public string Modify { get; set; }
         public long ID { get; set; }
     }
-
+    public class AccountDataAccessor : EFSnowflakeDataAccessor<Account>
+    {
+        public AccountDataAccessor(EfDbContext context) : base(context)
+        {
+        }
+        public AccountRepository.AccountRole[] GetAccounts()
+        {
+            var outerSet = context.Set<Account>();
+            var inner1Set = context.Set<Role>();
+            var query = from outer in outerSet
+                        join inner1 in inner1Set on outer.RoleId equals inner1.ID
+                        select new AccountRepository.AccountRole { Age = outer.Age, Name = outer.Name, RoleCode = inner1.RoleCode, RoleName = inner1.RoleName };
+            return query.ToArray();
+        }
+    }
     public class AccountRepository : Repository<Account>
     {
         public AccountRepository(RepositoryContextOptions context) : base(context)
         {
-            _wrapper = CreateWrapper<Account,EFSnowflakeDataAccessor<Account>>("db1");
+            _wrapper = CreateWrapper<Account, AccountDataAccessor>("db1");
+
+            _roleWrapper = CreateWrapper<Role>("db2");
             Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
-        readonly IEFDataAccessor<Account> _wrapper;
+        readonly AccountDataAccessor _wrapper;
         protected override IDataAccessor<Account> Wrapper { get { return _wrapper; } }
 
         public override IList<Account> Where(Expression<Func<Account, bool>> whereLambda)
         {
-           
             return _wrapper.WhereTracking(whereLambda);
         }
-        public IList<AccountRole> GetAccounts()
+        public AccountRole[] GetAccounts()
         {
-            var join = CreateJoinFacade().Query<Account, Role, long, AccountRole>(
-                outer => outer.RoleId,
-                inner => inner.ID,
-                (outer, inner) => new AccountRole
-                {
-                    RoleCode = inner.RoleCode,
-                    RoleName = inner.RoleName,
-                    Name = outer.Name,
-                    Age = outer.Age
-                });
-            return join.ToList((outer, inner) => outer.Age > 10);
+            return _wrapper.GetAccounts();
         }
         public class AccountRole
         {
@@ -198,8 +217,6 @@ namespace BingoX.Core.Test.RepositoryTest
             public int Age { get; set; }
         }
     }
-
-
     //  [DbEntityInterceptAttribute(typeof(AopUser))]
     public class Role : BaseEntityTest, ISnowflakeEntity<Role>, IDomainEntry
     {

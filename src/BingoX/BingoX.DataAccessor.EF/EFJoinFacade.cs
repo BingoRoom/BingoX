@@ -54,8 +54,7 @@ namespace BingoX.DataAccessor.EF
         private IQueryable<TResult> Where(Expression<Func<TOuter, TInner, bool>> whereLambda)
         {
             var outerSet = Context.Set<TOuter>();
-            var inner1Set = Context.Set<TInner>();
-            var inner2Set = Context.Set<TInner>();
+            var inner1Set = Context.Set<TInner>();          
             var whereKey = whereLambda.Compile();
             var query = (from outer in outerSet
                          join inner1 in inner1Set on outerKeySelector(outer) equals innerKeySelector(inner1)
@@ -67,7 +66,6 @@ namespace BingoX.DataAccessor.EF
         {
             var outerSet = Context.Set<TOuter>();
             var inner1Set = Context.Set<TInner>();
-            var inner2Set = Context.Set<TInner>();
             var query = (from outer in outerSet
                          join inner1 in inner1Set on outerKeySelector(outer) equals innerKeySelector(inner1)
                          select resultSelector(outer, inner1));

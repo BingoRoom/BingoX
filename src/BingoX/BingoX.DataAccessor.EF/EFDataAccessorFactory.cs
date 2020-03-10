@@ -10,30 +10,30 @@ namespace BingoX.DataAccessor.EF
 {
     public class EFDataAccessorFactory<TContext> : DataAccessorFactory<TContext>, IDataAccessorFactory where TContext : EfDbContext
     {
-       
+
         public EFDataAccessorFactory(IServiceProvider serviceProvider, DataAccessorBuilderInfo dataAccessorBuilderInfo, string connectionString) : base(serviceProvider, dataAccessorBuilderInfo, connectionString)
         {
-           
+
 
         }
-        
+
+        public virtual EFSqlFacade CreateSqlFacade()
+        {
+            return new EFSqlFacade(DbContext);
+        }
       
 
         /// <summary>
         /// 创建SQL命令门面
         /// </summary>
         /// <returns></returns>
-        public EFSqlFacade CreateSqlFacade()
-        {
-            return new  EFSqlFacade(DbContext);
-        }
-  
- 
-
-        ISqlFacade IDataAccessorFactory.CreateSqlFacade()
+        protected override ISqlFacade AbstractSqlFacade()
         {
             return CreateSqlFacade();
         }
+
+    
+
 
         protected override Type GetDataAccessorType<TEntity>()
         {
