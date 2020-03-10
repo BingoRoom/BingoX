@@ -11,6 +11,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+
+
   <ItemGroup>
     <ProjectReference Include="..\BingoX.Domain\BingoX.Domain.csproj" />
   </ItemGroup>

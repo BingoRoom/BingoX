@@ -63,10 +63,6 @@ namespace BingoX.DataAccessor.SqlSugar
             return typeDataAccessor;
         }
 
-        IJoinFacade IDataAccessorFactory.CreateJoinFacade()
-        {
-            return CreateJoinFacade();
-        }
         ISqlFacade IDataAccessorFactory.CreateSqlFacade()
         {
             return CreateSqlFacade();

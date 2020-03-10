@@ -45,6 +45,7 @@ namespace BingoX.Core.Test.RepositoryTest
             {
 
                 n.DefaultConnectionName = "db1";
+                n.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
                 n.AddEF(
                     dbi =>
                     {
@@ -55,8 +56,7 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.DomainEntityAssembly = GetType().Assembly;
                         dbi.DbContextType = typeof(DbBoundedContext);
                         dbi.RepositoryAssembly = GetType().Assembly;
-                        dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
-                        //dbi.Intercepts.Add(new AopUser());
+                        dbi.Intercepts.Add<AopCreatedInfo>();
                         dbi.DbContextOption = new DbContextOptionsBuilder<DbBoundedContext>().UseSqlServer(conn).Options;
                     }
                 );
@@ -70,7 +70,6 @@ namespace BingoX.Core.Test.RepositoryTest
                         dbi.DomainEntityAssembly = GetType().Assembly;
                         dbi.DbContextType = typeof(SqlSugarDbBoundedContext);
                         dbi.RepositoryAssembly = GetType().Assembly;
-                        dbi.Intercepts.Add<AopCreatedInfo>(InterceptDIEnum.Scoped);
                         //dbi.Intercepts.Add(new AopUser());
                         dbi.DbContextOption = new ConnectionConfig() { ConnectionString = conn, DbType = DbType.SqlServer, InitKeyType = InitKeyType.SystemTable };
                     }
@@ -88,7 +87,7 @@ namespace BingoX.Core.Test.RepositoryTest
             var manage = serviceProvider.GetService<EfDbEntityInterceptManagement>();
             Assert.IsNotNull(manage);
             var global = options.DataAccessorBuilderInfos[0].Intercepts.OfType<DbEntityInterceptAttribute>();
-            manage.AddRangeGlobalIntercepts(global);
+            manage.AddRangeIntercepts(global);
             var attributes = manage.GetAttributes(typeof(Account)).ToArray();
 
             var aops = manage.GetAops(typeof(Account)).ToArray();
@@ -99,15 +98,32 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestQueryRepository()
         {
-
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
+            var list = roleRepository.QueryAll();
+            Assert.GreaterOrEqual(list.Count, 1);
         }
         [Test]
-        public void TestAddUpdateRepository()
+        public void TestAddUpdateSqlSugarRepository()
+        {
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
+            var list = roleRepository.QueryAll();
+            Assert.GreaterOrEqual(list.Count, 1);
+            DateTime dateTimeInit = DateTime.Now;
+            var item= list.First();
+            item.RoleName = "管理员_1";
+            item.RoleCode = "Admin_1";
+            roleRepository.Update(item);
+            roleRepository.UnitOfWork.Commit();
+            list = roleRepository.Where(n=>n.ModifyDate> dateTimeInit);
+            Assert.GreaterOrEqual(list.Count, 1);
+        }
+        [Test]
+        public void TestAddUpdateEFRepository()
         {
             var accountRepository = serviceProvider.GetService<AccountRepository>();
             Assert.IsNotNull(accountRepository);
             var roleRepository = serviceProvider.GetService<IRepository<Role>>();
-            // var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
+            // 
             Assert.IsNotNull(roleRepository);
             var accoutroles = accountRepository.GetAccounts();
 
@@ -164,12 +180,13 @@ namespace BingoX.Core.Test.RepositoryTest
         }
     }
 
-    public class BaseEntityTest : ISnowflakeEntity<Role>
+    public class BaseEntityTest : ISnowflakeEntity<BaseEntityTest>
     {
         public DateTime CreatedDate { get; set; }
         public string Created { get; set; }
         public DateTime ModifyDate { get; set; }
         public string Modify { get; set; }
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = false)]
         public long ID { get; set; }
     }
     public class AccountDataAccessor : EFSnowflakeDataAccessor<Account>
@@ -197,6 +214,8 @@ namespace BingoX.Core.Test.RepositoryTest
             Wrapper.SetInclude = opt => opt.Include(n => n.Role);
         }
         readonly AccountDataAccessor _wrapper;
+        private readonly IDataAccessor<Role> _roleWrapper;
+
         protected override IDataAccessor<Account> Wrapper { get { return _wrapper; } }
 
         public override IList<Account> Where(Expression<Func<Account, bool>> whereLambda)
@@ -316,7 +335,7 @@ namespace BingoX.Core.Test.RepositoryTest
             throw new NotImplementedException();
         }
     }
-    class AopCreatedInfo : IDbEntityIntercept, IDbEntityAddIntercept, IDbEntityModifiyIntercept, IDbEntityDeleteIntercept
+    class AopCreatedInfo : IDbEntityAddIntercept, IDbEntityModifiyIntercept, IDbEntityDeleteIntercept
     {
         public bool AllowDelete { get { return true; } }
 

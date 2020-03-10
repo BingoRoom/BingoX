@@ -27,10 +27,10 @@ namespace BingoX.Repository
     /// </summary>
     /// <typeparam name="TDomain">领域实体</typeparam>
     /// <typeparam name="pkType">主键类型</typeparam>
-    public interface IRepository<TDomain> : IRepository<TDomain, TDomain>
+    public interface IRepository<TDomain> : IRepository<TDomain, TDomain>, IRepositoryExpression<TDomain>
         where TDomain : IDomainEntry, IEntity<TDomain>
     {
-        //   void SetDb(string dbName);
+    
     }
     /// <summary>
     /// 表示一个领域实体与数据库实体不为同一个实体类的领域仓储
@@ -41,7 +41,6 @@ namespace BingoX.Repository
     public interface IRepository<TDomain, TEntity> : IRepository
         where TDomain : IDomainEntry
         where TEntity : IEntity<TEntity>
-
     {
         /// <summary>
         /// 批量新增记录
@@ -103,47 +102,6 @@ namespace BingoX.Repository
         /// <param name="entity">待删除记录实体</param>
         /// <returns>受影响记录数</returns>
         void Delete(TDomain entity);
-        /// <summary>
-        /// 根据条件查询记录
-        /// </summary>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <returns>查询结果</returns>
-        TDomain Get(Expression<Func<TEntity, bool>> whereLambda);
-        /// <summary>
-        /// 根据条件查询记录
-        /// </summary>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">whereLambda为null</exception>
-        IList<TDomain> Where(Expression<Func<TEntity, bool>> whereLambda);
-        /// <summary>
-        /// 根据条件判断记录是否存在
-        /// </summary>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">whereLambda为null</exception>
-        bool Exist(Expression<Func<TEntity, bool>> whereLambda);
-        /// <summary>
-        /// 根据条件更新记录
-        /// </summary>
-        /// <param name="update">如何更新实体的委托</param>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">whereLambda为null</exception>
-        void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
-        /// <summary>
-        /// 根据条件删除记录
-        /// </summary>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">whereLambda为null</exception>
-        void Delete(Expression<Func<TEntity, bool>> whereLambda);
-        /// <summary>
-        /// 返回查询结果的前N条
-        /// </summary>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <param name="num">返回记录条数</param>
-        /// <returns></returns>
-        IList<TDomain> Take(Expression<Func<TEntity, bool>> whereLambda, int num);
+        
     }
 }

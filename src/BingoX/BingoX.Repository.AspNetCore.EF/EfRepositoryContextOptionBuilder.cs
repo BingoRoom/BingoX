@@ -25,7 +25,7 @@ namespace BingoX.Repository.AspNetCore.EF
 
         public override void ReplenishDataAccessorFactories(IServiceProvider serviceProvider, IConfiguration config, RepositoryContextOptions repositoryContextOptions)
         {
-            foreach (var item in dataAccessorBuilderInfos)
+            foreach (var item in DataAccessorBuilderInfos)
             {
                 var connectionString = config.GetConnectionString(item.AppSettingConnectionName);
                 var factoryType = typeof(EFDataAccessorFactory<>).MakeGenericType(item.DbContextType);
@@ -49,30 +49,11 @@ namespace BingoX.Repository.AspNetCore.EF
         /// <param name="services"></param>
         public override void InjectDbIntercepts(IServiceCollection services)
         {
-            foreach (var item in dataAccessorBuilderInfos.SelectMany(n=>n. Intercepts.OfType<DbEntityInterceptAttribute>()).Where(n => n.DI != InterceptDIEnum.None))
-            {
-                if (item.Intercept != null) continue;
-                switch (item.DI)
-                {
-                    case InterceptDIEnum.Scoped:
-                        services.AddScoped(item.AopType);
-                        break;
-                    case InterceptDIEnum.Singleton:
-                        services.AddSingleton(item.AopType);
-                        break;
-                    case InterceptDIEnum.Transient:
-                        services.AddTransient(item.AopType);
-                        break;
-                }
-            }
+
             services.AddScoped<EfDbEntityInterceptManagement>(serviceProvider =>
             {
                 var interceptManagement = new EfDbEntityInterceptManagement(serviceProvider);
-                foreach (var options in dataAccessorBuilderInfos)
-                {
-                    interceptManagement.AddRangeGlobalIntercepts(options.Intercepts.OfType<DbEntityInterceptAttribute>());
-                
-                }
+                InitIntercept(serviceProvider, interceptManagement);
                 return interceptManagement;
             });
         }

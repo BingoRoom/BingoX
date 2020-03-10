@@ -36,7 +36,7 @@ namespace BingoX.Repository.AspNetCore
         public virtual IList<Type> FindImplementedRepositoryType()
         {
             List<Type> list = new List<Type>();
-            foreach (var item in dataAccessorBuilderInfos)
+            foreach (var item in DataAccessorBuilderInfos)
             {
                 if (item.RepositoryAssembly == null) throw new StartupSettingException("未配置仓储程序集");
                 var assemblyScanClass = new AssemblyScanClass(item.RepositoryAssembly, typeof(IRepository));
@@ -52,7 +52,7 @@ namespace BingoX.Repository.AspNetCore
         public virtual IList<AssemblyScanResult> FindBaseRepositoryType()
         {
             List<AssemblyScanResult> list = new List<AssemblyScanResult>();
-            foreach (var item in dataAccessorBuilderInfos)
+            foreach (var item in DataAccessorBuilderInfos)
             {
                 if (!item.IsMergeDomianAndDao) continue;
                 if (item.DomainEntityAssembly == null) throw new StartupSettingException("未配置领域实体、聚合程序集");

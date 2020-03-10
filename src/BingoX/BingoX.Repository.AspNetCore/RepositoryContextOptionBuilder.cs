@@ -4,6 +4,7 @@ using BingoX.Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace BingoX.Repository.AspNetCore
@@ -13,12 +14,12 @@ namespace BingoX.Repository.AspNetCore
     /// </summary>
     public abstract class RepositoryContextOptionBuilder
     {
-        private readonly RepositoryContextOptionBuilderInfo repositoryContextOptionBuilderInfo;
-        protected readonly IEnumerable<DataAccessorBuilderInfo> dataAccessorBuilderInfos;
+        protected readonly RepositoryContextOptionBuilderInfo RepositoryContextOptionBuilderInfo;
+        protected readonly IEnumerable<DataAccessorBuilderInfo>  DataAccessorBuilderInfos;
         public RepositoryContextOptionBuilder(RepositoryContextOptionBuilderInfo repositoryContextOptionBuilderInfo)
         {
-            this.repositoryContextOptionBuilderInfo = repositoryContextOptionBuilderInfo;
-            dataAccessorBuilderInfos = FilterDataAccessorBuilderInfo(repositoryContextOptionBuilderInfo.DataAccessorBuilderInfos);
+            this.RepositoryContextOptionBuilderInfo = repositoryContextOptionBuilderInfo;
+            DataAccessorBuilderInfos = FilterDataAccessorBuilderInfo(repositoryContextOptionBuilderInfo.DataAccessorBuilderInfos);
         }
         /// <summary>
         /// 向数据访问器工厂集合补充工厂
@@ -39,5 +40,15 @@ namespace BingoX.Repository.AspNetCore
         /// <returns>返回符合当前类型操作的数据访问器构建信息</returns>
         protected abstract IEnumerable<DataAccessorBuilderInfo> FilterDataAccessorBuilderInfo(DataAccessorBuilderInfoColletion dataAccessorBuilderInfos);
 
+        protected virtual void InitIntercept(IServiceProvider serviceProvider, DbEntityInterceptManagement interceptManagement)
+        {
+            var copt = serviceProvider.GetService<RepositoryContextOptions>();
+            foreach (var options in DataAccessorBuilderInfos)
+            {
+                interceptManagement.AddRangeIntercepts(options.Intercepts.OfType<DbEntityInterceptAttribute>());
+
+            }
+            interceptManagement.AddRangeIntercepts(copt.Intercepts.OfType<DbEntityInterceptAttribute>());
+        }
     }
 }

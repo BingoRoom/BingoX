@@ -14,17 +14,17 @@ namespace BingoX.DataAccessor
         /// 向拦截器缓存添加拦截器
         /// </summary>
         /// <param name="dbEntityIntercept">实现接口类型(IDbEntityIntercept)的拦截器实例</param>
-        void AddGlobalIntercept(Type dbEntityIntercept);
+        void AddIntercept(Type dbEntityIntercept);
         /// <summary>
         /// 向拦截器缓存添加拦截器
         /// </summary>
         /// <param name="dbEntityIntercept">特性类型(DbEntityInterceptAttribute)的拦截器实例</param>
-        void AddGlobalIntercept(DbEntityInterceptAttribute dbEntityIntercept);
+        void AddIntercept(DbEntityInterceptAttribute dbEntityIntercept);
         /// <summary>
         /// 批量向拦截器缓存添加拦截器
         /// </summary>
         /// <param name="dbEntityIntercepts">特性类型(DbEntityInterceptAttribute)的拦截器实例集合</param>
-        void AddRangeGlobalIntercepts(IEnumerable<DbEntityInterceptAttribute> dbEntityIntercepts);
+        void AddRangeIntercepts(IEnumerable<DbEntityInterceptAttribute> dbEntityIntercepts);
         /// <summary>
         /// 获取或构建从指定数据库实体的标签上获取到的所有实现了接口IDbEntityIntercept的类型的实例。
         /// </summary>
@@ -42,7 +42,7 @@ namespace BingoX.DataAccessor
     public class DbEntityInterceptManagement : IDbEntityInterceptManagement
     {
         protected readonly IDictionary<Type, IEnumerable<DbEntityInterceptAttribute>> dictionary = new Dictionary<Type, IEnumerable<DbEntityInterceptAttribute>>();
-        protected readonly List<DbEntityInterceptAttribute> global = new List<DbEntityInterceptAttribute>();
+        protected readonly List<DbEntityInterceptAttribute> scopList = new List<DbEntityInterceptAttribute>();
         protected readonly IServiceProvider serviceProvider;
 
         public DbEntityInterceptManagement(IServiceProvider serviceProvider)
@@ -58,6 +58,23 @@ namespace BingoX.DataAccessor
         protected T GetService<T>(Type type)
         {
             object obj = null;
+#if Standard
+            obj = serviceProvider.GetRequiredService(type);
+#else
+            obj = serviceProvider.GetService(type);
+#endif
+            if (obj is T) return (T)obj;
+            return default(T);
+        }
+        /// <summary>
+        /// 从DI获取服务
+        /// </summary>
+        /// <typeparam name="T">服务类型</typeparam> 
+        /// <returns></returns>
+        protected T GetService<T>()
+        {
+            object obj = null;
+            var type = typeof(T);
 #if Standard
             obj = serviceProvider.GetRequiredService(type);
 #else
@@ -124,23 +141,24 @@ namespace BingoX.DataAccessor
                 intercepts = entityType.GetCustomAttributesIncludeBaseType<DbEntityInterceptAttribute>().ToArray();
                 dictionary.Add(entityType, intercepts);
             }
-            return global.Union(intercepts).ToArray();
+       //     var global = GetService<BingoXRepositoryContextOptions>();
+            return intercepts.Union(scopList).Distinct(n=>n.AopType).ToArray();
         }
 
-        public void AddGlobalIntercept(Type dbEntityIntercept)
+        public void AddIntercept(Type dbEntityIntercept)
         {
             if (!typeof(IDbEntityIntercept).IsAssignableFrom(dbEntityIntercept)) throw new LogicException("类型不为IDbEntityIntercept");
-            global.Add(new DbEntityInterceptAttribute(dbEntityIntercept));
+            scopList.Add(new DbEntityInterceptAttribute(dbEntityIntercept));
         }
 
-        public void AddGlobalIntercept(DbEntityInterceptAttribute dbEntityIntercept)
+        public void AddIntercept(DbEntityInterceptAttribute dbEntityIntercept)
         {
-            global.Add(dbEntityIntercept);
+            scopList.Add(dbEntityIntercept);
         }
 
-        public void AddRangeGlobalIntercepts(IEnumerable<DbEntityInterceptAttribute> dbEntityIntercepts)
+        public void AddRangeIntercepts(IEnumerable<DbEntityInterceptAttribute> dbEntityIntercepts)
         {
-            global.AddRange(dbEntityIntercepts);
+            scopList.AddRange(dbEntityIntercepts);
         }
     }
 }

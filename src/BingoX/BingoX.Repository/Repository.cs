@@ -67,7 +67,7 @@ namespace BingoX.Repository
             return sqlFacade;
         }
 
-  
+
         private IDataAccessorFactory GetFactory(string dbName)
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
@@ -194,10 +194,7 @@ namespace BingoX.Repository
             return Wrapper.Exist(whereLambda);
         }
 
-        public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public virtual void Delete(Expression<Func<TEntity, bool>> whereLambda)
         {
@@ -217,20 +214,24 @@ namespace BingoX.Repository
             Check();
             return Where(whereLambda).FirstOrDefault();
         }
+
+
     }
 
-    public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain> 
+    public class Repository<TDomain> : Repository<TDomain, TDomain>, IRepository<TDomain>
         where TDomain : class, IEntity<TDomain>, IDomainEntry
     {
         public Repository(RepositoryContextOptions options) : base(options)
         {
 
         }
-        public Repository(RepositoryContextOptions options, string dbname) : base(options)
+        public Repository(RepositoryContextOptions options, string dbname) : base(options, dbname)
         {
-            wrapper = CreateWrapper<TDomain>(dbname);
+           // wrapper = CreateWrapper<TDomain>(dbname);
         }
-        IDataAccessor<TDomain> wrapper;
-        protected override IDataAccessor<TDomain> Wrapper { get { return wrapper ?? base.Wrapper; } }
+        //IDataAccessor<TDomain> wrapper;
+        //protected override IDataAccessor<TDomain> Wrapper { get { return wrapper ?? base.Wrapper; } }
+
+
     }
 }

@@ -27,7 +27,7 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public IUnitOfWork UnitOfWork => unitOfWork;
 
-        Func<IQueryable<TEntity>, IQueryable<TEntity>> IDataAccessor<TEntity>.SetInclude { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Func<IQueryable<TEntity>, IQueryable<TEntity>> IDataAccessor<TEntity>.SetInclude { get; set; }
 
         public virtual void Add(TEntity entity)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace BingoX.DataAccessor
@@ -8,6 +9,14 @@ namespace BingoX.DataAccessor
     /// </summary>
     public class InterceptCollection : Collection<IDbEntityIntercept>
     {
+        public InterceptCollection()
+        {
+
+        }
+        public InterceptCollection(IList<IDbEntityIntercept> list):base(list)
+        {
+
+        }
         public void Add<TFilterType>(InterceptDIEnum interceptDI = InterceptDIEnum.None) where TFilterType : IDbEntityIntercept
         {
             Add(typeof(TFilterType), order: 0, interceptDI: interceptDI);

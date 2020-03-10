@@ -17,6 +17,10 @@ namespace BingoX.Repository
             DataAccessorFactories = new Dictionary<string, IDataAccessorFactory>();
             Mapper = mapper;
         }
+        public RepositoryContextOptions(IRepositoryMapper mapper,IList<IDbEntityIntercept> intercepts):this(mapper)
+        {
+            Intercepts = new InterceptCollection(intercepts);
+        }
         /// <summary>
         /// 数据操作器工厂集合
         /// </summary>
@@ -27,7 +31,7 @@ namespace BingoX.Repository
         public IRepositoryMapper Mapper { get; private set; }
         public string DefaultConnectionName { get; set; }
 
-
+        public virtual InterceptCollection Intercepts { get; internal set; }
         /// <summary>
         /// 添加关联查询委托
         /// </summary>
