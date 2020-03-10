@@ -90,6 +90,8 @@ namespace BingoX.DataAccessor
             if (typeDataAccessor == null) throw new DataAccessorException($"找不到接口IDataAccessor<{ nameof(TEntity) }>的实现类");
             var constructor = typeDataAccessor.GetConstructors().FirstOrDefault(n => n.GetParameters().Count() == 1);
             if (constructor == null) throw new DataAccessorException("找不到符合条件的DataAccessor构造函数，创建数据库上下文失败");
+            var DbContextType = constructor.GetParameters().First().ParameterType;
+            if (!DbContextType.IsInstanceOfType(DbContext)) throw new DataAccessorException("数据库上下文件不对，应该为" + DbContextType.FullName);
             cache.Add(resultType, constructor);
             return FastReflectionExtensions.FastInvoke(constructor, DbContext) as IDataAccessor<TEntity>;
         }
@@ -139,6 +141,6 @@ namespace BingoX.DataAccessor
         {
             return AbstractSqlFacade();
         }
-      
+
     }
 }
