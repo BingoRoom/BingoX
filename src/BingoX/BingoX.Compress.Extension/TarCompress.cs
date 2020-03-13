@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace BingoX.Compress
 {
-    public class TarCompress : AbsCompress, ICompress
+    public class TarCompress : SharpCompress, ICompress
     {
 
 
         public override byte[] Compress(IEnumerable<CompressEntry> compressEntrys, string password = null)
         {
             Stream stream = new MemoryStream();
-            var writer = new SharpCompress.Writers.Tar.TarWriter(stream, new SharpCompress.Writers.Tar.TarWriterOptions(SharpCompress.Common.CompressionType.Deflate, false));
+            var writer = new global::SharpCompress.Writers.Tar.TarWriter(stream, new global::SharpCompress.Writers.Tar.TarWriterOptions(global::SharpCompress.Common.CompressionType.Deflate, false));
             WriteFiles(writer, compressEntrys);
 
             var buffer = stream.ToArray();
@@ -25,9 +25,9 @@ namespace BingoX.Compress
         public IEnumerable<CompressEntry> Extract(byte[] bytes, string password = null)
         {
             Stream stream = new MemoryStream(bytes);
-            if (!SharpCompress.Archives.Tar.TarArchive.IsTarFile(stream)) throw new LogicException("不为 Tar文件");
+            if (!global::SharpCompress.Archives.Tar.TarArchive.IsTarFile(stream)) throw new LogicException("不为 Tar文件");
 
-            var archive = SharpCompress.Archives.Tar.TarArchive.Open(stream, new SharpCompress.Readers.ReaderOptions() { Password = password });
+            var archive = global::SharpCompress.Archives.Tar.TarArchive.Open(stream, new global::SharpCompress.Readers.ReaderOptions() { Password = password });
             var list = Extract(archive.ExtractAllEntries());
             return list;
         }

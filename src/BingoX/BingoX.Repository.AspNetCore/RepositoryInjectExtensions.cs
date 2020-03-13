@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddRepository(this IServiceCollection services, IConfiguration config, Action<RepositoryContextOptionBuilderInfo> action)
         {
 
-            action(rcobItme);         
+            action(rcobItme);
 
             var rcob = new BaseRepositoryContextOptionBuilder(rcobItme);
             services.AddScoped<RepositoryContextOptions>(serviceProvider =>
@@ -34,8 +34,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 return rco;
             });
-            services.AddScoped<IRepositoryFactory, RepositoryFactory>();
-
             foreach (var item in rcobItme.RepositoryContextOptionBuilders)
             {
                 item.InjectDbIntercepts(services);
@@ -58,24 +56,18 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
 
             }
-            foreach (var item in rcob.FindBaseRepositoryType())
+            var repositoryTypes = rcob.FindRepositoryType() ;
+            foreach (var item in repositoryTypes)
             {
-                foreach (var itemInterfaces in item.ImplementedType.GetInterfaces())
-                {
-                    if (ignores.Any(n => n == itemInterfaces)) continue;
-                    services.AddScoped(itemInterfaces, item.ImplementedType);
-                }
-                services.AddScoped(item.ImplementedType);
+                if (ignores.Any(n => n == item.BaseType) || services.Any(n => n.ServiceType == item.BaseType)) continue;
+                services.AddScoped(item.BaseType, item.ImplementedType);
             }
-            foreach (var item in rcob.FindImplementedRepositoryType())
+            services.AddScoped<IRepositoryFactory>(serviceProvider =>
             {
-                foreach (var itemInterfaces in item.GetInterfaces())
-                {
-                    if (ignores.Any(n => n == itemInterfaces)) continue;
-                    services.AddScoped(itemInterfaces, item);
-                }
-                services.AddScoped(item);
-            }
+                var optesScoped = serviceProvider.GetService<RepositoryContextOptions>();
+                return new RepositoryFactory(serviceProvider,optesScoped, repositoryTypes);
+            });
+
             return services;
         }
     }

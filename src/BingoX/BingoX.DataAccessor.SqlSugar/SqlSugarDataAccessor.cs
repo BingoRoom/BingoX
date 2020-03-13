@@ -27,7 +27,7 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public IUnitOfWork UnitOfWork => unitOfWork;
 
-        Func<IQueryable<TEntity>, IQueryable<TEntity>> IDataAccessor<TEntity>.SetInclude { get; set; }
+        public Func<IQueryable<TEntity>, IQueryable<TEntity>> SetInclude { get; set; }
 
         public virtual void Add(TEntity entity)
         {
@@ -41,7 +41,10 @@ namespace BingoX.DataAccessor.SqlSugar
 
         }
 
-        public abstract TEntity GetId(object id);
+        public virtual TEntity GetId(object id)
+        {
+            return GetId(id, SetInclude);
+        }
 
         public virtual bool Exist(object id)
         {
@@ -51,18 +54,12 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public virtual IList<TEntity> QueryAll()
         {
-            var query = DbSet.AsQueryable();
-
-            return query.ToList();
+            return QueryAll(SetInclude);
         }
 
         public virtual IList<TEntity> PageList(ISpecification<TEntity> specification, ref int total)
         {
-            var query = DbSet.AsQueryable().Where(specification.ToExpression());
-            query = OrderBy(query, specification.ToStorExpression());
-
-
-            return query.ToPageList(specification.PageIndex, specification.PageSize, ref total);
+            return PageList(specification, ref total, SetInclude);
         }
 
         public virtual void Update(TEntity entity)
@@ -104,8 +101,7 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda)
         {
-
-            return DbSet.AsQueryable().Where(whereLambda).ToList();
+            return Where(whereLambda, SetInclude);
         }
 
         public virtual bool Exist(Expression<Func<TEntity, bool>> whereLambda)
@@ -133,8 +129,7 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public virtual IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num)
         {
-            var query = DbSet.AsQueryable().Where(whereLambda);
-            return query.Take(num).ToList();
+            return Take(whereLambda, num, SetInclude);
         }
 
 
@@ -160,7 +155,86 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public TEntity Get(Expression<Func<TEntity, bool>> whereLambda)
         {
-            return DbSet.AsQueryable().First(whereLambda);
+            return Get(whereLambda, SetInclude);
         }
+
+        #region SetInclude
+
+        public virtual IList<TEntity> QueryAll(Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            var query = DbSet.AsQueryable().ToList();
+            if (include == null) return query;
+            return include(query.AsQueryable()).ToList();
+
+        }
+
+        public virtual IList<TEntity> PageList(ISpecification<TEntity> specification, ref int total, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+
+            var query = DbSet.AsQueryable().Where(specification.ToExpression());
+            query = OrderBy(query, specification.ToStorExpression());
+            total = query.Count();
+            if (specification.PageSize == 0) specification.PageSize = 20;
+            query = query.Skip(specification.PageIndex * specification.PageSize).Take(specification.PageSize);
+            var list = query.ToList();
+            if (include == null) return list;
+            return include(list.AsQueryable()).ToList();
+        }
+
+        public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+            var list = query.ToList();
+            if (include == null) return list;
+            return include(list.AsQueryable()).ToList();
+        }
+
+        public virtual IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+
+            var query = DbSet.AsQueryable();
+            if (whereLambda != null) query = query.Where(whereLambda);
+            query = query.Take(num);
+            var list = query.ToList();
+            if (include == null) return list;
+            return include(list.AsQueryable()).ToList();
+        }
+
+        public abstract TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include);
+
+
+
+
+        public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+            var list = query.ToList();
+            if (include == null) return list;
+            return include(list.AsQueryable()).ToList();
+        }
+
+        public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            var query = DbSet.AsQueryable();
+            if (whereLambda != null) query = query.Where(whereLambda);
+            query = query.Take(num);
+            var list = query.ToList();
+            if (include == null) return list;
+            return include(list.AsQueryable()).ToList();
+
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
+            var query = DbSet.AsQueryable();
+            if (whereLambda != null) query = query.Where(whereLambda);
+            var entity = query.First();
+
+            if (include == null) return entity;
+            return include(new[] { entity }.AsQueryable()).FirstOrDefault();
+        }
+
+        #endregion
+
     }
 }

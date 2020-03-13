@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace BingoX.DataAccessor.SqlSugar
 {
+    
     public class SqlSugarUnitOfWork : IUnitOfWork
     {
         private SqlSugarDbContext context;
@@ -58,25 +59,8 @@ namespace BingoX.DataAccessor.SqlSugar
         public void SaveChanges()
         {
             DoTracker();
-            object entity = null;
-            SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
-            try
-            {
-
-                foreach (var item in this.context.ChangeTracker.Entries().Where(n => n.State != SqlSugarEntityState.Unchanged))
-                {
-                    entity = item.Entity;
-                    state = item.State;
-                    item.ExecuteCommand();
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new DataAccessorException("执行出错" + state + entity, ex);
-            }
-
+            context.SaveChanges();
+          
         }
         private void DoTracker()
         {

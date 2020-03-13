@@ -85,7 +85,7 @@ namespace BingoX.Utility
             if (obj.HasError) return obj.Error;
             return ObjectUtility.Cast<T>(obj);
         }
-
+        const BindingFlags DefaulBindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static;
         /// <summary>
         /// 通过对象实例、方法名、参数列表执行方法
         /// </summary>
@@ -97,7 +97,7 @@ namespace BingoX.Utility
         {
             if (obj == null) throw new ArgumentNullException("obj");
             if (methodName == null) throw new ArgumentNullException("methodName");
-            var method = obj.GetType().GetMethod(methodName, ConstValue.DefaulBindingFlags);
+            var method = obj.GetType().GetMethod(methodName, DefaulBindingFlags);
             if (method == null)
             {
                 return new Exception("NotFindMethod");

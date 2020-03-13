@@ -33,7 +33,7 @@ namespace BingoX.Compress
             try
             {
                 Stream stream = new MemoryStream(bytes);
-                var reader = SharpCompress.Readers.ReaderFactory.Open(stream, new SharpCompress.Readers.ReaderOptions { Password = password });
+                var reader = global::SharpCompress.Readers.ReaderFactory.Open(stream, new global::SharpCompress.Readers.ReaderOptions { Password = password });
                 return Extract(reader);
             }
             catch (System.Exception ex)
@@ -44,7 +44,7 @@ namespace BingoX.Compress
 
         }
 
-        internal static IEnumerable<CompressEntry> Extract(SharpCompress.Readers.IReader reader)
+        internal static IEnumerable<CompressEntry> Extract(global::SharpCompress.Readers.IReader reader)
         {
             IList<CompressEntry> list = new List<CompressEntry>();
             while (reader.MoveToNextEntry())

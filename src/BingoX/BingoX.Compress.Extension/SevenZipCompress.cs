@@ -5,7 +5,7 @@ using System.IO;
 
 namespace BingoX.Compress
 {
-    public class SevenZipCompress : AbsCompress, ICompress
+    public class SevenZipCompress : SharpCompress, ICompress
     {
         public override byte[] Compress(CompressEntry compressEntry, string password = null)
         {
@@ -20,9 +20,9 @@ namespace BingoX.Compress
         public IEnumerable<CompressEntry> Extract(byte[] bytes, string password = null)
         {
             Stream stream = new MemoryStream(bytes);
-            if (!SharpCompress.Archives.SevenZip.SevenZipArchive.IsSevenZipFile(stream)) throw new LogicException("不为 7-Zip文件");
+            if (!global::SharpCompress.Archives.SevenZip.SevenZipArchive.IsSevenZipFile(stream)) throw new LogicException("不为 7-Zip文件");
 
-            var archive = SharpCompress.Archives.SevenZip.SevenZipArchive.Open(stream, new SharpCompress.Readers.ReaderOptions() { Password = password });
+            var archive = global::SharpCompress.Archives.SevenZip.SevenZipArchive.Open(stream, new global::SharpCompress.Readers.ReaderOptions() { Password = password });
             var list = Extract(archive.ExtractAllEntries());
             return list;
         }

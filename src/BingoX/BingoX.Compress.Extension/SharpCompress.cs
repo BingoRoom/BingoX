@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace BingoX.Compress
 {
-    public abstract class AbsCompress
+    public abstract class SharpCompress
     {
         public abstract byte[] Compress(IEnumerable<CompressEntry> compressEntrys, string password = null);
         public virtual byte[] Compress(CompressEntry compressEntry, string password = null)
@@ -15,11 +15,11 @@ namespace BingoX.Compress
 
             return Compress(new CompressEntry[] { compressEntry }, password);
         }
-        protected virtual IEnumerable<CompressEntry> Extract(SharpCompress.Readers.IReader reader)
+        protected virtual IEnumerable<CompressEntry> Extract(global::SharpCompress.Readers.IReader reader)
         {
             return SharpCompressFactory.Extract(reader);
         }
-        protected virtual void WriteFiles(SharpCompress.Writers.IWriter writer, IEnumerable<CompressEntry> compressEntrys)
+        protected virtual void WriteFiles(global::SharpCompress.Writers.IWriter writer, IEnumerable<CompressEntry> compressEntrys)
         {
             if (writer == null)
             {
@@ -35,7 +35,7 @@ namespace BingoX.Compress
                 writer.Write(item.Name, new MemoryStream(item.FileContent), item.CreateTime);
             }
         }
-        protected virtual void WriteFiles(SharpCompress.Archives.IWritableArchive writer, IEnumerable<CompressEntry> compressEntrys)
+        protected virtual void WriteFiles(global::SharpCompress.Archives.IWritableArchive writer, IEnumerable<CompressEntry> compressEntrys)
         {
             if (writer == null)
             {

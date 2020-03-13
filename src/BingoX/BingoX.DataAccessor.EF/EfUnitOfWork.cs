@@ -60,13 +60,13 @@ namespace BingoX.DataAccessor.EF
         }
         public override bool Equals(object obj)
         {
-            if(obj is EfUnitOfWork)
+            if (obj is EfUnitOfWork)
             {
                 var efun = obj as EfUnitOfWork;
-                return object.Equals(efun.context,context);
+                return object.Equals(efun.context, context);
             }
             return false;
-         
+
         }
         /// <summary>
         /// 完成事务
@@ -81,12 +81,11 @@ namespace BingoX.DataAccessor.EF
             }
             else
             {
-                context.SaveChanges();
+                SaveChanges();
             }
         }
-        public void SaveChanges()
+        private void DoTracker()
         {
-
             var serviceProvider = context.GetServiceProvider();
             if (serviceProvider == null) return;
             var entries = context.ChangeTracker.Entries();
@@ -102,6 +101,12 @@ namespace BingoX.DataAccessor.EF
                     interceptManagement.Interceptor(entityEntry);
                 }
             }
+        }
+        public void SaveChanges()
+        {
+
+            DoTracker();
+            context.SaveChanges();
         }
     }
 }

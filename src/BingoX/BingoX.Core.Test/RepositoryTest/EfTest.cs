@@ -212,6 +212,17 @@ namespace BingoX.Core.Test.RepositoryTest
             return query.ToArray();
         }
     }
+    public class RoleRepository : Repository<Role>
+    {
+        public RoleRepository(RepositoryContextOptions options) : this(options,null)
+        {
+        }
+
+        public RoleRepository(RepositoryContextOptions options, string dbname) : base(options, dbname)
+        {
+            Wrapper.SetInclude = opt => opt.Include(n => n.Accounts);
+        }
+    }
     public class AccountRepository : Repository<Account>
     {
         public AccountRepository(RepositoryContextOptions context) : this(context, "db1")

@@ -10,7 +10,7 @@ namespace BingoX.DataAccessor.SqlSugar
 {
     public abstract class SqlSugarDbContext : IDbContext
     {
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -59,8 +59,30 @@ namespace BingoX.DataAccessor.SqlSugar
             return RootContextData.ContainsKey(DIConst) ? RootContextData[DIConst] as System.IServiceProvider : null;
         }
 
-      
 
-   
+        public void SaveChanges()
+        {
+            object entity = null;
+            SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
+            try
+            {
+
+                foreach (var item in this.ChangeTracker.Entries().Where(n => n.State != SqlSugarEntityState.Unchanged))
+                {
+                    entity = item.Entity;
+                    state = item.State;
+                    item.ExecuteCommand();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new DataAccessorException("执行出错" + state + entity, ex);
+            }
+
+        }
+
+
     }
 }

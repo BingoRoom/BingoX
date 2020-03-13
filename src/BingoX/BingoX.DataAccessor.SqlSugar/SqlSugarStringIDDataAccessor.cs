@@ -13,15 +13,16 @@ namespace BingoX.DataAccessor.SqlSugar
         {
         }
 
-     
 
-        public override TEntity GetId(object id)
+
+        public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {
-            var query = DbSet.AsQueryable();
-        
-            return query.First(n => n.ID == (string)id);
-        }
 
+            var guid = (string)id;
+            var entity = DbSet.AsQueryable().First(n => n.ID == guid);
+            if (include == null) return entity;
+            return include(new[] { entity }.AsQueryable()).FirstOrDefault();
+        }
         public override bool Exist(object id)
         {
             var list = DbSet.AsQueryable();

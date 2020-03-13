@@ -15,14 +15,8 @@ namespace BingoX.DataAccessor.SqlSugar
 
         }
 
-    
 
-        public override TEntity GetId(object id)
-        {
-            var query = DbSet.AsQueryable();
-            var guid = (Guid)id;
-            return query.First(n => n.ID == guid);
-        }
+
 
         public override bool Exist(object id)
         {
@@ -30,8 +24,14 @@ namespace BingoX.DataAccessor.SqlSugar
             var guid = (Guid)id;
             return query.Any(n => n.ID == guid);
         }
- 
 
+        public override TEntity GetId(object id, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
+        {
 
+            var guid = (Guid)id;
+            var entity = DbSet.AsQueryable().First(n => n.ID == guid);
+            if (include == null) return entity;
+            return include(new[] { entity }.AsQueryable()).FirstOrDefault();
+        }
     }
 }

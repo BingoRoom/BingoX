@@ -160,7 +160,7 @@ namespace BingoX.Helper
         {
             if (!source.HasAny() || !items.HasAny()) return source;
             IList slist = source;
-            var indexlist = items.Select(item => slist.IndexOf(item)).Where(n => n != ConstValue.FailCode).ToArray();
+            var indexlist = items.Select(item => slist.IndexOf(item)).Where(n => n != -1).ToArray();
             if (!indexlist.HasAny()) return source;
             var arr = new T[source.Length - indexlist.Length];
             var index = 0;
@@ -187,7 +187,7 @@ namespace BingoX.Helper
             for (var i = indexs.Count - 1; i >= 0; i--)
             {
                 var index = indexs[i];
-                if (index == ConstValue.FailCode) continue;
+                if (index == -1) continue;
                 if (method != null)
                 {
                     method(source[index]);
@@ -246,7 +246,7 @@ namespace BingoX.Helper
         /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
         public static int AddWithoutContains<T>(this ICollection<T> source, T item)
         {
-            if (source == null || source.IsReadOnly || source.Contains(item)) return ConstValue.FailCode;
+            if (source == null || source.IsReadOnly || source.Contains(item)) return -1;
             source.Add(item);
             return source.Count - 1;
         }
@@ -262,7 +262,7 @@ namespace BingoX.Helper
         /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
         public static int Add<T, TSourceItem>(this ICollection<T> source, TSourceItem item, Func<TSourceItem, T> keySelector)
         {
-            if (source == null || source.IsReadOnly) return ConstValue.FailCode;
+            if (source == null || source.IsReadOnly) return -1;
             T obj = default(T);
             if (keySelector != null) obj = keySelector(item);
             source.Add(obj);
@@ -279,9 +279,9 @@ namespace BingoX.Helper
         /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
         public static int AddWithoutContains<T, TSourceItem>(this ICollection<T> source, TSourceItem item, Func<TSourceItem, T> keySelector)
         {
-            if (source == null || source.IsReadOnly || keySelector == null) return ConstValue.FailCode;
+            if (source == null || source.IsReadOnly || keySelector == null) return -1;
             var obj = keySelector(item);
-            if (source.Contains(obj)) return ConstValue.FailCode;
+            if (source.Contains(obj)) return -1;
             source.Add(obj);
             return source.Count - 1;
         }
@@ -295,8 +295,8 @@ namespace BingoX.Helper
         /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
         public static int AddWithoutContains<T>(this ICollection<T> source, T item, Func<T, bool> predicate)
         {
-            if (source == null) return ConstValue.FailCode;
-            if (predicate != null && source.Any(predicate)) return ConstValue.FailCode;
+            if (source == null) return -1;
+            if (predicate != null && source.Any(predicate)) return -1;
             source.Add(item);
             return source.Count - 1;
         }
