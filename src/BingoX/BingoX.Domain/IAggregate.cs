@@ -14,7 +14,7 @@ namespace BingoX.Domain
     /// <summary>
     /// 表示一个领域聚合
     /// </summary>
-    public interface IAggregate : IDomainEntry
+    public interface IAggregate
     {
        
     }
