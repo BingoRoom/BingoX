@@ -8,7 +8,7 @@ namespace BingoX.Repository
     /// 支持表达式查询的仓储表接口
     /// </summary>
     /// <typeparam name="TDomain">领域实体</typeparam>
-    public interface IRepositoryExpression<TDomain> : IRepository
+    public interface IRepositoryExpression<TDomain>
     {
         /// <summary>
         /// 查询记录
