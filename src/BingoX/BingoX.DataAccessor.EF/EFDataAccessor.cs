@@ -225,7 +225,10 @@ namespace BingoX.DataAccessor.EF
             if (include != null) query = include(query);
             return query.FirstOrDefault();
         }
-
+        public int Count(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            return DbSet.AsQueryable().Where(whereLambda).Count();
+        }
         #endregion
 
         protected IQueryable<TEntity> OrderBy(IQueryable<TEntity> source, params OrderModelField<TEntity>[] orderByPropertyList)

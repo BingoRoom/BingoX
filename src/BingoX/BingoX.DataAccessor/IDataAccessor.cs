@@ -66,12 +66,17 @@ namespace BingoX.DataAccessor
     public interface IDataAccessorLambda<TEntity>  where TEntity : IEntity<TEntity>
     {
 
-
+        /// <summary>
+        /// 根据主键查询记录
+        /// </summary>
+        /// <param name="whereLambda">条件</param>
+        /// <returns>数量</returns>
+        int Count(Expression<Func<TEntity, bool>> whereLambda);
 
         /// <summary>
         /// 根据主键查询记录
         /// </summary>
-        /// <param name="whereLambda">主键</param>
+        /// <param name="whereLambda">条件</param>
         /// <returns>查询结果</returns>
         TEntity Get(Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>

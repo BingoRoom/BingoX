@@ -234,6 +234,11 @@ namespace BingoX.DataAccessor.SqlSugar
             return include(new[] { entity }.AsQueryable()).FirstOrDefault();
         }
 
+        public int Count(Expression<Func<TEntity, bool>> whereLambda)
+        {
+            return DbSet.AsQueryable().Where(whereLambda).Count();
+        }
+
         #endregion
 
     }

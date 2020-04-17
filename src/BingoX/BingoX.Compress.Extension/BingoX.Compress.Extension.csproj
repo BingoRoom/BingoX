@@ -7,8 +7,8 @@
     <Authors>Bingo</Authors>
     <Product>Bingo</Product>
     <Description>第三方解压类支持</Description>
-    <Version>1.1.0</Version>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <Version>1.1.1</Version>
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
     <RootNamespace>BingoX.Compress</RootNamespace>
     <AssemblyName>BingoX.Compress.Extension</AssemblyName> 
   </PropertyGroup>

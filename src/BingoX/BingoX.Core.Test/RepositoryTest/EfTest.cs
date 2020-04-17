@@ -126,6 +126,12 @@ namespace BingoX.Core.Test.RepositoryTest
             Assert.GreaterOrEqual(list.Count, 1);
         }
         [Test]
+        public void TestTruncate_EFRepository()
+        {
+            var accountRepository = serviceProvider.GetService<AccountRepository>();
+            accountRepository.Truncate();
+        }
+        [Test]
         public void TestAddUpdate_EFRepository()
         {
             var accountRepository = serviceProvider.GetService<AccountRepository>();
@@ -254,6 +260,14 @@ namespace BingoX.Core.Test.RepositoryTest
             var sqlFacad = CreateSqlFacade("db1");
             return sqlFacad.QueryList<AccountRole>("select  outer1.Name,outer1.Age,inner1.RoleName,inner1.RoleName from [Account]  outer1  INNER  join  [Role]  inner1 on outer1.roleid=inner1.id ").ToArray();
         }
+
+        public void Truncate()
+        {
+            var sqlFacad = CreateSqlFacade("db1");
+            sqlFacad.Truncate<Account>();
+            sqlFacad.Commit();
+        }
+
         public class AccountRole
         {
             public string RoleCode { get; set; }
@@ -275,6 +289,7 @@ namespace BingoX.Core.Test.RepositoryTest
 
     }
     //   [DbEntityInterceptAttribute(typeof(AopUser))]
+    [CanTruncateAttribute("Account")]
     public class Account : BaseEntityTest, ISnowflakeEntity<Account>, IDomainEntry
     {
         public string Name { get; set; }

@@ -179,6 +179,7 @@ namespace BingoX.Compress
                         FileContent = new byte[ent.Size]
                     };
                     zipStream.Read(entry.FileContent, 0, entry.FileContent.Length);
+                    entries.Add(entry);
                 }
             }
             catch (Exception ex)
