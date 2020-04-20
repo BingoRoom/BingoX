@@ -48,7 +48,7 @@ namespace BingoX.DataAccessor.SqlSugar
                     {
                         var flagAccept = aops.OfType<IDbEntityDeleteIntercept>().All(n =>
                         {
-                            var info = new SqlSugarDbEntityDeleteInfo(entityEntry);
+                            var info = new SqlSugarDbEntityDeleteInfo(entityEntry.Entity);
                             n.OnDelete(info);
                             return info.Accept;
                         });
@@ -62,7 +62,7 @@ namespace BingoX.DataAccessor.SqlSugar
                      
                         var flagAccept = aops.OfType<IDbEntityModifiyIntercept>().All(n =>
                         {
-                            var info = new SqlSugarDbEntityChangeInfo(entityEntry, currentValues, currentValues, currentValues);
+                            var info = new SqlSugarDbEntityChangeInfo(entityEntry.Entity, currentValues, currentValues, currentValues);
                             n.OnModifiy(info);
                             return info.Accept;
                         });
@@ -81,7 +81,7 @@ namespace BingoX.DataAccessor.SqlSugar
                         var currentValues = ToDic(entityEntry.CurrentValues);
                         var flagAccept = aops.OfType<IDbEntityAddIntercept>().All(n =>
                         {
-                            var info = new SqlSugarDbEntityCreateInfo(entityEntry, currentValues);
+                            var info = new SqlSugarDbEntityCreateInfo(entityEntry.Entity, currentValues);
                             n.OnAdd(info);
                             return info.Accept;
                         });

@@ -38,6 +38,7 @@ namespace BingoX.DataAccessor.SqlSugar
             foreach (var item in changeValues)
             {
                 var method = propertiesMethods.FirstOrDefault(n => string.Equals(n.Name, item.Key, StringComparison.InvariantCultureIgnoreCase));
+                if (method == null) continue;
                 BingoX.Helper.FastReflectionExtensions.FastSetValue(method, entity, item.Value);
 
             }
