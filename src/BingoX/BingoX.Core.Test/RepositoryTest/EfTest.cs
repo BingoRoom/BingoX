@@ -125,6 +125,16 @@ namespace BingoX.Core.Test.RepositoryTest
             var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
         }
+
+        [Test]
+        public void TestNoTracking_SqlSuargRepository()
+        {
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>("db2");
+          
+            //var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>("db2");
+            roleRepository.UpdateUserState();
+            roleRepository.Commit();
+        }
         [Test]
         public void TestTruncate_EFRepository()
         {
@@ -220,7 +230,7 @@ namespace BingoX.Core.Test.RepositoryTest
     }
     public class RoleRepository : Repository<Role>
     {
-        public RoleRepository(RepositoryContextOptions options) : this(options,null)
+        public RoleRepository(RepositoryContextOptions options) : this(options, null)
         {
         }
 
@@ -244,6 +254,12 @@ namespace BingoX.Core.Test.RepositoryTest
         }
         readonly AccountDataAccessor _wrapper;
         private readonly IDataAccessor<Role> _roleWrapper;
+        public void UpdateUserState()
+        {
+     
+            var noTracking = _roleWrapper.AsNoTracking();
+            noTracking.Update(n => new Role {   RoleName = "a1" }, n => n.RoleCode == "Admin_1");
+        }
 
         protected override IDataAccessor<Account> Wrapper { get { return _wrapper; } }
 

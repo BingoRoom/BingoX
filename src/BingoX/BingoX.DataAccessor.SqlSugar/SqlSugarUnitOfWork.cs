@@ -52,7 +52,10 @@ namespace BingoX.DataAccessor.SqlSugar
             }
             else
             {
+
+                this.context.Database.Ado.BeginTran();
                 SaveChanges();
+                this.context.Database.Ado.CommitTran();
             }
 
         }

@@ -127,7 +127,13 @@ namespace BingoX.DataAccessor.EF
 
         public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
-            throw new NotImplementedException();
+            var updetefunc = update.Compile();
+            var list = DbSet.AsQueryable().Where(whereLambda).ToList();
+            foreach (var item in list)
+            {
+                Update(updetefunc(item));
+            }
+
         }
 
         public virtual void Delete(Expression<Func<TEntity, bool>> whereLambda)
@@ -244,5 +250,13 @@ namespace BingoX.DataAccessor.EF
             }
             return orderedQueryable;
         }
+
+        public INoTrackingDataAccessor<TEntity> AsNoTracking()
+        {
+            throw new NotImplementedException();            
+        }
+
+       
     }
+    
 }

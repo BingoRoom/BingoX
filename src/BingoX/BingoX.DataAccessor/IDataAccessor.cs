@@ -93,6 +93,33 @@ namespace BingoX.DataAccessor
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
         bool Exist(Expression<Func<TEntity, bool>> whereLambda);
+        
+        /// <summary>
+        /// 根据条件删除记录
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        void Delete(Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 根据条件更新记录
+        /// </summary>
+        /// <param name="update">如何更新实体的委托</param>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda);
+        /// <summary>
+        /// 返回查询结果的前N条
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <param name="num">返回记录条数</param>
+        /// <returns></returns>
+        IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num);
+    }
+    public interface INoTrackingDataAccessor<TEntity> where TEntity : IEntity<TEntity>
+    {
+        
         /// <summary>
         /// 根据条件更新记录
         /// </summary>
@@ -108,13 +135,6 @@ namespace BingoX.DataAccessor
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
         void Delete(Expression<Func<TEntity, bool>> whereLambda);
-        /// <summary>
-        /// 返回查询结果的前N条
-        /// </summary>
-        /// <param name="whereLambda">查询条件表达式</param>
-        /// <param name="num">返回记录条数</param>
-        /// <returns></returns>
-        IList<TEntity> Take(Expression<Func<TEntity, bool>> whereLambda, int num);
     }
     /// <summary>
     /// 表示一个指定DAO的数据访问器
@@ -123,6 +143,11 @@ namespace BingoX.DataAccessor
     public interface IDataAccessor<TEntity> : IDataAccessor, IDataAccessorLambda<TEntity>, IDataAccessorInclude<TEntity> where TEntity : IEntity<TEntity>
     {
 
+        /// <summary>
+        /// 无跟踪访问器
+        /// </summary>
+        /// <returns></returns>
+        INoTrackingDataAccessor<TEntity> AsNoTracking();
 
         /// <summary>
         /// 新增记录

@@ -18,6 +18,15 @@ namespace BingoX.DataAccessor.SqlSugar
         }
         private readonly SqlSugarClient database;
         private readonly IList<SqlSugarEntityEntry> entityEntries = new List<SqlSugarEntityEntry>();
+        internal readonly IList<NoTrackingEntry> NoTrackingEntries = new List<NoTrackingEntry>();
+        internal abstract class NoTrackingEntry
+        {
+            public abstract string Entity { get;  }
+
+            internal abstract int ExecuteCommand();
+
+            internal abstract string ToSql();
+        }
 
         internal void Clear()
         {
@@ -29,7 +38,7 @@ namespace BingoX.DataAccessor.SqlSugar
             return entityEntries.ToArray();
         }
 
-     
+
 
 
         internal void AddDeleteable<T>(T entity) where T : class, new()

@@ -1,4 +1,5 @@
 ﻿using SqlSugar;
+using System;
 
 namespace BingoX.DataAccessor.SqlSugar
 {
@@ -34,6 +35,8 @@ namespace BingoX.DataAccessor.SqlSugar
         public SqlSugarPropertyValues CurrentValues { get; private set; }
 
         internal abstract int ExecuteCommand();
+
+      
     }
     sealed class SqlSugarEntityEntry<TEntity> : SqlSugarEntityEntry where TEntity : class, new()
     {
@@ -74,5 +77,7 @@ namespace BingoX.DataAccessor.SqlSugar
             }
             return 0;
         }
+
+        
     }
 }

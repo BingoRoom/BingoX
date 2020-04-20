@@ -12,13 +12,13 @@ namespace BingoX.DataAccessor.SqlSugar
 {
     public abstract class SqlSugarDataAccessor<TEntity> : IDataAccessor<TEntity> where TEntity : class, IEntity<TEntity>, new()
     {
-        protected readonly SqlSugarDbContext context;
+        protected internal readonly SqlSugarDbContext Context;
 
         protected readonly SqlSugarUnitOfWork unitOfWork;
         protected readonly SqlSugarDbSet<TEntity> DbSet;
         public SqlSugarDataAccessor(SqlSugarDbContext context)
         {
-            this.context = context;
+            this.Context = context;
 
             DbSet = context.Set<TEntity>();
             unitOfWork = new SqlSugarUnitOfWork(context);
@@ -239,6 +239,17 @@ namespace BingoX.DataAccessor.SqlSugar
             return DbSet.AsQueryable().Where(whereLambda).Count();
         }
 
+
+        public SqlSugarNoTrackingDataAccessor<TEntity> AsNoTracking()
+        {
+
+            return new SqlSugarNoTrackingDataAccessor<TEntity>(this);
+        }
+
+        INoTrackingDataAccessor<TEntity> IDataAccessor<TEntity>.AsNoTracking()
+        {
+            return AsNoTracking();
+        }
         #endregion
 
     }

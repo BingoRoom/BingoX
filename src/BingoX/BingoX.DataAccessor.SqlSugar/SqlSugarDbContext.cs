@@ -63,6 +63,7 @@ namespace BingoX.DataAccessor.SqlSugar
         public void SaveChanges()
         {
             object entity = null;
+            string sql = string.Empty;
             SqlSugarEntityState state = SqlSugarEntityState.Unchanged;
             try
             {
@@ -70,10 +71,16 @@ namespace BingoX.DataAccessor.SqlSugar
                 foreach (var item in this.ChangeTracker.Entries().Where(n => n.State != SqlSugarEntityState.Unchanged))
                 {
                     entity = item.Entity;
-                    state = item.State;
+                    state = item.State; 
                     item.ExecuteCommand();
                 }
-
+                foreach (var item in ChangeTracker.NoTrackingEntries)
+                {
+                    state = SqlSugarEntityState.NoTracking;
+                    entity = item.Entity;
+                    sql = item.ToSql();
+                    item.ExecuteCommand();
+                }
             }
             catch (Exception ex)
             {
