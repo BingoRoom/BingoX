@@ -17,25 +17,29 @@ namespace BingoX.DataAccessor.SqlSugar
             this.database = database;
         }
         private readonly SqlSugarClient database;
-        private readonly IList<SqlSugarEntityEntry> entityEntries = new List<SqlSugarEntityEntry>();
-        internal readonly IList<NoTrackingEntry> NoTrackingEntries = new List<NoTrackingEntry>();
-        internal abstract class NoTrackingEntry
+        internal readonly IList<ISqlSugarEntityEntry> EntityEntries = new List<ISqlSugarEntityEntry>();
+      
+        internal abstract class NoTrackingEntry: ISqlSugarEntityEntry
         {
-            public abstract string Entity { get;  }
+            public abstract object Entity { get;  }
 
-            internal abstract int ExecuteCommand();
+            public SqlSugarEntityState State { get { return SqlSugarEntityState.NoTracking; } }
+
+          
+
+            public abstract int ExecuteCommand();
 
             internal abstract string ToSql();
         }
 
         internal void Clear()
         {
-            entityEntries.Clear();
+            EntityEntries.Clear();
         }
 
         public SqlSugarEntityEntry[] Entries()
         {
-            return entityEntries.ToArray();
+            return EntityEntries.OfType<SqlSugarEntityEntry>().ToArray();
         }
 
 
@@ -44,12 +48,12 @@ namespace BingoX.DataAccessor.SqlSugar
         internal void AddDeleteable<T>(T entity) where T : class, new()
         {
             SqlSugarPropertyValues propertyValues = GetPrproety(entity);
-            entityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Deleted });
+            EntityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Deleted });
         }
         internal void AddDeleteablePrimaryKeyValue<T>(dynamic[] primaryKeyValues) where T : class, new()
         {
 
-            entityEntries.Add(new SqlSugarEntityEntryDeleteable<T>(database, primaryKeyValues));
+            EntityEntries.Add(new SqlSugarEntityEntryDeleteable<T>(database, primaryKeyValues));
 
 
         }
@@ -57,7 +61,7 @@ namespace BingoX.DataAccessor.SqlSugar
         internal void AddInsertable<T>(T entity) where T : class, new()
         {
             SqlSugarPropertyValues propertyValues = GetPrproety(entity);
-            entityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Added });
+            EntityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Added });
 
         }
 
@@ -65,7 +69,7 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             SqlSugarPropertyValues propertyValues = GetPrproety(entity);
 
-            entityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Modified });
+            EntityEntries.Add(new SqlSugarEntityEntry<T>(database, entity, propertyValues) { State = SqlSugarEntityState.Modified });
         }
 
         private SqlSugarPropertyValues GetPrproety(object entity)

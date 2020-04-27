@@ -23,7 +23,7 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public void Delete(Expression<Func<TEntity, bool>> whereLambda)
         {
-            Context.ChangeTracker.NoTrackingEntries.Add(new NoTrackingDeleteEntry(Context.Database.Deleteable<TEntity>().Where(whereLambda)));
+            Context.ChangeTracker.EntityEntries.Add(new NoTrackingDeleteEntry(Context.Database.Deleteable<TEntity>().Where(whereLambda)));
         }
 
 
@@ -31,7 +31,7 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             var update = Context.Database.Updateable<TEntity>(columns);
             update = update.Where(whereLambda);
-            Context.ChangeTracker.NoTrackingEntries.Add(new NoTrackingUpdateEntry(update));
+            Context.ChangeTracker.EntityEntries.Add(new NoTrackingUpdateEntry(update));
         }
 
         class NoTrackingUpdateEntry : SqlSugarChangeTracker.NoTrackingEntry
@@ -41,10 +41,10 @@ namespace BingoX.DataAccessor.SqlSugar
             {
                 this.updateable = updateable;
             }
-            public override string Entity { get { return typeof(TEntity).FullName; } }
+            public override object Entity { get { return typeof(TEntity).FullName; } }
             private IUpdateable<TEntity> updateable;
 
-            internal override int ExecuteCommand()
+            public override int ExecuteCommand()
             {
                 return updateable.ExecuteCommand();
             }
@@ -62,10 +62,10 @@ namespace BingoX.DataAccessor.SqlSugar
                 this.deleteable = deleteable;
             }
 
-            public override string Entity { get { return typeof(TEntity).FullName; } }
+            public override object Entity { get { return typeof(TEntity).FullName; } }
             private IDeleteable<TEntity> deleteable;
 
-            internal override int ExecuteCommand()
+            public override int ExecuteCommand()
             {
                 return deleteable.ExecuteCommand();
             }

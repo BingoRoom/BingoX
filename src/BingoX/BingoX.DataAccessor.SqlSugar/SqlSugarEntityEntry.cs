@@ -3,7 +3,13 @@ using System;
 
 namespace BingoX.DataAccessor.SqlSugar
 {
+    public interface ISqlSugarEntityEntry
+    {
+        SqlSugarEntityState State { get; }
+        object Entity { get; }
 
+        int ExecuteCommand();
+    }
     sealed class SqlSugarEntityEntryDeleteable<T> : SqlSugarEntityEntry where T : class, new()
     {
         private readonly SqlSugarClient database;
@@ -20,7 +26,7 @@ namespace BingoX.DataAccessor.SqlSugar
             return database.Deleteable<T>(primaryKeyValues).ExecuteCommand();
         }
     }
-    public abstract class SqlSugarEntityEntry
+    public abstract class SqlSugarEntityEntry: ISqlSugarEntityEntry
     {
         public SqlSugarEntityEntry(object entity, SqlSugarPropertyValues currentValues)
         {
@@ -36,7 +42,10 @@ namespace BingoX.DataAccessor.SqlSugar
 
         internal abstract int ExecuteCommand();
 
-      
+        int ISqlSugarEntityEntry.ExecuteCommand()
+        {
+            return ExecuteCommand();
+        }
     }
     sealed class SqlSugarEntityEntry<TEntity> : SqlSugarEntityEntry where TEntity : class, new()
     {

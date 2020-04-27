@@ -68,19 +68,15 @@ namespace BingoX.DataAccessor.SqlSugar
             try
             {
 
-                foreach (var item in this.ChangeTracker.Entries().Where(n => n.State != SqlSugarEntityState.Unchanged))
+                foreach (var item in this.ChangeTracker.EntityEntries.Where(n => n.State != SqlSugarEntityState.Unchanged))
                 {
+                    
                     entity = item.Entity;
-                    state = item.State; 
+                    state = item.State;
+                 //   sql = item.ToSql();
                     item.ExecuteCommand();
                 }
-                foreach (var item in ChangeTracker.NoTrackingEntries)
-                {
-                    state = SqlSugarEntityState.NoTracking;
-                    entity = item.Entity;
-                    sql = item.ToSql();
-                    item.ExecuteCommand();
-                }
+                this.ChangeTracker.EntityEntries.Clear();
             }
             catch (Exception ex)
             {
