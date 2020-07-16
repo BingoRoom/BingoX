@@ -87,6 +87,14 @@ namespace BingoX.DataAccessor
         /// <exception cref="ArgumentException">whereLambda为null</exception>
         IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda);
         /// <summary>
+        /// 根据条件查询记录
+        /// </summary>
+        /// <param name="whereLambda">查询条件表达式</param>
+        /// <param name="orderByPropertyList">排序</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">whereLambda为null</exception>
+        IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, OrderModelField<TEntity>[] orderByPropertyList);
+        /// <summary>
         /// 根据条件判断记录是否存在
         /// </summary>
         /// <param name="whereLambda">查询条件表达式</param>

@@ -108,6 +108,11 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             return DbSet.AsQueryable().Where(whereLambda).Any();
         }
+        public virtual IList<TEntity> FromSql(string sql)
+        {
+            throw new NotImplementedException();
+
+        }
 
         public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
@@ -139,14 +144,14 @@ namespace BingoX.DataAccessor.SqlSugar
         protected ISugarQueryable<TEntity> OrderBy(ISugarQueryable<TEntity> source, params OrderModelField<TEntity>[] orderByPropertyList)
         {
             if (orderByPropertyList.IsEmpty()) return source;
-            ISugarQueryable<TEntity> orderedQueryable;
-            OrderModelField<TEntity> item = orderByPropertyList.First();
+            ISugarQueryable<TEntity> orderedQueryable = source;
 
-            orderedQueryable = source.OrderBy(item.OrderPredicates, item.IsDesc ? OrderByType.Desc : OrderByType.Desc);
-            for (int i = 1; i < orderByPropertyList.Length; i++)
+
+
+            for (int i = 0; i < orderByPropertyList.Length; i++)
             {
-                item = orderByPropertyList[i];
-                orderedQueryable = orderedQueryable.OrderBy(item.OrderPredicates, item.IsDesc ? OrderByType.Desc : OrderByType.Desc);
+                var item = orderByPropertyList[i];
+                orderedQueryable = orderedQueryable.OrderBy(item.OrderPredicates, item.IsDesc ? OrderByType.Desc : OrderByType.Asc);
             }
             return orderedQueryable;
         }
@@ -179,6 +184,14 @@ namespace BingoX.DataAccessor.SqlSugar
             var list = query.ToList();
             if (include == null) return list;
             return include(list.AsQueryable()).ToList();
+        }
+        public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda,  OrderModelField<TEntity>[] orderByPropertyList)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+            query = OrderBy(query, orderByPropertyList);
+            var list = query.ToList();
+            return list;
+
         }
 
         public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)

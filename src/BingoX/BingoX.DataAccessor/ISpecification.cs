@@ -11,7 +11,7 @@ namespace BingoX.DataAccessor
     /// 数据操作规格
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ISpecification<TEntity> 
+    public interface ISpecification<TEntity>
     {
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace BingoX.DataAccessor
     /// 动态数据查询操作
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IDynamicSpecification<TEntity> : ISpecification<TEntity> where TEntity : class 
+    public interface IDynamicSpecification<TEntity> : ISpecification<TEntity> where TEntity : class
     {
         ISpecification<TEntity> And(string propertyName, object value);
 
@@ -216,7 +216,7 @@ namespace BingoX.DataAccessor
             }
             else
             {
-                typePropertyDic = new Dictionary<string, PropertyInfo>(StringComparer.CurrentCultureIgnoreCase );
+                typePropertyDic = new Dictionary<string, PropertyInfo>(StringComparer.CurrentCultureIgnoreCase);
                 propertyDic.Add(param.Type, typePropertyDic);
             }
             PropertyInfo propertyInfo = null;
@@ -389,6 +389,10 @@ namespace BingoX.DataAccessor
         {
             PageIndex = 0;
             PageSize = 20;
+        }
+        public static Specification<T> Eval(Expression<Func<T, bool>> expression)
+        {
+            return new Specification<T>().And(expression);
         }
         static Expression<Func<T, bool>> True() { return f => true; }
         protected internal Expression<Func<T, bool>> SearchPredicate = True();

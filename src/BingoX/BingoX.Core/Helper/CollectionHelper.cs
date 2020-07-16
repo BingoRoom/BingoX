@@ -13,7 +13,7 @@ namespace BingoX.Helper
     /// </summary>
     public static class CollectionHelper
     {
-        static object lockobj = new object();
+
         static readonly Dictionary<Type, object> DictionaryEmpty = new Dictionary<Type, object>();
         static readonly Dictionary<Type, object> ArrayEmpty = new Dictionary<Type, object>();
         /// <summary>
@@ -24,15 +24,32 @@ namespace BingoX.Helper
         public static T[] EmptyOfArray<T>()
         {
             if (ArrayEmpty.ContainsKey(typeof(T))) return ArrayEmpty[typeof(T)] as T[];
-            lock (lockobj)
-            {
-                if (ArrayEmpty.ContainsKey(typeof(T))) return ArrayEmpty[typeof(T)] as T[];
-                var arr = new T[] { };
-                ArrayEmpty.Add(typeof(T), arr);
-                return arr;
-            }
+
+            if (ArrayEmpty.ContainsKey(typeof(T))) return ArrayEmpty[typeof(T)] as T[];
+            var arr = new T[] { };
+            ArrayEmpty.Add(typeof(T), arr);
+            return arr;
+
+        }
+        public static IEnumerable<T> Distinct<T>(this IEnumerable<T> source, Func<T, T, bool> comparer) where T : class
+        {
+            return source.Distinct(new DynamicEqualityComparer<T>(comparer));
         }
 
+        private sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
+            where T : class
+        {
+            private readonly Func<T, T, bool> _func;
+
+            public DynamicEqualityComparer(Func<T, T, bool> func)
+            {
+                _func = func;
+            }
+
+            public bool Equals(T x, T y) => _func(x, y);
+
+            public int GetHashCode(T obj) => 0;
+        }
         /// <summary>
         /// 返回一个指定类型的空IList
         /// </summary>
@@ -68,7 +85,7 @@ namespace BingoX.Helper
             if (collection == null) return new BindingList<T>();
             return new BindingList<T>(collection.ToList());
         }
-      
+
         /// <summary>
         /// 通过枚举返回符合转型条件的集合
         /// </summary>
@@ -82,71 +99,9 @@ namespace BingoX.Helper
             return new List<TTarget>(collection.Cast<TTarget>());
         }
 
-        /// <summary>
-        /// 从字符串数组获取指定值的下一个值
-        /// </summary>
-        /// <param name="array">数组</param>
-        /// <param name="value">字符串</param>
-        /// <returns></returns>
-        public static string GetNextItemByValue(this string[] array, string value)
-        {
-            return GetNextItemByValue(array, value, (x, y) => string.Equals(x, y, StringComparison.CurrentCultureIgnoreCase));
-        }
 
-        /// <summary>
-        /// 从数组获取指定值的下一个值
-        /// 需要提供比较器
-        /// </summary>
-        /// <param name="array">数组</param>
-        /// <param name="t">指定值的实例</param>
-        /// <param name="func">比较器</param>
-        /// <typeparam name="T">指定值的类型</typeparam>
-        /// <returns>指定值在数组中的下一个实例</returns>
-        public static T GetNextItemByValue<T>(this T[] array, T t, Func<T, T, bool> func)
-        {
-            if (func == null || !array.HasAny()) return default(T);
-            var max = array.Length;
-            for (int i = 0; i < max; i++)
-            {
-                var item = array[i];
-                if (func(item, t) && i < max - 1)
-                {
-                    return array[i + 1];
-                }
-            }
-            return default(T);
-        }
 
-        /// <summary>
-        /// 取记录行
-        /// </summary>
-        /// <param name="collection">集合</param>
-        /// <param name="index">索引</param>
-        /// <param name="defaultValue">失败进时取默认值</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>成功否失败</returns>
-        public static TryResult<T> TryGetRow<T>(this IEnumerable<T> collection, int index, Func<T> defaultValue = null)
-        {
-            var value = defaultValue != null ? defaultValue() : default(T);
-            if (collection == null) return new TryResult<T>(new ArgumentNullException("collection"), value);
-            if (!collection.HasCount(index + 1)) return new TryResult<T>(new IndexOutOfRangeException("collection"), value);
-            if (collection is IList<T> == false)
-            {
-                int tmpindex = 0;
-                foreach (var t in collection)
-                {
-                    if (tmpindex == index)
-                    {
-                        return t;
-                    }
-                    tmpindex++;
-                }
 
-                return value;
-            }
-            var list = collection as IList<T>;
-            return list[index];
-        }
 
         /// <summary>
         /// 从数组移除项目
@@ -237,69 +192,8 @@ namespace BingoX.Helper
             return arr;
         }
 
-        /// <summary>
-        /// 在集合新增项目
-        /// </summary>
-        /// <param name="source">集合</param>
-        /// <param name="item">项目</param>
-        /// <typeparam name="T">项目类型</typeparam>
-        /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
-        public static int AddWithoutContains<T>(this ICollection<T> source, T item)
-        {
-            if (source == null || source.IsReadOnly || source.Contains(item)) return -1;
-            source.Add(item);
-            return source.Count - 1;
-        }
 
-        /// <summary>
-        /// 通过选择器向集合新增项目
-        /// </summary>
-        /// <param name="source">集合</param>
-        /// <param name="keySelector">选择器</param>
-        /// <param name="item">新增的项目</param>
-        /// <typeparam name="T"></typeparam>       
-        /// <typeparam name="TSourceItem"> </typeparam>
-        /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
-        public static int Add<T, TSourceItem>(this ICollection<T> source, TSourceItem item, Func<TSourceItem, T> keySelector)
-        {
-            if (source == null || source.IsReadOnly) return -1;
-            T obj = default(T);
-            if (keySelector != null) obj = keySelector(item);
-            source.Add(obj);
-            return source.Count - 1;
-        }
-        /// <summary>
-        /// 通过选择器向集合新增项目
-        /// </summary>
-        /// <param name="source">集合</param>
-        /// <param name="keySelector">选择器</param>
-        /// <param name="item">新增的项目</param>
-        /// <typeparam name="T"></typeparam>       
-        /// <typeparam name="TSourceItem"> </typeparam>
-        /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
-        public static int AddWithoutContains<T, TSourceItem>(this ICollection<T> source, TSourceItem item, Func<TSourceItem, T> keySelector)
-        {
-            if (source == null || source.IsReadOnly || keySelector == null) return -1;
-            var obj = keySelector(item);
-            if (source.Contains(obj)) return -1;
-            source.Add(obj);
-            return source.Count - 1;
-        }
-        /// <summary>
-        /// 通过断言向集合新增记录
-        /// </summary>
-        /// <param name="source">集合</param>
-        /// <param name="predicate">断言Func</param>
-        /// <param name="item">新增的项目</param>
-        /// <typeparam name="T"></typeparam>      
-        /// <returns>已存在或新增失败返回-1，成功返回新增项目索引</returns>
-        public static int AddWithoutContains<T>(this ICollection<T> source, T item, Func<T, bool> predicate)
-        {
-            if (source == null) return -1;
-            if (predicate != null && source.Any(predicate)) return -1;
-            source.Add(item);
-            return source.Count - 1;
-        }
+
 
         /// <summary>
         ///  是否有记录数

@@ -119,7 +119,13 @@ namespace BingoX.DataAccessor.EF
         {
             return Where(whereLambda, SetInclude);
         }
-
+        public virtual IList<TEntity> Where(Expression<Func<TEntity, bool>> whereLambda, OrderModelField<TEntity>[] orderByPropertyList)
+        {
+            var query = DbSet.AsNoTracking<TEntity>().Where(whereLambda);
+            query = OrderBy(query, orderByPropertyList);
+ 
+            return query.ToList();
+        }
         public virtual bool Exist(Expression<Func<TEntity, bool>> whereLambda)
         {
             return DbSet.AsNoTracking<TEntity>().Where(whereLambda).Any();

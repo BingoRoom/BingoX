@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -60,9 +61,15 @@ namespace BingoX.Core.Test.Generator
         public void It_should_generate_ids_over_50_billion()
         {
             var worker = new SnowflakeGenerator(0, 0);
-            var id = worker.New();
-            Assert.That(id, Is.GreaterThan(50000000000L));
+            StringBuilder filetext = new StringBuilder();
+            for (int i = 0; i < 100; i++)
+            {
+                var id = worker.New();
+                filetext.AppendLine(id.ToString());
+            }
+            File.WriteAllText(@"D:\id.txt", filetext.ToString());
+     //       Assert.That(id, Is.GreaterThan(50000000000L));
         }
- 
+
     }
 }
