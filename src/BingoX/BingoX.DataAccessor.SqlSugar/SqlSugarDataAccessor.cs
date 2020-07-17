@@ -108,11 +108,7 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             return DbSet.AsQueryable().Where(whereLambda).Any();
         }
-        public virtual IList<TEntity> FromSql(string sql)
-        {
-            throw new NotImplementedException();
-
-        }
+    
 
         public virtual void Update(Expression<Func<TEntity, TEntity>> update, Expression<Func<TEntity, bool>> whereLambda)
         {
@@ -218,24 +214,6 @@ namespace BingoX.DataAccessor.SqlSugar
 
 
 
-        public IList<TEntity> WhereTracking(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
-        {
-            var query = DbSet.AsQueryable().Where(whereLambda);
-            var list = query.ToList();
-            if (include == null) return list;
-            return include(list.AsQueryable()).ToList();
-        }
-
-        public IList<TEntity> TakeTracking(Expression<Func<TEntity, bool>> whereLambda, int num, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
-        {
-            var query = DbSet.AsQueryable();
-            if (whereLambda != null) query = query.Where(whereLambda);
-            query = query.Take(num);
-            var list = query.ToList();
-            if (include == null) return list;
-            return include(list.AsQueryable()).ToList();
-
-        }
 
         public TEntity Get(Expression<Func<TEntity, bool>> whereLambda, Func<IQueryable<TEntity>, IQueryable<TEntity>> include)
         {

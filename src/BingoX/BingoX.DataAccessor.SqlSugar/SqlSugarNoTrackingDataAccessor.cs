@@ -20,7 +20,16 @@ namespace BingoX.DataAccessor.SqlSugar
         readonly SqlSugarDbContext Context;
 
 
-
+        public void Add(TEntity entity)
+        {
+            Context.ChangeTracker.EntityEntries.Add(new NoTrackingAddEntry(Context.Database.Insertable<TEntity>(entity)));
+        }
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            
+            Context.ChangeTracker.EntityEntries.Add(new NoTrackingAddEntry(Context.Database.Insertable<TEntity>(entities.ToArray())));
+        }
+      
         public void Delete(Expression<Func<TEntity, bool>> whereLambda)
         {
             Context.ChangeTracker.EntityEntries.Add(new NoTrackingDeleteEntry(Context.Database.Deleteable<TEntity>().Where(whereLambda)));
@@ -52,6 +61,25 @@ namespace BingoX.DataAccessor.SqlSugar
             internal override string ToSql()
             {
                 return updateable.ToSql().ToString();
+            }
+        } 
+        class NoTrackingAddEntry : SqlSugarChangeTracker.NoTrackingEntry
+        {
+            private readonly IInsertable<TEntity> insertable;
+
+            public NoTrackingAddEntry(IInsertable<TEntity> insertable)
+            {
+                this.insertable = insertable;
+            }
+            public override object Entity { get { return typeof(TEntity).FullName; } }
+            public override int ExecuteCommand()
+            {
+                return insertable.ExecuteCommand();
+            }
+
+            internal override string ToSql()
+            {
+                return insertable.ToSql().ToString();
             }
         }
         class NoTrackingDeleteEntry : SqlSugarChangeTracker.NoTrackingEntry

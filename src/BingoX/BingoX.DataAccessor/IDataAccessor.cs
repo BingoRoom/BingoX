@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace BingoX.DataAccessor
 {
-    public interface IDataAccessorInclude<TEntity>  where TEntity : IEntity<TEntity>
+    public interface IDataAccessorInclude<TEntity> where TEntity : IEntity<TEntity>
     {
         /// <summary>
         /// 设置局部表关联查询委托
@@ -63,7 +63,7 @@ namespace BingoX.DataAccessor
         /// </summary>
         void Rollback();
     }
-    public interface IDataAccessorLambda<TEntity>  where TEntity : IEntity<TEntity>
+    public interface IDataAccessorLambda<TEntity> where TEntity : IEntity<TEntity>
     {
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace BingoX.DataAccessor
         /// <returns></returns>
         /// <exception cref="ArgumentException">whereLambda为null</exception>
         bool Exist(Expression<Func<TEntity, bool>> whereLambda);
-        
+
         /// <summary>
         /// 根据条件删除记录
         /// </summary>
@@ -127,7 +127,8 @@ namespace BingoX.DataAccessor
     }
     public interface INoTrackingDataAccessor<TEntity> where TEntity : IEntity<TEntity>
     {
-        
+        void AddRange(IEnumerable<TEntity> entities);
+        void Add(TEntity entity);
         /// <summary>
         /// 根据条件更新记录
         /// </summary>
