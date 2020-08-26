@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace BingoX.AspNetCore.Extensions
+namespace BingoX.AspNetCore
 {
     [Serializable]
     public class NotFoundEntityException : LogicException

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BingoX.AspNetCore.Extensions
+namespace BingoX.AspNetCore
 {
     [Serializable]
     public class UnauthorizedException : Exception

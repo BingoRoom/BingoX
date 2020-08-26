@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using BingoX;
 
-namespace BingoX.AspNetCore.Extensions
+namespace BingoX.AspNetCore
 {
     [Serializable]
     public class BadRequestException : Exception

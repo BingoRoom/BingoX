@@ -66,6 +66,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BingoX.Repository.AspNetCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.AspNetCore.Extensions", "BingoX.AspNetCore.Extensions\BingoX.AspNetCore.Extensions.csproj", "{34CEA20C-D8D1-40E1-88DA-76511F2A564E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BingoX.AspNetCore", "BingoX.AspNetCore\BingoX.AspNetCore.csproj", "{F9C3F833-42F1-4595-A9D7-08DC57770825}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,10 @@ Global
 		{34CEA20C-D8D1-40E1-88DA-76511F2A564E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34CEA20C-D8D1-40E1-88DA-76511F2A564E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34CEA20C-D8D1-40E1-88DA-76511F2A564E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9C3F833-42F1-4595-A9D7-08DC57770825}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9C3F833-42F1-4595-A9D7-08DC57770825}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9C3F833-42F1-4595-A9D7-08DC57770825}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9C3F833-42F1-4595-A9D7-08DC57770825}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,6 +194,7 @@ Global
 		{38F33812-788D-434E-8590-F28049E8B44C} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{E7F0B2DD-2829-40AC-B0F4-6194614568A3} = {AC89EBA6-9855-430E-ACD6-B7BE959AE611}
 		{34CEA20C-D8D1-40E1-88DA-76511F2A564E} = {FC2F859B-3B3D-49DF-B551-2FBFFB356FDC}
+		{F9C3F833-42F1-4595-A9D7-08DC57770825} = {FC2F859B-3B3D-49DF-B551-2FBFFB356FDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AC5542E-6F29-4E50-8D92-569885541F99}

@@ -6,14 +6,18 @@ using BingoX.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using BingoX.Helper;
+using BingoX.AspNetCore;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -44,6 +48,22 @@ namespace Microsoft.Extensions.DependencyInjection
     
         public static IMvcBuilder AddStandard(this IServiceCollection services, Assembly assembly)
         {
+            var osname = "Windows";
+
+            if (Environment.OSVersion.Platform == PlatformID.MacOSX) osname = "Mac";
+            if (Environment.OSVersion.Platform == PlatformID.Unix) osname = "Linux";
+            if (Environment.OSVersion.Platform == PlatformID.Xbox) osname = "Xbox";
+            services.AddSingleton<IBoundedContext>(c => new ScopeBoundedContext
+            {
+                Generator = c.GetService<IGenerator<long>>(),
+                DateTimeService = c.GetService<IDateTimeService>(),
+                ContentRootPath = c.GetService<IWebHostEnvironment>().ContentRootPath,
+                WebRootPath = c.GetService<IWebHostEnvironment>().WebRootPath,
+                IsProduction = c.GetService<IWebHostEnvironment>().IsProduction(),
+                OS = osname,
+                AppVersion = assembly.GetVersion().ToString(),
+                AppName = "珠海金税格力比对系统"
+            });
             FaultExceptionProvider.Add(new GenericFaultExceptionProvider<UnauthorizedException>());
             FaultExceptionProvider.Add(new GenericFaultExceptionProvider<NotFoundEntityException>());
             FaultExceptionProvider.Add(new GenericFaultExceptionProvider<ForbiddenException>());
