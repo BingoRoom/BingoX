@@ -18,9 +18,31 @@ using System.Net.NetworkInformation;
 using System.Reflection;
 using BingoX.Helper;
 using BingoX.AspNetCore;
+using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using IdentityModel;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+
+    public class IdentitryJwtBearerOption
+    {
+        public string RSAPublicKey { get; set; }
+        public string Authority { get; set; }
+        public string Audience { get; set; }
+    }
+    public class IdentitryOpenIdOption
+    {
+        public string Authority { get; set; }
+        public string ResponseType { get; set; }
+        public string WebSiteClientId { get; set; }
+        public string[] Scopes { get; set; }
+        public string ClientSecret { get; set; }
+    }
     public static class DIExtensions
     {
         public static void FindConfigureServices(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
@@ -44,8 +66,84 @@ namespace Microsoft.Extensions.DependencyInjection
             var assembly = Assembly.GetCallingAssembly();
             AddStandard(services, assembly);
         }
+        public static void AddIdentitryJwtBearer(this IServiceCollection services, IConfiguration configuration)
+        {
+            var opt = new IdentitryJwtBearerOption();
+            configuration.Bind("JWT", opt);
 
-    
+            if (string.IsNullOrEmpty(opt.Audience)) throw new Exception("Audience不能为空");
+            if (string.IsNullOrEmpty(opt.RSAPublicKey)) opt.RSAPublicKey = "MIIBCgKCAQEAqEztXyQqMD/+sB6kIcWWR6Vsh0JdNbuQQ+hGEexQZxN6ml5i2rbWRVpzyjxJNKKutHB276/wBZTKAU7ikk7fbk5QELsc7Xf+Xh31YV5uSi2HzuD5IeYxMN6AFx/2cvyIEni8sogC7czRicM/tWo0hyciC55D9gGqqVo2iBrMyil9IFjz4XaVb46f8l22ym16GXY7kvTvrPmleqhLhbdAkgvkrEYmTPulZEa3Vm9h6k4L8gZRZOX3zsfXpEy95iH4tg8NCrHSGzdVUpx6Amg5JhrrukgxCC6icWH0d0fyVkYka+ELMYqYL6HY2aJrsosO7qNUBFBo3S+eBMpXHn7y8QIDAQAB";
+
+            AddIdentitryJwtBearer(services, opt);
+        }
+        public static void AddIdentitryOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
+        {
+
+            var opt = new IdentitryOpenIdOption();
+            configuration.Bind("Permission", opt);
+            AddIdentitryOpenIdConnect(services, opt);
+        }
+        public static void AddIdentitryOpenIdConnect(this IServiceCollection services, IdentitryOpenIdOption identitryoption)
+        {
+            services.AddAuthentication(options =>
+            {
+
+                //客户端应用设置使用"Cookies"进行认证
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //identityserver4设置使用"oidc"进行认证
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                //   options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+
+            }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                          .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+                          {
+                              options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                              options.Authority = identitryoption.Authority ?? "http://identityserver.zhjinshui.com/";
+                              options.RequireHttpsMetadata = false;
+                              options.ClientId = identitryoption.WebSiteClientId;
+                              options.ClientSecret = identitryoption.ClientSecret ?? "";
+                              options.ResponseType = identitryoption.ResponseType ?? OpenIdConnectResponseType.CodeIdToken;
+                              options.SaveTokens = true;
+                              options.GetClaimsFromUserInfoEndpoint = true;
+                              foreach (var item in identitryoption.Scopes)
+                              {
+                                  options.Scope.Add(item);
+                              }
+
+                              options.Scope.Add("offline_access");
+
+                              options.ClaimActions.MapJsonKey("website", "website");
+                              options.TokenValidationParameters.NameClaimType = "name";
+
+
+                          });
+        }
+
+        public static void AddIdentitryJwtBearer(this IServiceCollection services, IdentitryJwtBearerOption identitryJwt)
+        {
+            string pubcont = identitryJwt.RSAPublicKey;
+            var rsa = new RSACryptoServiceProvider();
+            rsa.ImportRSAPublicKey(new ReadOnlySpan<byte>(Convert.FromBase64String(pubcont)), out int red2s);
+            var key = new RsaSecurityKey(rsa);
+            services.AddAuthentication("Bearer")
+                         .AddJwtBearer(options =>
+                         {
+                             options.Authority = identitryJwt.Authority ?? "http://IdentityServer.zhjinshui.com";
+                             options.RequireHttpsMetadata = false;
+                             options.Audience = identitryJwt.Audience;
+                             options.TokenValidationParameters = new TokenValidationParameters
+                             {
+                                 NameClaimType = JwtClaimTypes.Name,
+                                 RoleClaimType = JwtClaimTypes.Role,
+                                 ValidateIssuerSigningKey = true,
+                                 RequireExpirationTime = false,
+                                 ValidateLifetime = false,
+                                 IssuerSigningKey = key
+                             };
+
+                         });
+        }
+
         public static IMvcBuilder AddStandard(this IServiceCollection services, Assembly assembly)
         {
             var osname = "Windows";
@@ -86,7 +184,7 @@ namespace Microsoft.Extensions.DependencyInjection
                      options.SerializerSettings.Converters.Add(new DateJsonConverter());
                  }).AddMvcOptions(options =>
                  {
-         
+
                      options.Filters.Add<StandardExceptionFilterAttribute>();
                  })
                 .AddFluentValidation(n =>
