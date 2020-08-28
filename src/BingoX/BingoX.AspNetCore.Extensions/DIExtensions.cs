@@ -25,6 +25,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using BingoX.ComponentModel;
+using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -144,6 +146,63 @@ namespace Microsoft.Extensions.DependencyInjection
                          });
         }
 
+        public static void AddApplicationDI(this IServiceCollection services, Assembly assembly)
+        {
+
+            RegeditTypes(services, assembly, typeof(IService));
+            SingleRegeditTypes(services, assembly, typeof(ISingleService));
+        }
+        /// <summary>
+        /// 构建未实现仓储的领域实体的仓储类型
+        /// </summary>
+        /// <returns></returns>
+        static AssemblyScanResult[] FindDIType(Assembly assembly, params Type[] interfaceTypes)
+        {
+
+
+
+            return interfaceTypes.SelectMany(n =>
+            {
+                List<AssemblyScanResult> list = new List<AssemblyScanResult>();
+                var assemblyScanClass = new AssemblyScanClass(assembly, n);
+                var repositoryTypes = assemblyScanClass.Find();
+                foreach (var itemRepositoryType in repositoryTypes)
+                {
+                    foreach (var iteminterfcae in itemRepositoryType.GetInterfaces())
+                    {
+                        if (iteminterfcae == n) continue;
+                        if (list.Any(n => n.BaseType == iteminterfcae)) continue;
+                        list.Add(new AssemblyScanResult(iteminterfcae, itemRepositoryType));
+                    }
+                    if (list.Any(n => n.BaseType == itemRepositoryType)) continue;
+                    list.Add(new AssemblyScanResult(itemRepositoryType, itemRepositoryType));
+                }
+
+                return list;
+            }).ToArray();
+
+
+        }
+        static void SingleRegeditTypes(IServiceCollection services, Assembly assembly, params Type[] interfaceTypes)
+        {
+            var implTypes = FindDIType(assembly, interfaceTypes);
+
+            foreach (var item in implTypes)
+            {
+
+                services.AddSingleton(item.BaseType, item.ImplementedType);
+            }
+        }
+        static void RegeditTypes(IServiceCollection services, Assembly assembly, params Type[] interfaceTypes)
+        {
+            var implTypes = FindDIType(assembly, interfaceTypes);
+
+            foreach (var item in implTypes)
+            {
+
+                services.AddScoped(item.BaseType, item.ImplementedType);
+            }
+        }
         public static IMvcBuilder AddStandard(this IServiceCollection services, Assembly assembly)
         {
             var osname = "Windows";
@@ -201,6 +260,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         .AllowAnyMethod();
                 });
             });
+            AddApplicationDI(services, assembly);
             services.AddAutoMapper(assembly);
             var WorkerId = GetWorkerId();
             var DatacenterId = GetDatacenterId();
