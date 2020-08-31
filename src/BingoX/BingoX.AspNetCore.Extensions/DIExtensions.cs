@@ -30,21 +30,6 @@ using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-
-    public class IdentitryJwtBearerOption
-    {
-        public string RSAPublicKey { get; set; }
-        public string Authority { get; set; }
-        public string Audience { get; set; }
-    }
-    public class IdentitryOpenIdOption
-    {
-        public string Authority { get; set; }
-        public string ResponseType { get; set; }
-        public string WebSiteClientId { get; set; }
-        public string[] Scopes { get; set; }
-        public string ClientSecret { get; set; }
-    }
     public static class DIExtensions
     {
         public static void FindConfigureServices(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
@@ -210,6 +195,8 @@ namespace Microsoft.Extensions.DependencyInjection
             if (Environment.OSVersion.Platform == PlatformID.MacOSX) osname = "Mac";
             if (Environment.OSVersion.Platform == PlatformID.Unix) osname = "Linux";
             if (Environment.OSVersion.Platform == PlatformID.Xbox) osname = "Xbox";
+            var titleAttribute = assembly.GetCustomAttribute<AssemblyProductAttribute>();
+            string appname = titleAttribute?.Product;
             services.AddSingleton<IBoundedContext>(c => new ScopeBoundedContext
             {
                 Generator = c.GetService<IGenerator<long>>(),
@@ -219,7 +206,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 IsProduction = c.GetService<IWebHostEnvironment>().IsProduction(),
                 OS = osname,
                 AppVersion = assembly.GetVersion().ToString(),
-                AppName = "珠海金税格力比对系统"
+                AppName = appname
             });
             FaultExceptionProvider.Add(new GenericFaultExceptionProvider<UnauthorizedException>());
             FaultExceptionProvider.Add(new GenericFaultExceptionProvider<NotFoundEntityException>());

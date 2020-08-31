@@ -4,6 +4,7 @@ using System;
 
 namespace BingoX.AspNetCore
 {
+   
     public interface IBoundedContext
     {
         string WebRootPath { get; }
