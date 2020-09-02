@@ -4,4 +4,9 @@
     <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BingoX.AspNetCore.Extensions\BingoX.AspNetCore.Extensions.csproj" />
+    <ProjectReference Include="..\BingoX.AspNetCore\BingoX.AspNetCore.csproj" />
+  </ItemGroup>
+
 </Project>

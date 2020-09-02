@@ -27,6 +27,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using BingoX.ComponentModel;
 using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -252,7 +254,37 @@ namespace Microsoft.Extensions.DependencyInjection
             var WorkerId = GetWorkerId();
             var DatacenterId = GetDatacenterId();
             services.AddSingleton<IGenerator<long>, SnowflakeGenerator>(c => new SnowflakeGenerator(WorkerId, DatacenterId));
+
+            services.AddScoped<ICurrentUser>(x =>
+            {
+                var httpContextAccessor = x.GetService<IHttpContextAccessor>();
+                var httpContext = httpContextAccessor.HttpContext;
+                if (httpContext == null) return new ScopeCurrentUser { Name= "Hosted", UserID=0 };
+                ClaimsPrincipal principal = httpContext.User;
+                if (!principal.Identity.IsAuthenticated) throw new UnauthorizedException();
+                var role = string.Empty;
+                string RoleClaimType = principal.Identities.First().RoleClaimType;
+                role = principal.FindFirst(RoleClaimType)?.Value;
+                return new ScopeCurrentUser
+                {
+                    Name = principal.Identity.Name,
+                    Role = role,
+                    IsAuthenticated = principal.Identity.IsAuthenticated,
+                    Claims = principal.Claims.ToArray()
+                };
+            });
             return mvcbuilder;
+        }
+        class ScopeCurrentUser : ICurrentUser
+        {
+            public object UserID { get; internal set; }
+
+            public string Name { get; internal set; }
+
+            public string Role { get; internal set; }
+
+            public Claim[] Claims { get; internal set; }
+            public bool IsAuthenticated { get; internal set; }
         }
         const int MaxWorkerId = 30;
         const int MaxDatacenterId = 30;

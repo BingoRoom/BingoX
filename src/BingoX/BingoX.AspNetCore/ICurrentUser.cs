@@ -5,7 +5,11 @@
         object UserID { get; }
         string Name { get; }
         string Role { get; }
-        string Account { get; }
+
+        System.Security.Claims.Claim[] Claims { get; }
     }
-     
+
+   
+
+
 }

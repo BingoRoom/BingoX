@@ -2,9 +2,11 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace BingoX.FileSystem
 {
+   
     public class DiskFolderFileSystemProvider : IFileSystemProvider
     {
 
@@ -35,7 +37,7 @@ namespace BingoX.FileSystem
             return GetFileInfo(fileName);
         }
 
-    
+
 
         public string CreateDirectory(string path)
         {
@@ -55,7 +57,7 @@ namespace BingoX.FileSystem
             if (File.Exists(readPath)) File.Delete(readPath);
         }
 
-      
+
         public bool ExistsDirectory(string dirPath)
         {
             return Directory.Exists(dirPath);
@@ -79,12 +81,13 @@ namespace BingoX.FileSystem
 
         public byte[] GetFileBuffer(string path)
         {
-            var buffer = File.ReadAllBytes(path);
+            string readPath = GetReadPath(path);
+            var buffer = File.ReadAllBytes(readPath);
 
             return buffer;
         }
 
-        
+
         public DMSFileInfo GetFileInfo(string path)
         {
             string readPath = GetReadPath(path);
@@ -106,6 +109,6 @@ namespace BingoX.FileSystem
             return Path.Combine(_rootList, path);
         }
 
-     
+
     }
 }

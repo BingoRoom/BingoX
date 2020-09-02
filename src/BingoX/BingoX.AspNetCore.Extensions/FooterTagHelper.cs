@@ -22,6 +22,7 @@ namespace BingoX.AspNetCore.TagHelpers
             output.Attributes.Add("class", "border-top footer text-muted");
             TagBuilder builderContainer = new TagBuilder("div");
             builderContainer.AddCssClass("container");
+            builderContainer.MergeAttribute("style", "margin-right: unset;margin-left: auto;");
             builderContainer.InnerHtml.Append($"Copyright© {System.DateTime.Now.Year} - {boundedContext.AppName} Powered by .NET Core Version {boundedContext.AppVersion} on {boundedContext.OS}");
             output.Content.AppendHtml(builderContainer);
         }
