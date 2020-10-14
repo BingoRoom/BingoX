@@ -32,12 +32,66 @@ using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class DIExtensions
+    static class Helper
+    {
+        /// <summary>
+        /// 构建未实现仓储的领域实体的仓储类型
+        /// </summary>
+        /// <returns></returns>
+        public static AssemblyScanResult[] FindDIType(Assembly assembly, params Type[] interfaceTypes)
+        {
+
+
+
+            return interfaceTypes.SelectMany(n =>
+            {
+                List<AssemblyScanResult> list = new List<AssemblyScanResult>();
+                var assemblyScanClass = new AssemblyScanClass(assembly, n);
+                var repositoryTypes = assemblyScanClass.Find();
+                foreach (var itemRepositoryType in repositoryTypes)
+                {
+                    foreach (var iteminterfcae in itemRepositoryType.GetInterfaces())
+                    {
+                        if (iteminterfcae == n) continue;
+                        if (list.Any(n => n.BaseType == iteminterfcae)) continue;
+                        list.Add(new AssemblyScanResult(iteminterfcae, itemRepositoryType));
+                    }
+                    if (list.Any(n => n.BaseType == itemRepositoryType)) continue;
+                    list.Add(new AssemblyScanResult(itemRepositoryType, itemRepositoryType));
+                }
+
+                return list;
+            }).ToArray();
+
+
+        }
+        public static void SingleRegeditTypes(IServiceCollection services, Assembly assembly, params Type[] interfaceTypes)
+        {
+            var implTypes = FindDIType(assembly, interfaceTypes);
+
+            foreach (var item in implTypes)
+            {
+
+                services.AddSingleton(item.BaseType, item.ImplementedType);
+            }
+        }
+        public static void RegeditTypes(IServiceCollection services, Assembly assembly, params Type[] interfaceTypes)
+        {
+            var implTypes = FindDIType(assembly, interfaceTypes);
+
+            foreach (var item in implTypes)
+            {
+
+                services.AddScoped(item.BaseType, item.ImplementedType);
+            }
+        }
+    }
+    public static partial class DIExtensions
     {
         public static void FindConfigureServices(this IServiceCollection services, IConfiguration configuration, Assembly assembly)
         {
 
-            var diConfigures = assembly.GetTypes().Where(n => typeof(DIConfigureServices).IsAssignableFrom(n) && n.IsClass && !n.IsAbstract).OrderBy(n => n.GetCustomAttribute<DIConfigureServicesAttribute>().Order).ToArray();
+            var diConfigures = assembly.GetTypes().Where(n => typeof(DIConfigureServices).IsAssignableFrom(n) && n.IsClass && !n.IsAbstract).OrderBy(n => n.GetCustomAttribute<DIConfigureServicesAttribute>()?.Order).ToArray();
             var pars = new object[] { configuration, services };
             foreach (var item in diConfigures)
             {
@@ -65,11 +119,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             AddIdentitryJwtBearer(services, opt);
         }
-        public static void AddIdentitryOpenIdConnect(this IServiceCollection services, IConfiguration configuration)
+        public static void AddIdentitryOpenIdConnect(this IServiceCollection services, IConfiguration configuration, OpenIdConnectEvents events = null)
         {
 
             var opt = new IdentitryOpenIdOption();
             configuration.Bind("Permission", opt);
+            opt.Events = events;
             AddIdentitryOpenIdConnect(services, opt);
         }
         public static void AddIdentitryOpenIdConnect(this IServiceCollection services, IdentitryOpenIdOption identitryoption)
@@ -103,6 +158,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                               options.ClaimActions.MapJsonKey("website", "website");
                               options.TokenValidationParameters.NameClaimType = "name";
+                              if (identitryoption.Events != null) options.Events = identitryoption.Events;
 
 
                           });
@@ -136,60 +192,10 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddApplicationDI(this IServiceCollection services, Assembly assembly)
         {
 
-            RegeditTypes(services, assembly, typeof(IService));
-            SingleRegeditTypes(services, assembly, typeof(ISingleService));
+            Helper.RegeditTypes(services, assembly, typeof(IService));
+            Helper.SingleRegeditTypes(services, assembly, typeof(ISingleService));
         }
-        /// <summary>
-        /// 构建未实现仓储的领域实体的仓储类型
-        /// </summary>
-        /// <returns></returns>
-        static AssemblyScanResult[] FindDIType(Assembly assembly, params Type[] interfaceTypes)
-        {
 
-
-
-            return interfaceTypes.SelectMany(n =>
-            {
-                List<AssemblyScanResult> list = new List<AssemblyScanResult>();
-                var assemblyScanClass = new AssemblyScanClass(assembly, n);
-                var repositoryTypes = assemblyScanClass.Find();
-                foreach (var itemRepositoryType in repositoryTypes)
-                {
-                    foreach (var iteminterfcae in itemRepositoryType.GetInterfaces())
-                    {
-                        if (iteminterfcae == n) continue;
-                        if (list.Any(n => n.BaseType == iteminterfcae)) continue;
-                        list.Add(new AssemblyScanResult(iteminterfcae, itemRepositoryType));
-                    }
-                    if (list.Any(n => n.BaseType == itemRepositoryType)) continue;
-                    list.Add(new AssemblyScanResult(itemRepositoryType, itemRepositoryType));
-                }
-
-                return list;
-            }).ToArray();
-
-
-        }
-        static void SingleRegeditTypes(IServiceCollection services, Assembly assembly, params Type[] interfaceTypes)
-        {
-            var implTypes = FindDIType(assembly, interfaceTypes);
-
-            foreach (var item in implTypes)
-            {
-
-                services.AddSingleton(item.BaseType, item.ImplementedType);
-            }
-        }
-        static void RegeditTypes(IServiceCollection services, Assembly assembly, params Type[] interfaceTypes)
-        {
-            var implTypes = FindDIType(assembly, interfaceTypes);
-
-            foreach (var item in implTypes)
-            {
-
-                services.AddScoped(item.BaseType, item.ImplementedType);
-            }
-        }
         public static IMvcBuilder AddStandard(this IServiceCollection services, Assembly assembly)
         {
             var osname = "Windows";
@@ -259,7 +265,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var httpContextAccessor = x.GetService<IHttpContextAccessor>();
                 var httpContext = httpContextAccessor.HttpContext;
-                if (httpContext == null) return new ScopeCurrentUser { Name= "Hosted", UserID=0 };
+                if (httpContext == null) return new ScopeCurrentUser { Name = "Hosted", UserID = 0 };
                 ClaimsPrincipal principal = httpContext.User;
                 if (!principal.Identity.IsAuthenticated) throw new UnauthorizedException();
                 var role = string.Empty;
@@ -274,17 +280,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 };
             });
             return mvcbuilder;
-        }
-        class ScopeCurrentUser : ICurrentUser
-        {
-            public object UserID { get; internal set; }
-
-            public string Name { get; internal set; }
-
-            public string Role { get; internal set; }
-
-            public Claim[] Claims { get; internal set; }
-            public bool IsAuthenticated { get; internal set; }
         }
         const int MaxWorkerId = 30;
         const int MaxDatacenterId = 30;

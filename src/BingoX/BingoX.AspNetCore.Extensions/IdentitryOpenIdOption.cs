@@ -1,4 +1,8 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System;
+using System.Threading.Tasks;
+
+namespace Microsoft.Extensions.DependencyInjection
 {
     public class IdentitryOpenIdOption
     {
@@ -7,5 +11,8 @@
         public string WebSiteClientId { get; set; }
         public string[] Scopes { get; set; }
         public string ClientSecret { get; set; }
+
+        public OpenIdConnectEvents Events { get; set; }
+
     }
 }
