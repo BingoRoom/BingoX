@@ -2,7 +2,7 @@
 {
     public interface ICurrentUser
     {
-        object UserID { get; }
+        object NameIdentifier { get; }
         string Name { get; }
         string Role { get; }
 

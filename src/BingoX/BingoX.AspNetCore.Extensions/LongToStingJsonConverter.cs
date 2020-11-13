@@ -21,6 +21,11 @@ namespace BingoX.AspNetCore.Extensions
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null) return;
+            if ((long)value == 0)
+            {
+                writer.WriteValue(string.Empty);
+                return;
+            }
             writer.WriteValue(((long)value).ToString());
 
         }
