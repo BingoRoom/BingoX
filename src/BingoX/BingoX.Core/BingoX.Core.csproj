@@ -40,7 +40,6 @@
     <Compile Remove="Generator\DisposableAction.cs" />
     <Compile Remove="Helper\CompressHelper.cs" />
     <Compile Remove="Services\IUtilityServiceProvider.cs" />
-    <Compile Remove="Utility\EnumUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ComponentModel\FastReflection\" />

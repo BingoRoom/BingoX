@@ -16,9 +16,7 @@ namespace BingoX.DataAccessor.SqlSugar
 {
     public class SqlSugarSqlFacade : ISqlFacade
     {
-        private IDbTransaction tran;
 
-        private readonly IDbConnection connection;
 
         private readonly List<IDbCommand> cmds = new List<IDbCommand>();
 
@@ -26,7 +24,6 @@ namespace BingoX.DataAccessor.SqlSugar
         {
             Context = context;
 
-            connection = Context.Database.Ado.Connection;
 
         }
 
@@ -34,10 +31,13 @@ namespace BingoX.DataAccessor.SqlSugar
 
         public void Commit()
         {
+            var connection = Context.Database.Ado.Connection;
+            var tran = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+            if (connection.State != ConnectionState.Open) connection.Open();
             string sql = string.Empty;
             try
             {
-                tran = connection.BeginTransaction();
+
                 foreach (var item in cmds)
                 {
                     item.Transaction = tran;
@@ -59,7 +59,7 @@ namespace BingoX.DataAccessor.SqlSugar
         public void AddCommand(string sqlcommand)
         {
 
-            var cmd = connection.CreateCommand();
+            var cmd = Context.Database.Ado.Connection.CreateCommand();
             cmd.CommandText = sqlcommand;
             cmds.Add(cmd);
         }
@@ -67,7 +67,7 @@ namespace BingoX.DataAccessor.SqlSugar
         public object ExecuteScalar(string sqlcommand)
         {
 
-            var cmd = connection.CreateCommand();
+            var cmd = Context.Database.Ado.Connection.CreateCommand();
             cmd.CommandText = sqlcommand;
             return cmd.ExecuteScalar();
         }
@@ -77,12 +77,9 @@ namespace BingoX.DataAccessor.SqlSugar
             if (attr == null) throw new DataAccessorException($"{nameof(TEntity)}没打CanTruncateAttribute标签，不能执行数据清除操作");
             if (string.IsNullOrEmpty(attr.Tablename)) throw new DataAccessorException($"{nameof(TEntity)}实体的CanTruncateAttribute标签没设置表名，无法执行数据清除操作");
             AddCommand($"Truncate table {attr.Tablename}");
+            Commit();
         }
-        public void Rollback()
-        {
-            if (tran != null) tran.Rollback();
-            cmds.Clear();
-        }
+
 
         T ISqlFacade.Query<T>(string sqlcommand)
         {
@@ -95,12 +92,15 @@ namespace BingoX.DataAccessor.SqlSugar
         }
         void IUnitOfWork.BeginTransaction()
         {
-            throw new NotImplementedException();
-        }
 
+        }
+        void IUnitOfWork.Rollback()
+        {
+
+        }
         void IUnitOfWork.SaveChanges()
         {
-            throw new NotImplementedException();
+
         }
 
     }
