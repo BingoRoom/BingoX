@@ -56,7 +56,12 @@ namespace BingoX.Domain
 
     }
 
+    public interface ISoftDelete<TKey> : IEntity<TKey>
+    {
 
+
+        bool SoftDeleted { get; set; }
+    }
     public abstract class Entity<TKey> : IEntity<TKey>
     {
         public virtual TKey ID { get; protected set; }

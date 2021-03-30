@@ -30,9 +30,9 @@ namespace BingoX.Helper
             stream.TrySeek();
             if (stream.CanRead)
             {
-          
+
                 const int maxbuffer = 1024000;
-           
+
                 var buffers = new byte[maxbuffer];
                 var ms = new MemoryStream();
                 while (true)
@@ -206,8 +206,8 @@ namespace BingoX.Helper
         public static bool TrySeek(this Stream stream)
         {
             if (stream == null || !stream.CanRead) return false;
-            if (!stream.CanSeek && stream.Position != 0) return false;
-            if (stream.CanSeek && stream.Position != 0) stream.Seek(0, SeekOrigin.Begin);
+            if (!stream.CanSeek) return false;
+            if (stream.CanSeek) stream.Seek(0, SeekOrigin.Begin);
             return true;
         }
     }
