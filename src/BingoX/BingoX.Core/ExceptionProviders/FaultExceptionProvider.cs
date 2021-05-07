@@ -19,7 +19,6 @@ namespace BingoX.ExceptionProviders
                 if (innerException is T) return (T)innerException;
                 innerException = innerException.InnerException;
             }
-
             return null;
         }
         protected bool IsType<T>(Exception exception) where T : Exception
@@ -31,7 +30,6 @@ namespace BingoX.ExceptionProviders
                 if (innerException is T) return true;
                 innerException = innerException.InnerException;
             }
-
             return false;
         }
         public abstract string GetMessage(Exception exception);
@@ -39,7 +37,7 @@ namespace BingoX.ExceptionProviders
             new GenericFaultExceptionProvider<NotImplementedException>("没实现此方法") ,
             new GenericFaultExceptionProvider<LogicException>() ,
             new GenericFaultExceptionProvider<WebException>() ,
-        //    new GenericFaultExceptionProvider<System.Net.Sockets.SocketException>("连接服务器不成功") ,
+        //   new GenericFaultExceptionProvider<System.Net.Sockets.SocketException>("连接服务器不成功") ,
             new GenericFaultExceptionProvider<IOException>("文件或读写功能不能處理") ,
         };
         public readonly static UnkownFaultExceptionProvider Unhandled = new UnkownFaultExceptionProvider();
@@ -47,11 +45,22 @@ namespace BingoX.ExceptionProviders
         {
             providers.Add(provider);
         }
+        public static void Add(FaultExceptionProvider provider,int index)
+        {
+            providers.Insert(index,provider);
+        }
+        public static void Clear()
+        {
+            providers.Clear();
+        }
+        public static void Remove(FaultExceptionProvider provider)
+        {
+            providers.Remove(provider);
+        }
         public static FaultExceptionProvider Get(Exception exception)
         {
             var provider = providers.FirstOrDefault(n => n.IsType(exception));
- 
-            return provider;
+            return provider ?? Unhandled;
         }
     }
 }
