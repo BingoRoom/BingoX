@@ -67,17 +67,16 @@ namespace BingoX.DataAccessor.SqlSugar
         public object ExecuteScalar(string sqlcommand)
         {
 
-            var cmd = Context.Database.Ado.Connection.CreateCommand();
-            cmd.CommandText = sqlcommand;
-            return cmd.ExecuteScalar();
+            return Context.Database.Ado.GetScalar(sqlcommand);
+
         }
         public void Truncate<TEntity>() where TEntity : class, IEntity<TEntity>
         {
             var attr = typeof(TEntity).GetCustomAttribute<CanTruncateAttribute>(true);
             if (attr == null) throw new DataAccessorException($"{nameof(TEntity)}没打CanTruncateAttribute标签，不能执行数据清除操作");
             if (string.IsNullOrEmpty(attr.Tablename)) throw new DataAccessorException($"{nameof(TEntity)}实体的CanTruncateAttribute标签没设置表名，无法执行数据清除操作");
-            AddCommand($"Truncate table {attr.Tablename}");
-            Commit();
+            Context.Database.Ado.ExecuteCommand($"Truncate table {attr.Tablename}");
+       
         }
 
 

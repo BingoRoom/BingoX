@@ -241,6 +241,92 @@ namespace BingoX.DataAccessor.EF
         {
             return DbSet.AsQueryable().Where(whereLambda).Count();
         }
+        public float? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public int? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, int?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public decimal? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public double? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public float Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public int Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, int>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public decimal Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }
+        public double Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Sum(expression);
+        }  
+        public float? Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Average(expression);
+        }
+     
+        public decimal? Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Average(expression);
+        }
+        public double? Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double?>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Average(expression);
+        }
+        public float Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Average(expression);
+        }
+    
+        public decimal Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Average(expression);
+        }
+        public double Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double>> expression)
+        {
+            var query = DbSet.AsQueryable().Where(whereLambda);
+
+            return query.Average(expression);
+        }
         #endregion
 
         protected IQueryable<TEntity> OrderBy(IQueryable<TEntity> source, params OrderModelField<TEntity>[] orderByPropertyList)
