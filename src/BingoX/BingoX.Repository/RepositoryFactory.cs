@@ -33,11 +33,10 @@ namespace BingoX.Repository
             if (!implementedType.IsAssignableFrom(baseType)) throw new Exception($"{implementedType} 不是继承于 {implementedType}");
             repositoryTypes.Add(new AssemblyScanResult(baseType, implementedType));
         }
-        static readonly Type[] ConstructorTypes = { typeof(RepositoryContextOptions), typeof(string) };
-        public IRepository<TDomain> Create<TDomain>(string name) where TDomain : IEntity<TDomain>
+        static readonly Type[] ConstructorTypes = { typeof(RepositoryContextOptions) };
+        public IRepository<TDomain> Create<TDomain>() where TDomain : IEntity<TDomain>
         {
 
-            if (string.IsNullOrEmpty(name)) return serviceProvider.GetService(typeof(IRepository<TDomain>)) as IRepository<TDomain>;
 
             var typeRepository = typeof(IRepository<>).MakeGenericType(typeof(TDomain));
             var entityScope = repositoryTypes.FirstOrDefault(n => n.BaseType == typeRepository);
@@ -50,26 +49,26 @@ namespace BingoX.Repository
             {
                 typeRepository = typeof(Repository<>).MakeGenericType(typeof(TDomain));
             }
-            repository = CreateRepository(typeRepository, name);
+            repository = CreateRepository(typeRepository);
             return repository as IRepository<TDomain>;
         }
 
-        private object CreateRepository(Type repositoryType, string name)
+        private object CreateRepository(Type repositoryType)
         {
             var constructorinfo = repositoryType.GetConstructor(ConstructorTypes);
             if (constructorinfo == null) throw new RepositoryException("没有对应的构造函数,不能指定db");
-            return constructorinfo.FastInvoke(options, name);
+            return constructorinfo.FastInvoke(options);
         }
 
-        public IRepository<TDomain, TEntity> Create<TDomain, TEntity>(string name) where TEntity : IEntity<TEntity>
+        public IRepository<TDomain, TEntity> Create<TDomain, TEntity>() where TEntity : IEntity<TEntity>
         {
-            var repository = CreateRepository(typeof(Repository<,>).MakeGenericType(typeof(TDomain), typeof(TEntity)), name);
+            var repository = CreateRepository(typeof(Repository<,>).MakeGenericType(typeof(TDomain), typeof(TEntity)));
             return repository as IRepository<TDomain, TEntity>;
         }
 
-        public TRepository CreateRepository<TRepository>(string name) where TRepository : class, IRepository
+        public TRepository CreateRepository<TRepository>() where TRepository : Repository
         {
-            var repository = CreateRepository(typeof(TRepository), name);
+            var repository = CreateRepository(typeof(TRepository));
             return (TRepository)repository;
         }
     }
