@@ -5,9 +5,10 @@ namespace BingoX.Repository
 {
     public interface IRepositoryFactory
     {
-        IRepository<TDomain> Create<TDomain>(string name) where TDomain : IEntity<TDomain>;
-        TRepository CreateRepository<TRepository>(string name) where TRepository : class, IRepository;
-        IRepository<TDomain, TEntity> Create<TDomain, TEntity>(string name) where TEntity : IEntity<TEntity>  ;
+
+        TRepository CreateRepository<TRepository>() where TRepository : Repository;
+        IRepository<TDomain> Create<TDomain>() where TDomain : IEntity<TDomain>;
+        IRepository<TDomain, TEntity> Create<TDomain, TEntity>() where TEntity : IEntity<TEntity>;
 
         void AddRepository(Type baseType, Type implementedType);
     }

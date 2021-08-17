@@ -1,5 +1,6 @@
 ﻿using BingoX.DataAccessor;
 using BingoX.Domain;
+using BingoX.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +72,7 @@ namespace BingoX.Repository
         private IDataAccessorFactory GetFactory(string dbName)
         {
             if (options.DataAccessorFactories == null || options.DataAccessorFactories.Count == 0) throw new RepositoryException("DataAccessorFactory集合为空");
-            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories[dbName];
+            var factory = string.IsNullOrEmpty(dbName) ? options.DataAccessorFactories.First().Value : options.DataAccessorFactories.GetValue(dbName);
             if (factory == null) throw new RepositoryException("DataAccessorFactory集合为空");
             return factory;
         }

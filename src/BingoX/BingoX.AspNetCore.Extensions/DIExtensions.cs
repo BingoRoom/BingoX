@@ -32,7 +32,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    static class Helper
+    public static class Helper
     {
         /// <summary>
         /// 构建未实现仓储的领域实体的仓储类型
@@ -265,7 +265,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var httpContextAccessor = x.GetService<IHttpContextAccessor>();
                 var httpContext = httpContextAccessor.HttpContext;
-                if (httpContext == null) return new ScopeCurrentUser { Name = "Hosted",  };
+                if (httpContext == null) return new ScopeCurrentUser { Name = "Hosted", };
                 ClaimsPrincipal principal = httpContext.User;
                 if (!principal.Identity.IsAuthenticated) throw new UnauthorizedException();
                 var role = string.Empty;

@@ -118,19 +118,7 @@ namespace BingoX.Core.Test.Utility
 
         }
 
-        [Test]
-        public void TestIsBetweenThrow()
-        {
-            Assert.Throws<CompareException>(() =>
-            {
-                var flag = CompareHelper.IsBetween(1, 10, 1);
-                Assert.IsFalse(flag);
-                int? x = null;
-                flag = CompareHelper.IsBetween(x, 10, 1);
-                Assert.IsFalse(flag);
-            });
-        }
-
+     
 
         [Test]
         public void TestNumerCompare()
