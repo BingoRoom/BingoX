@@ -2,9 +2,18 @@
 using System.Collections.Generic;
 using SqlSugar;
 using System.Linq;
+using System;
+using System.Linq.Expressions;
 
 namespace BingoX.DataAccessor.SqlSugar
 {
+    public class ModelBuilder<TEntity>
+    {
+        public void AddQueryFilter(Expression<Func<TEntity, bool>> filter)
+        {
+
+        }
+    }
     public class SqlSugarDbSet<TEntity> where TEntity : class, new()
     {
         private readonly SqlSugarClient sqlSugar;

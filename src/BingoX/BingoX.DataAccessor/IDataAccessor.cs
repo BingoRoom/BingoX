@@ -73,6 +73,23 @@ namespace BingoX.DataAccessor
         /// <returns>数量</returns>
         int Count(Expression<Func<TEntity, bool>> whereLambda);
 
+
+        float? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float?>> expression);
+        int? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, int?>> expression);
+        decimal? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal?>> expression);
+        double? Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double?>> expression);
+        float Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float>> expression);
+        int Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, int>> expression);
+        decimal Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal>> expression);
+        double Sum(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double>> expression);
+
+
+        float? Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float?>> expression);
+        decimal? Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal?>> expression);
+        double? Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double?>> expression);
+        float Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, float>> expression);
+        decimal Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, decimal>> expression);
+        double Avg(Expression<Func<TEntity, bool>> whereLambda, Expression<Func<TEntity, double>> expression);
         /// <summary>
         /// 根据主键查询记录
         /// </summary>

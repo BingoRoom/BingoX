@@ -19,7 +19,7 @@ namespace BingoX.ComponentModel.Compress
             {
                 AddEntry(zipArchive, compressEntry);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -63,8 +63,12 @@ namespace BingoX.ComponentModel.Compress
             {
                 foreach (var entry in zipArchive.Entries)
                 {
-                    CompressEntry compressEntry = new CompressEntry();
-                    compressEntry.Name = entry.Name;
+                    CompressEntry compressEntry = new CompressEntry
+                    {
+                        Name = entry.Name,
+                        FullName = entry.FullName
+
+                    };
                     using (Stream stream = entry.Open())
                     {
                         compressEntry.FileContent = stream.ToArray();

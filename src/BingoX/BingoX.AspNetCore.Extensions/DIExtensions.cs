@@ -124,7 +124,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var opt = new IdentitryOpenIdOption();
             configuration.Bind("Permission", opt);
-            opt.Events = events;
+            if (events != null) opt.Events = events;
             AddIdentitryOpenIdConnect(services, opt);
         }
         public static void AddIdentitryOpenIdConnect(this IServiceCollection services, IdentitryOpenIdOption identitryoption)
@@ -265,7 +265,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var httpContextAccessor = x.GetService<IHttpContextAccessor>();
                 var httpContext = httpContextAccessor.HttpContext;
-                if (httpContext == null) return new ScopeCurrentUser { Name = "Hosted", UserID = 0 };
+                if (httpContext == null) return new ScopeCurrentUser { Name = "Hosted",  };
                 ClaimsPrincipal principal = httpContext.User;
                 if (!principal.Identity.IsAuthenticated) throw new UnauthorizedException();
                 var role = string.Empty;
@@ -275,6 +275,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     Name = principal.Identity.Name,
                     Role = role,
+                    NameIdentifier = principal.Claims.First(n => n.Type == ClaimTypes.NameIdentifier)?.Value,
                     IsAuthenticated = principal.Identity.IsAuthenticated,
                     Claims = principal.Claims.ToArray()
                 };

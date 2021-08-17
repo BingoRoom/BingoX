@@ -15,6 +15,12 @@ namespace BingoX.ComponentModel.Compress
         /// 流
         /// </summary>
         public byte[] FileContent { get; set; }
+
+        /// <summary>
+        /// 完全名称
+        /// </summary>
+        public string FullName { get; set; }
+
         /// <summary>
         /// 创建时间
         /// </summary>
@@ -26,7 +32,8 @@ namespace BingoX.ComponentModel.Compress
             return new CompressEntry
             {
                 FileContent = encoding.GetBytes(content),
-                Name = name
+                Name = name,
+                FullName = name,
             };
         }
         public static CompressEntry StringContent(string name, string content)

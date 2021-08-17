@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         class ScopeCurrentUser : ICurrentUser
         {
-            public object UserID { get; internal set; }
+            public object NameIdentifier { get; internal set; }
 
             public string Name { get; internal set; }
 

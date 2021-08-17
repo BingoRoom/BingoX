@@ -31,8 +31,14 @@
 
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="ComponentModel\Pattern\**" />
+    <EmbeddedResource Remove="ComponentModel\Pattern\**" />
+    <None Remove="ComponentModel\Pattern\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="ComponentModel\Data\PageSizeDescriptor.cs" />
     <Compile Remove="Generator\DisposableAction.cs" />
+    <Compile Remove="Helper\CompressHelper.cs" />
     <Compile Remove="Services\IUtilityServiceProvider.cs" />
   </ItemGroup>
   <ItemGroup>

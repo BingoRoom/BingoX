@@ -83,7 +83,7 @@ namespace BingoX.Helper
         public static BindingList<T> AsBindingList<T>(this IEnumerable<T> collection)
         {
             if (collection == null) return new BindingList<T>();
-            return new BindingList<T>(collection.ToList());
+            return new BindingList<T>(collection.OfType<T>().ToList());
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace BingoX.Helper
         public static List<TTarget> AsList<TSource, TTarget>(this IEnumerable<TSource> collection)
         {
             if (collection == null) return new List<TTarget>();
-            return new List<TTarget>(collection.Cast<TTarget>());
+            return new List<TTarget>(collection.OfType<TTarget>());
         }
 
 
@@ -295,6 +295,24 @@ namespace BingoX.Helper
             foreach (var variable in source)
             {
                 action(variable);
+            }
+        }
+        /// <summary>
+        ///  对集合执行循环操作
+        /// </summary>
+        /// <param name="source">集合</param>
+        /// <param name="action">操作</param>
+        /// <typeparam name="T"></typeparam>     
+        /// <returns></returns>
+        public static void Foreach<T>(this IEnumerable<T> source, Action<int, T> action)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+            if (action == null) throw new ArgumentNullException("action");
+            int index = 0;
+            foreach (var variable in source)
+            {
+                action(index, variable);
+                index++;
             }
         }
 

@@ -35,7 +35,7 @@ namespace BingoX.AspNetCore.Extensions
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(string.Format("{0:yyyy-MM-dd HH:mm:ss}", value));
+            writer.WriteValue(string.Format("{0:yyyy-MM-dd HH:mm:ss}", value).Replace(" 00:00:00",string.Empty));
         }
     }
 }

@@ -395,7 +395,7 @@ namespace BingoX.DataAccessor
             return new Specification<T>().And(expression);
         }
         static Expression<Func<T, bool>> True() { return f => true; }
-        protected internal Expression<Func<T, bool>> SearchPredicate = True();
+        protected internal Expression<Func<T, bool>> SearchPredicate;//= True();
         protected internal IList<OrderModelField<T>> OrderPredicates = new List<OrderModelField<T>>();
 
         public int PageIndex { get; set; }
@@ -403,6 +403,7 @@ namespace BingoX.DataAccessor
 
         public virtual bool IsSatisfiedBy(T entity)
         {
+            if (SearchPredicate == null) return true;
             return SearchPredicate.Compile().Invoke(entity);
         }
         public virtual OrderModelField<T>[] ToStorExpression()
@@ -411,13 +412,18 @@ namespace BingoX.DataAccessor
         }
         public virtual Expression<Func<T, bool>> ToExpression()
         {
-            return SearchPredicate;
+            return SearchPredicate ?? True();
         }
 
         #region condition
 
         public virtual Specification<T> And(Specification<T> rightExpression)
         {
+            if (SearchPredicate == null)
+            {
+                SearchPredicate = rightExpression.SearchPredicate;
+                return this;
+            }
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.AndAlso(SearchPredicate.Body, rightExpression.SearchPredicate.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
@@ -426,6 +432,11 @@ namespace BingoX.DataAccessor
         }
         public virtual Specification<T> Not(Specification<T> specification)
         {
+            if (SearchPredicate == null)
+            {
+                SearchPredicate = specification.SearchPredicate;
+                return this;
+            }
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.NotEqual(SearchPredicate.Body, specification.SearchPredicate.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
@@ -435,6 +446,11 @@ namespace BingoX.DataAccessor
 
         public virtual Specification<T> Or(Specification<T> specification)
         {
+            if (SearchPredicate == null)
+            {
+                SearchPredicate = specification.SearchPredicate;
+                return this;
+            }
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.OrElse(SearchPredicate.Body, specification.SearchPredicate.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
@@ -444,6 +460,11 @@ namespace BingoX.DataAccessor
 
         public virtual Specification<T> And(Expression<Func<T, bool>> expression)
         {
+            if (SearchPredicate == null)
+            {
+                SearchPredicate = expression;
+                return this;
+            }
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.AndAlso(SearchPredicate.Body, expression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
@@ -453,6 +474,11 @@ namespace BingoX.DataAccessor
 
         public virtual Specification<T> Or(Expression<Func<T, bool>> expression)
         {
+            if (SearchPredicate == null)
+            {
+                SearchPredicate = expression;
+                return this;
+            }
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.OrElse(SearchPredicate.Body, expression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);
@@ -462,6 +488,11 @@ namespace BingoX.DataAccessor
 
         public virtual Specification<T> Not(Expression<Func<T, bool>> expression)
         {
+            if (SearchPredicate == null)
+            {
+                SearchPredicate = expression;
+                return this;
+            }
             var paramExpr = Expression.Parameter(typeof(T));
             var exprBody = Expression.NotEqual(SearchPredicate.Body, expression.Body);
             exprBody = (BinaryExpression)new ParameterReplacer(paramExpr).Visit(exprBody);

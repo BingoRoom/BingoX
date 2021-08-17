@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace BingoX.Utility
 {
-    [Serializable]
-    public class EnumConverterException : Exception
-    {
-        public EnumConverterException() { }
-        public EnumConverterException(string message) : base(message) { }
-        public EnumConverterException(string message, Exception inner) : base(message, inner) { }
-        protected EnumConverterException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-    }
     /// <summary>
     /// 提供一个针对枚举类的操作工具
     /// </summary>
@@ -38,10 +26,10 @@ namespace BingoX.Utility
         /// <returns>注释</returns>
         public static string GetDescription<T>(int value)
         {
-            if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
+            if (typeof(T) != typeof(Enum)) throw new Exception("泛型必须为枚举类型");
             var obj = Enum.ToObject(typeof(T), value);
             var str = Enum.GetName(typeof(T), obj);
-            if (str == null) throw new EnumConverterException("转换失败");
+            if (str == null) throw new Exception("转换失败");
 
             var display = GetDescription<T>(str);
             return display;
@@ -54,7 +42,7 @@ namespace BingoX.Utility
         /// <returns>注释</returns>
         public static string GetDescription<T>(string value)
         {
-            if (typeof(T) != typeof(Enum)) throw new EnumConverterException("泛型必须为枚举类型");
+            if (typeof(T) != typeof(Enum)) throw new Exception("泛型必须为枚举类型");
             return GetDescription(typeof(T), value);
         }
 
@@ -66,7 +54,7 @@ namespace BingoX.Utility
 
 #if Standard
             var att = field.GetCustomAttribute<System.ComponentModel.DescriptionAttribute>();
-             
+
 #else
             var att = field.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), true).OfType<System.ComponentModel.DescriptionAttribute>().FirstOrDefault();
 

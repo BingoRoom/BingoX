@@ -10,15 +10,29 @@ namespace BingoX.Repository
     public class RepositoryFactory : IRepositoryFactory
     {
         private readonly RepositoryContextOptions options;
-        private readonly AssemblyScanResult[] repositoryTypes;
+        private readonly IList<AssemblyScanResult> repositoryTypes;
         private readonly IServiceProvider serviceProvider;
         public RepositoryFactory(IServiceProvider serviceProvider, RepositoryContextOptions options, AssemblyScanResult[] repositoryTypes)
         {
             this.options = options;
-            this.repositoryTypes = repositoryTypes;
+            this.repositoryTypes = new List<AssemblyScanResult>(repositoryTypes);
             this.serviceProvider = serviceProvider;
         }
+        public void AddRepository(Type baseType, Type implementedType)
+        {
+            if (baseType is null)
+            {
+                throw new ArgumentNullException(nameof(baseType));
+            }
 
+            if (implementedType is null)
+            {
+                throw new ArgumentNullException(nameof(implementedType));
+            }
+            if (implementedType.IsAbstract) throw new Exception($"{implementedType} 不能是抽像类");
+            if (!implementedType.IsAssignableFrom(baseType)) throw new Exception($"{implementedType} 不是继承于 {implementedType}");
+            repositoryTypes.Add(new AssemblyScanResult(baseType, implementedType));
+        }
         static readonly Type[] ConstructorTypes = { typeof(RepositoryContextOptions), typeof(string) };
         public IRepository<TDomain> Create<TDomain>(string name) where TDomain : IEntity<TDomain>
         {

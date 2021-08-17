@@ -74,8 +74,7 @@ namespace BingoX.Utility
         public static object Cast(object value, Type targetType, object defaultValue = null)
         {
             if (value == null) return defaultValue;
-            if (targetType == null) throw new ArgumentNullException("targetType");
-            if (value == null) throw new ArgumentNullException("value");
+            if (targetType == null) throw new ArgumentNullException("targetType");       
             var tmpType = targetType.RemoveNullabl();
             if (tmpType.IsInstanceOfType(value)) return value;
             if (tmpType == typeof(string)) return value.ToString();
@@ -85,8 +84,9 @@ namespace BingoX.Utility
             {
                 case TypeCode.DBNull:
                 case TypeCode.Empty:
-                    throw new ArgumentNullException("value");
+                    return defaultValue;
                 case TypeCode.String:
+                    if (string.IsNullOrEmpty((string)value)) return defaultValue;
                     return StringUtility.Cast((string)value, tmpType);
                 case TypeCode.Int16:
                 case TypeCode.Int32:

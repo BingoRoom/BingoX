@@ -15,7 +15,7 @@ namespace BingoX.AspNetCore.TagHelpers
         {
             httpContext = httpContextAccessor.HttpContext;
         }
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var boundedContext = httpContext.RequestServices.GetService<BingoX.AspNetCore.IBoundedContext>();
             output.TagName = "footer";
@@ -26,5 +26,6 @@ namespace BingoX.AspNetCore.TagHelpers
             builderContainer.InnerHtml.Append($"Copyright© {System.DateTime.Now.Year} - {boundedContext.AppName} Powered by .NET Core Version {boundedContext.AppVersion} on {boundedContext.OS}");
             output.Content.AppendHtml(builderContainer);
         }
+       
     }
 }
