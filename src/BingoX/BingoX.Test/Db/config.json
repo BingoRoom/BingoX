@@ -1,0 +1,173 @@
+﻿{
+  "schema": {
+    "checkSchema": true,
+    "table": {
+      "order": { //样例 url路径  http://loaclhost:888/api/query/order?ownerId={0}&beginDate={1}&endDate={2}
+        "node": "mysql1",
+        "tablename": "order",
+        "class": "APorject.Applaction.Model.Order,APorject.Applaction.Model", //使用实体，如果class 为空刚使用table
+        "supportGetId": true,
+        "hasPage": true,
+        "primaryKey": "id",
+        "queryFields": [
+          {
+            "fieldName": "id"
+          },
+          {
+            "fieldName": "createDate"
+          },
+          {
+            "fieldName": "amount"
+          },
+          {
+            "fieldName": "goodQuantity"
+          },
+          {
+            "fieldName": "title",
+            "dsisplayName": "orderTitle" //字段名称转换
+          },
+          {
+            "fieldName": "state",
+            "convert": "APorject.Applaction.OrderStateConvert,APorject.Applaction" //获取数据后进行代码逻辑的转换
+          },
+          {
+            "fieldName": "detailId"
+          },
+          {
+            "fieldName": "details", //一个子属性
+            "fieldJoin": {
+              "node": "mysql1",
+              "tablename": "orderDetail",
+              "JoinType": "OneToMany", //列表
+              "primaryKey": "id",
+              "foreignKey": "detailId",
+              "fields": [
+                { "fieldName": "name" },
+                { "fieldName": "price" },
+                { "fieldName": "remark" }
+              ]
+            }
+          },
+          {
+            "fieldName": "sellerId"
+          },
+          {
+            "fieldName": "seller",
+            "fieldJoin": {
+              "node": "mysql1",
+              "customSQL": "select * from Merchant  a1 join MerchantInfo  b2 on a1.id = b2.MerchantId",
+              "JoinType": "OneToOne",
+              "foreignKey": "sellerId",
+              "fields": [
+                { "fieldName": "name" },
+                { "fieldName": "tel" },
+                { "fieldName": "address" }
+              ]
+            }
+          },
+          {
+            "fieldName": "ownerId"
+          },
+          {
+            "fieldName": "owner",
+            "fieldJoin": {
+              "node": "web_01",
+              "JoinType": "OneToOne",
+              "url": "/api/user/{id}",
+              "args": { "id": "ownerId" },
+              "fields": [
+                { "fieldName": "name" },
+                { "fieldName": "age" },
+                { "fieldName": "birthday" }
+              ]
+            }
+          },
+          {
+            "fieldName": "expressId"
+          },
+          {
+            "fieldName": "express",
+            "fieldJoin": {
+              "node": "web_01",
+              "JoinType": "OneToMany",
+              "url": "/api/express/{orderid}?ownerId={ownerId}",
+              "method": "get",
+              "args": {
+                "orderid": "id",
+                "ownerId": "ownerId"
+              }
+            }
+          }
+        ],
+        "filterField": [
+          {
+            "name": "ownerId",
+            "fieldName": "ownerId",
+            "filterType": "equals"
+          },
+          {
+            "name": "beginDate",
+            "fieldName": "createDate",
+            "filterType": "greaterEquals"
+          },
+          {
+            "name": "endDate",
+            "fieldName": "createDate",
+            "filterType": "lesserEquals"
+          }
+
+        ]
+      },
+      "greeinfo": {
+        "node": "mysql1",
+        "tablename": "greeinfo",
+        "supportGetId": true,
+        "hasPage": true,
+        "primaryKey": "id",
+        "filterField": [
+          {
+            "name": "fullname",
+            "fieldName": "fullname",
+            "filterType": "like"
+          },
+          {
+            "name": "taxcode",
+            "fieldName": "taxcode",
+            "filterType": "like"
+          },
+          {
+            "name": "id",
+            "fieldName": "id",
+            "filterType": "equals"
+          }
+
+        ]
+      }
+
+    }
+  },
+  "dataNode": [
+
+    {
+      "nodeType": "db",
+      "nodeName": "mysql1",
+      "connectionStrting": "Server=localhost;User Id=root;Password=sasa;Database=TaxHelperNetWeb",
+      "dbtype": "mysql"
+    },
+    {
+      "nodeType": "webremote",
+      "nodeName": "web_01",
+      "hosturl": "http://localhost:8080/",
+      "remotetype": "webapi"
+    },
+    {
+      "nodeType": "webremote",
+      "nodeName": "web_02",
+      "hosturl": "http://localhost:8081/wcf/wcfService.svc",
+      "remotetype": "wcf"
+    }
+
+  ]
+
+
+}

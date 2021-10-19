@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+  <data name="ChrominanceTable" xml:space="preserve">
+    <value>色度表</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>比对</value>
+  </data>
+  <data name="DateTimeDigitized" xml:space="preserve">
+    <value>建立時間</value>
+  </data>
+  <data name="DateTimeOriginal" xml:space="preserve">
+    <value>拍攝時間</value>
+  </data>
+  <data name="EquipmentInfo" xml:space="preserve">
+    <value>设备信息</value>
+  </data>
+  <data name="EquipmentMake" xml:space="preserve">
+    <value>设备廠商</value>
+  </data>
+  <data name="EquipmentModel" xml:space="preserve">
+    <value>设备型号</value>
+  </data>
+  <data name="ExifVersion" xml:space="preserve">
+    <value>Exif版本</value>
+  </data>
+  <data name="ExposureProgram" xml:space="preserve">
+    <value>曝光方式</value>
+  </data>
+  <data name="ExposureTime" xml:space="preserve">
+    <value>曝光时间</value>
+  </data>
+  <data name="Flash" xml:space="preserve">
+    <value>闪光灯模式</value>
+  </data>
+  <data name="FocalLengthIn35mmFilm" xml:space="preserve">
+    <value>35mm胶卷</value>
+  </data>
+  <data name="GeoInfo" xml:space="preserve">
+    <value>地理信息</value>
+  </data>
+  <data name="GPS" xml:space="preserve">
+    <value>GPS</value>
+  </data>
+  <data name="ImageInfo" xml:space="preserve">
+    <value>圖像信息</value>
+  </data>
+  <data name="ISOSpeedRatings" xml:space="preserve">
+    <value>ISO光圈</value>
+  </data>
+  <data name="LightSource" xml:space="preserve">
+    <value>光源</value>
+  </data>
+  <data name="LuminanceTable" xml:space="preserve">
+    <value>亮度表</value>
+  </data>
+  <data name="MeteringMode" xml:space="preserve">
+    <value>测光模式</value>
+  </data>
+  <data name="AllExifs" xml:space="preserve">
+    <value>所有Exifs</value>
+  </data>
+  <data name="Pix" xml:space="preserve">
+    <value>像素</value>
+  </data>
+  <data name="Resolution" xml:space="preserve">
+    <value>解析度</value>
+  </data>
+  <data name="ResolutionUnit" xml:space="preserve">
+    <value>分辨率单元</value>
+  </data>
+  <data name="Saturation" xml:space="preserve">
+    <value>饱和</value>
+  </data>
+  <data name="Sharpness" xml:space="preserve">
+    <value>清晰度</value>
+  </data>
+  <data name="ShutterSpeed" xml:space="preserve">
+    <value>快门速度</value>
+  </data>
+  <data name="Thumbnail" xml:space="preserve">
+    <value>縮略圖</value>
+  </data>
+  <data name="WhiteBalance" xml:space="preserve">
+    <value>白平衡</value>
+  </data>
+  <data name="YCbCrPositioning" xml:space="preserve">
+    <value>YCbCr定位</value>
+  </data>
+  <data name="LightSource_D55" xml:space="preserve">
+    <value>D55</value>
+  </data>
+  <data name="LightSource_D65" xml:space="preserve">
+    <value>D65</value>
+  </data>
+  <data name="LightSource_D75" xml:space="preserve">
+    <value>D75</value>
+  </data>
+  <data name="LightSource_Daylight" xml:space="preserve">
+    <value>日光</value>
+  </data>
+  <data name="LightSource_Flash" xml:space="preserve">
+    <value>閃光</value>
+  </data>
+  <data name="LightSource_Fluorescent" xml:space="preserve">
+    <value>螢光燈</value>
+  </data>
+  <data name="LightSource_StandardLightA" xml:space="preserve">
+    <value>標準照度A</value>
+  </data>
+  <data name="LightSource_StandardLightB" xml:space="preserve">
+    <value>標準照度B</value>
+  </data>
+  <data name="LightSource_StandardLightC" xml:space="preserve">
+    <value>標準照度C</value>
+  </data>
+  <data name="LightSource_Tungsten" xml:space="preserve">
+    <value>鵝絲類</value>
+  </data>
+  <data name="Metering_CenterWeightedAverage" xml:space="preserve">
+    <value>中央偏重平均測光</value>
+  </data>
+  <data name="Metering_ModeAverage" xml:space="preserve">
+    <value>平均測光</value>
+  </data>
+  <data name="Metering_MultiSegment" xml:space="preserve">
+    <value>分區測光</value>
+  </data>
+  <data name="Metering_MultiSpot" xml:space="preserve">
+    <value>多点測光</value>
+  </data>
+  <data name="Metering_Partial" xml:space="preserve">
+    <value>局部測光</value>
+  </data>
+  <data name="Metering_Spot" xml:space="preserve">
+    <value>測光</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>其它</value>
+  </data>
+  <data name="RawFormat" xml:space="preserve">
+    <value>圖片格式</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Flash_Name0" xml:space="preserve">
+    <value>無閃光燈</value>
+  </data>
+  <data name="Flash_Name1" xml:space="preserve">
+    <value>閃光燈</value>
+  </data>
+  <data name="Flash_Name13" xml:space="preserve">
+    <value>閃光燈,强制,無回應閃光</value>
+  </data>
+  <data name="Flash_Name15" xml:space="preserve">
+    <value>閃光燈,强制,回應閃光</value>
+  </data>
+  <data name="Flash_Name16" xml:space="preserve">
+    <value>無光灯,强制</value>
+  </data>
+  <data name="Flash_Name24" xml:space="preserve">
+    <value>無光灯,自动</value>
+  </data>
+  <data name="Flash_Name25" xml:space="preserve">
+    <value>閃光燈,自动</value>
+  </data>
+  <data name="Flash_Name29" xml:space="preserve">
+    <value>閃光燈,自动,無回應閃光</value>
+  </data>
+  <data name="Flash_Name31" xml:space="preserve">
+    <value>閃光燈,自动,回應閃光</value>
+  </data>
+  <data name="Flash_Name32" xml:space="preserve">
+    <value>無閃光燈功能</value>
+  </data>
+  <data name="Flash_Name5" xml:space="preserve">
+    <value>閃光燈,無回應閃光</value>
+  </data>
+  <data name="Flash_Name65" xml:space="preserve">
+    <value>閃光燈,紅眼</value>
+  </data>
+  <data name="Flash_Name69" xml:space="preserve">
+    <value>閃光燈,紅眼,無回應閃光</value>
+  </data>
+  <data name="Flash_Name7" xml:space="preserve">
+    <value>閃光燈,回應閃光</value>
+  </data>
+  <data name="Flash_Name71" xml:space="preserve">
+    <value>閃光燈,紅眼,回應閃光</value>
+  </data>
+  <data name="Flash_Name73" xml:space="preserve">
+    <value>閃光燈,强制,紅眼</value>
+  </data>
+  <data name="Flash_Name77" xml:space="preserve">
+    <value>閃光燈,强制,紅眼,無回應閃光</value>
+  </data>
+  <data name="Flash_Name79" xml:space="preserve">
+    <value>閃光燈,强制,紅眼,回應閃光</value>
+  </data>
+  <data name="Flash_Name83" xml:space="preserve">
+    <value>閃光燈,自动,紅眼</value>
+  </data>
+  <data name="Flash_Name9" xml:space="preserve">
+    <value>閃光燈,强制</value>
+  </data>
+  <data name="Flash_Name93" xml:space="preserve">
+    <value>閃光燈,自动,紅眼,無回應閃光</value>
+  </data>
+  <data name="Flash_Name95" xml:space="preserve">
+    <value>閃光燈,自动,紅眼,回應閃光</value>
+  </data>
+  <data name="Orientation" xml:space="preserve">
+    <value>方向</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>星星</value>
+  </data>
+  <data name="RawFormatID" xml:space="preserve">
+    <value>圖片格式編號</value>
+  </data>
+</root>
