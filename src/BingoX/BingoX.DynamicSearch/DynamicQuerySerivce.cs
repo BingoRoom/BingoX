@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace BingoX.DynamicSearch
 {
-    public class DynamicQuerySerivce
+    public class DynamicSearchSerivce
     {
 
 
 
-        public DynamicQuerySerivce(DynamicDataAccessorCollection dataAccessors, DynamicTableInfoCollection tableInfoCollection)
+        public DynamicSearchSerivce(DynamicDataAccessorCollection dataAccessors, DynamicTableInfoCollection tableInfoCollection)
         {
             this.DataAccessorCollection = dataAccessors;
             Tables = tableInfoCollection;

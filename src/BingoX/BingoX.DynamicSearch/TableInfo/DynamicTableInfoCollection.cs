@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BingoX.DynamicSearch
 {
-    public class DynamicTableInfoCollection
+    public class DynamicTableInfoCollection : IEnumerable<DynamicTableInfo>
     {
         public void AdddRange(DynamicTableInfo[] tables)
         {
@@ -14,10 +15,23 @@ namespace BingoX.DynamicSearch
             }
 
         }
+
+        public int Count { get { return dic.Count; } }
         public void AddTable(DynamicTableInfo info)
         {
             dic.Add(info.Code, info);
         }
+
+        public IEnumerator<DynamicTableInfo> GetEnumerator()
+        {
+            return dic.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return dic.Values.GetEnumerator();
+        }
+
         class StringEqualityComparer : IEqualityComparer<string>
         {
             public bool Equals(string x, string y)

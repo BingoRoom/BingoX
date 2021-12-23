@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -99,6 +102,79 @@ namespace BingoX.Helper
             return new List<TTarget>(collection.OfType<TTarget>());
         }
 
+        public static DataTable ToDataTable<T>(this IEnumerable<T> source, params Expression<Func<T, object>>[] expressions)
+        {
+            PropertyInfo[] members = PrepareMemberInfos(expressions).OfType<PropertyInfo>().ToArray();
+
+            Func<T, object[]> func = CreateShredder<T>(members);
+            DataTable table = new DataTable() { TableName = typeof(T).Name };
+            foreach (var item in members)
+            {
+                table.Columns.Add(item.Name, item.PropertyType);
+            }
+            table.BeginLoadData();
+            try
+            {
+                foreach (T item in source)
+                {
+                    DataRow dataRow = table.NewRow();
+                    dataRow.ItemArray = func(item);
+                    table.Rows.Add(dataRow);
+                }
+                return table;
+            }
+            finally
+            {
+                table.EndLoadData();
+            }
+        }
+
+        private static Func<T, object[]> CreateShredder<T>(PropertyInfo[] members)
+        {
+            return new Func<T, object[]>(n => members.Select(x => FastReflectionExtensions.FastGetValue(x, n)).ToArray());
+        }
+
+        private static IEnumerable<MemberInfo> PrepareMemberInfos<T>(ICollection<Expression<Func<T, object>>> expressions)
+        {
+            if (expressions == null || expressions.Count == 0)
+            {
+                return typeof(T).GetMembers(BindingFlags.Instance | BindingFlags.Public).Where(delegate (MemberInfo m)
+                {
+                    if (m.MemberType != MemberTypes.Field)
+                    {
+                        PropertyInfo propertyInfo = m as PropertyInfo;
+                        if ((object)propertyInfo != null && propertyInfo.CanRead)
+                        {
+                            return propertyInfo.GetIndexParameters().Length == 0;
+                        }
+                        return false;
+                    }
+                    return true;
+                });
+            }
+            try
+            {
+                return expressions.Select(GetAccessedMember);
+            }
+            catch (ArgumentException innerException)
+            {
+                throw new ArgumentException("One of the supplied expressions is not allowed.", "expressions", innerException);
+            }
+            MemberInfo GetAccessedMember(LambdaExpression lambda)
+            {
+                Expression expression = lambda.Body;
+                if (expression.NodeType == ExpressionType.Convert || expression.NodeType == ExpressionType.ConvertChecked)
+                {
+                    expression = ((UnaryExpression)expression).Operand;
+                }
+                MemberExpression memberExpression = expression as MemberExpression;
+                if (memberExpression == null || memberExpression.Expression.NodeType != ExpressionType.Parameter)
+                {
+                    throw new ArgumentException($"Illegal expression: {lambda}", "lambda");
+                }
+                return memberExpression.Member;
+            }
+        }
 
 
 

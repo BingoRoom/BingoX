@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>net45;netstandard2.0;netcoreapp3.1</TargetFrameworks>
 		<SignAssembly>false</SignAssembly>
 		<DelaySign>false</DelaySign>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -18,14 +18,27 @@
 	<PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netstandard2.0|AnyCPU'">
 		<DefineConstants>DEBUG;TRACE;Standard</DefineConstants>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='netcoreapp3.1|AnyCPU'">
+		<DefineConstants>DEBUG;TRACE;Framework</DefineConstants>
+	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='net45|AnyCPU'">
 		<DefineConstants>DEBUG;TRACE;Framework</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net45'">
 		<PackageReference Include="sqlSugar" Version="5.0.0.10" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">		 
+		<PackageReference Include="sqlSugarCore" Version="5.0.0.10" />	 
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core">
+		  <Version>2.2.5</Version>
+		</PackageReference>
 		<PackageReference Include="sqlSugarCore" Version="5.0.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.1" />
+		<ProjectReference Include="..\BingoX.AspNetCore\BingoX.AspNetCore.csproj" />
+
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

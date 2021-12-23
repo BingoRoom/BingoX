@@ -1,27 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace BingoX.DynamicSearch
 {
-    public class DynamicQueryOption
-    {
-
-
-
-        public DynamicTableInfoCollection Tables { get; private set; }
-        public DynamicDataAccessorCollection DataAccessors { get; private set; }
-
-
-        public void LoadConfig(string filePath)
-        {
-            DynamicSchemaReader reader = new DynamicSchemaReader(filePath);
-            reader.LoadConfig();
-            Tables = reader.Tables;
-            DataAccessors = reader.DataAccessors;
-        }
-    }
     public class DynamicSchemaReader
     {
         JObject jObj;

@@ -98,7 +98,7 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestQueryRepository()
         {
-            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db2");
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>();
             var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
         }
@@ -106,7 +106,7 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestQuery_EfRepository()
         {
-            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>("db1");
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().Create<Role>();
             var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
         }
@@ -121,7 +121,7 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestQueryWithSql_SqlSuargRepository()
         {
-            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>("db2");
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>();
             var list = roleRepository.QueryAll();
             Assert.GreaterOrEqual(list.Count, 1);
         }
@@ -129,7 +129,7 @@ namespace BingoX.Core.Test.RepositoryTest
         [Test]
         public void TestNoTracking_SqlSuargRepository()
         {
-            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>("db2");
+            var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>();
           
             //var roleRepository = serviceProvider.GetService<IRepositoryFactory>().CreateRepository<AccountRepository>("db2");
             roleRepository.UpdateUserState();
