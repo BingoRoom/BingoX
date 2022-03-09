@@ -4,7 +4,7 @@ using System;
 
 namespace BingoX.AspNetCore
 {
-   
+
     public interface IBoundedContext
     {
         string WebRootPath { get; }
@@ -16,5 +16,16 @@ namespace BingoX.AspNetCore
         bool IsProduction { get; }
         IGenerator<long> Generator { get; }
         IDateTimeService DateTimeService { get; }
+    }
+
+    /// <summary>
+    /// 网站备案信息
+    /// </summary>
+    public interface IRecordFiling
+    {
+        string No { get; }
+        string Company { get; }
+        string CopyrightYear { get;  }
+        string Url { get; }
     }
 }

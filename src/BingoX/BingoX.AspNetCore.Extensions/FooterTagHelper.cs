@@ -18,14 +18,22 @@ namespace BingoX.AspNetCore.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var boundedContext = httpContext.RequestServices.GetService<BingoX.AspNetCore.IBoundedContext>();
+            var recordFiling = httpContext.RequestServices.GetService<BingoX.AspNetCore.IRecordFiling>();
             output.TagName = "footer";
             output.Attributes.Add("class", "border-top footer text-muted");
             TagBuilder builderContainer = new TagBuilder("div");
             builderContainer.AddCssClass("container");
             builderContainer.MergeAttribute("style", "margin-right: unset;margin-left: auto;");
-            builderContainer.InnerHtml.Append($"Copyright© {System.DateTime.Now.Year} - {boundedContext.AppName} Powered by .NET Core Version {boundedContext.AppVersion} on {boundedContext.OS}");
+            if (recordFiling != null)
+            {
+                builderContainer.InnerHtml.Append($"Copyright© {recordFiling.CopyrightYear}");
+                var url = recordFiling.Url ?? "https://beian.miit.gov.cn/";
+                if (!string.IsNullOrEmpty(recordFiling.No)) builderContainer.InnerHtml.AppendHtml($"- <a href='{url}'>工业和信息化部备案管理系统网站 {recordFiling.No}</a>");
+                if (!string.IsNullOrEmpty(recordFiling.Company)) builderContainer.InnerHtml.Append($"主办单位：{recordFiling.Company}</a>");
+            }
+            builderContainer.InnerHtml.Append($"{boundedContext.AppName} Powered by .NET Core Version {boundedContext.AppVersion} on {boundedContext.OS}");
             output.Content.AppendHtml(builderContainer);
         }
-       
+
     }
 }

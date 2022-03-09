@@ -3,19 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using BingoX.Helper;
+using Microsoft.Extensions.Logging;
 
 namespace BingoX.AspNetCore.Extensions
 {
     public class StandardExceptionFilterAttribute : ExceptionFilterAttribute
     {
-
-
+        public StandardExceptionFilterAttribute(ILogger<StandardExceptionFilterAttribute> loger)
+        {
+            this.loger = loger;
+        }
+        ILogger loger;
         public override void OnException(ExceptionContext context)
         {
             Exception ex = context.Exception;
             var descriptor = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
             var apitype = descriptor.ControllerTypeInfo.GetAttribute<ApiControllerAttribute>();
-            var fault = FaultExceptionProvider.Get(ex)?? FaultExceptionProvider.Unhandled;
+            var fault = FaultExceptionProvider.Get(ex) ?? FaultExceptionProvider.Unhandled;
             if (apitype == null)
             {
 
@@ -41,11 +45,27 @@ namespace BingoX.AspNetCore.Extensions
                         return;
                     default:
                         {
-
-                            context.Result = new JsonResult(new { Message = fault.GetMessage(ex) })
+                            if (FaultExceptionProvider.Unhandled == fault)
                             {
-                                StatusCode = 400
-                            };
+                                loger.LogError(ex, context.HttpContext.Request.Path);
+                            }
+                            if (context.HttpContext.Request.Path.StartsWithSegments("/api/", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                context.Result = new JsonResult(new { Message = fault.GetMessage(ex) })
+                                {
+                                    ContentType = "text/json; charset=utf-8",
+                                    StatusCode = 400
+                                };
+                            }
+                            else
+                            {
+                                context.Result = new ContentResult()
+                                {
+                                    Content = fault.GetMessage(ex),
+                                    ContentType = "text/html; charset=utf-8",
+                                    StatusCode = 400
+                                };
+                            }
                             break;
                         }
                 }
