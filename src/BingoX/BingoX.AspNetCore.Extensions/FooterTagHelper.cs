@@ -28,8 +28,8 @@ namespace BingoX.AspNetCore.TagHelpers
             {
                 builderContainer.InnerHtml.Append($"Copyright© {recordFiling.CopyrightYear}");
                 var url = recordFiling.Url ?? "https://beian.miit.gov.cn/";
-                if (!string.IsNullOrEmpty(recordFiling.No)) builderContainer.InnerHtml.AppendHtml($"- <a href='{url}'>工业和信息化部备案管理系统网站 {recordFiling.No}</a>");
-                if (!string.IsNullOrEmpty(recordFiling.Company)) builderContainer.InnerHtml.Append($"主办单位：{recordFiling.Company}</a>");
+                if (!string.IsNullOrEmpty(recordFiling.No)) builderContainer.InnerHtml.AppendHtml($" - <a href='{url}'>工业和信息化部备案管理系统网站 {recordFiling.No}</a>");
+                if (!string.IsNullOrEmpty(recordFiling.Company)) builderContainer.InnerHtml.Append($" 主办单位：{recordFiling.Company}");
             }
             builderContainer.InnerHtml.Append($"{boundedContext.AppName} Powered by .NET Core Version {boundedContext.AppVersion} on {boundedContext.OS}");
             output.Content.AppendHtml(builderContainer);
