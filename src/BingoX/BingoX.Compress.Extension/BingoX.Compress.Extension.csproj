@@ -43,7 +43,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SharpCompress" Version="0.23.0" />
+    <PackageReference Include="SharpCompress" Version="0.29.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BingoX.Core\BingoX.Core.csproj" />
